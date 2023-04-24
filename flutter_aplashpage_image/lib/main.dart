@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
+//import 'bmicalc.dart/calc.dart';
 import 'bmicalc.dart/test.dart';
 
 
@@ -42,7 +43,7 @@ Widget build(BuildContext context){
       children: [
         Flexible(flex: 5,
         child: Image.asset(
-          "asssets/images/opi.jpg", scale: 0.5,
+          "assets/images/opi.jpg", scale: 0.5,
         ),
       ),
         const Text("BMI Calculator", style: TextStyle(fontSize: 32, fontWeight: FontWeight.bold))
