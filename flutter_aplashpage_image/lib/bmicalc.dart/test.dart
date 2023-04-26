@@ -39,9 +39,8 @@ class _SPageState extends State<SPage> {
               Flexible(
                 flex: 5,
                 child: Image.asset(
-                  "assets/images/opi.jpg",
-                  scale: 1,
-                ),
+                      "assets/images/opi.jpg",
+                      scale: 4),
               ),
               SingleChildScrollView(
                 child: Padding(
