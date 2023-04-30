@@ -84,7 +84,9 @@ class _CPageState extends State<CPage> {
                   countryobj: countryobj,
                 ),
               ),
-              if (flag.isNotEmpty) Image.network(flag, scale: 0.6),
+              
+              if (flag.isNotEmpty) 
+              Image.network(flag, scale: 0.6)
             ]),
           ),
         ),
@@ -93,10 +95,15 @@ class _CPageState extends State<CPage> {
   }
 
   void _getCountry() async {
-    ProgressDialog progressDialog = ProgressDialog(context,
-        message: const Text("Please Wait"), title: const Text("Loading..."));
-    progressDialog.show();
-
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return const AlertDialog(
+          title: Text("Please Wait"),
+          content: Text("Loading..."),
+        );
+      },
+    );
     selectloc = textEditingController.text;
     var apiid = "4NGOdfJ2XxrehJd0CvbIvQ==fzcVVyaVfVkeLMBM";
     var url =
@@ -104,60 +111,47 @@ class _CPageState extends State<CPage> {
     var response = await http.get(url, headers: {"X-Api-Key": apiid});
     var rescode = response.statusCode;
 
-    //if (textEditingController.text.isNotEmpty ) {
     if (rescode == 200) {
       var jsonData = response.body;
       var parsedJson = json.decode(jsonData);
-      if (parsedJson.isEmpty) { 
-        print ("error input");   
+      if (parsedJson[0]['name'].toLowerCase() == selectloc.toLowerCase() ||
+          parsedJson[0]['iso2'].toLowerCase() == selectloc.toLowerCase()) {
         setState(() {
+          capital = parsedJson[0]['capital'];
+          currency = parsedJson[0]['currency']['name'];
+          gdp = parsedJson[0]['gdp'];
+          ccode = parsedJson[0]['iso2'];
+          population = parsedJson[0]['population'];
+          flag = "https://flagsapi.com/$ccode/shiny/64.png";
           countryobj = Country(
-            "No Record", "No Record", "No Record", 0.0, "No Record", 0.0, '');
-        progressDialog.dismiss();
+              selectloc, capital, currency, gdp, ccode, population, flag);
+
           Fluttertoast.showToast(
-              msg: "Search not Found. Please try again.",
+              msg: "Found",
               toastLength: Toast.LENGTH_SHORT,
               gravity: ToastGravity.BOTTOM,
               timeInSecForIosWeb: 1,
-              fontSize: 12.0);
-          loadFail(); //NEGATIVE BEEP SOUNDS
+              fontSize: 16.0);
+          loadOk();
         });
-        Navigator.pop(context);
-      } else if (parsedJson[0]['name'].toLowerCase() ==
-          textEditingController.text.toLowerCase()) {
-        capital = parsedJson[0]['capital'];
-        currency = parsedJson[0]['currency']['name'];
-        gdp = parsedJson[0]['gdp'];
-        ccode = parsedJson[0]['iso2'];
-        population = parsedJson[0]['population'];
-        flag = "https://flagsapi.com/$ccode/shiny/64.png";
-        countryobj =
-            Country(selectloc, capital, currency, gdp, ccode, population, flag);
-        progressDialog.dismiss();
-        Fluttertoast.showToast(
-            msg: "Found",
-            toastLength: Toast.LENGTH_SHORT,
-            gravity: ToastGravity.BOTTOM,
-            timeInSecForIosWeb: 1,
-            fontSize: 16.0);
-        loadOk();
-        print ("success");  
-      }
-    }
-    /*
-    else {
+      Navigator.pop(context);
+          
+    } else {
       setState(() {
+        flag = "";
+        countryobj = Country(
+              "No Record", "No Record", "No Record", 0.0, " ", 0.0, " ");
         Fluttertoast.showToast(
-            msg: "Please enter a valid country name.",
+            msg: "Search not Found. Please try again.",
             toastLength: Toast.LENGTH_SHORT,
             gravity: ToastGravity.BOTTOM,
             timeInSecForIosWeb: 1,
             fontSize: 12.0);
         loadFail(); //NEGATIVE BEEP SOUNDS
       });
+      Navigator.pop(context);
     }
-    */
-    //}
+    }
   }
 }
 

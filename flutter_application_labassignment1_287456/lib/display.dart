@@ -32,23 +32,24 @@ class DPage extends StatefulWidget {
 }
 
 class _DPageState extends State<DPage> {
-  Country countryobj = Country(
-      "Malaysia", "Not Available", "Not Available", 0.0, "MY", 0.0, "");
+  Country countryobj =
+      Country("Malaysia", "Not Available", "Not Available", 0.0, "MY", 0.0, "");
   String selectloc = "Malaysia";
   var name = "Malaysia",
       capital = "Not available",
       currency = "Not available",
-      gdp =0.0,
+      gdp = 0.0,
       ccode = "MY",
       population = 0.0,
-      flag = '';   
+      flag = '';
 
   AudioPlayer player = AudioPlayer();
-    Future loadOk() async {
+  Future loadOk() async {
     player.play(AssetSource("audio/success.wav"));
   }
+
   Future loadFail() async {
-     player.play(AssetSource("audio/negative_beeps-6008.wav"));
+    player.play(AssetSource("audio/negative_beeps-6008.wav"));
   }
 
   TextEditingController textEditingController = TextEditingController();
@@ -58,40 +59,34 @@ class _DPageState extends State<DPage> {
     return MaterialApp(
       home: Scaffold(
         body: SingleChildScrollView(
-                child: Padding(
-                padding: const EdgeInsets.fromLTRB(20, 20, 20, 0),   
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                  const Text(
-                    "Country Information",
-                    style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
-                  ),
-                  const SizedBox(height: 10),
-                      TextField(
-                        controller: textEditingController,
-                        decoration: InputDecoration(
-                            hintText: "Country Name",
-                            border: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(10.0))),
-                      ),
-                      const Text(""),
-                  ElevatedButton(
-                      onPressed: _getCountry,
-                      child: const Text("Load country")
-                      ),                
-                  Flexible(
-                  flex: 5,
-                  child: CountryGrid(
-                    countryobj: countryobj,
-                  ), 
-                  ),
-                  if(flag.isNotEmpty)
-                  Image.network(flag, scale: 0.6),
-                ]
+          child: Padding(
+            padding: const EdgeInsets.fromLTRB(20, 20, 20, 0),
+            child: Column(mainAxisSize: MainAxisSize.min, children: [
+              const Text(
+                "Country Information",
+                style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+              ),
+              const SizedBox(height: 10),
+              TextField(
+                controller: textEditingController,
+                decoration: InputDecoration(
+                    hintText: "Country Name",
+                    border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(10.0))),
+              ),
+              const Text(""),
+              ElevatedButton(
+                  onPressed: _getCountry, child: const Text("Load country")),
+              Flexible(
+                flex: 5,
+                child: CountryGrid(
+                  countryobj: countryobj,
                 ),
               ),
-            ),
+              if (flag.isNotEmpty) Image.network(flag, scale: 0.6)
+            ]),
+          ),
+        ),
       ),
     );
   }
@@ -112,38 +107,46 @@ class _DPageState extends State<DPage> {
         Uri.parse('https://api.api-ninjas.com/v1/country?name=$selectloc');
     var response = await http.get(url, headers: {"X-Api-Key": apiid});
     var rescode = response.statusCode;
+
     if (rescode == 200) {
       var jsonData = response.body;
       var parsedJson = json.decode(jsonData);
-      setState(() {
-        capital = parsedJson[0]['capital'];
-        currency = parsedJson[0]['currency']['name'];
-        gdp = parsedJson[0]['gdp'];
-        ccode = parsedJson[0]['iso2'];
-        population = parsedJson[0]['population'];
-        flag = "https://flagsapi.com/$ccode/shiny/64.png";
-        countryobj = Country(selectloc, capital, currency, gdp, ccode, population, flag);
-        
-        Fluttertoast.showToast(
-            msg: "Found",
-            toastLength: Toast.LENGTH_SHORT,
-            gravity: ToastGravity.BOTTOM,
-            timeInSecForIosWeb: 1,
-            fontSize: 16.0);
-            loadOk();
-      });
-      Navigator.pop(context);
-    } else {
-      setState(() {
-        Fluttertoast.showToast(
-            msg: "Search not Found. Please try again.",
-            toastLength: Toast.LENGTH_SHORT,
-            gravity: ToastGravity.BOTTOM,
-            timeInSecForIosWeb: 1,
-            fontSize: 12.0);
-        loadFail();  //NEGATIVE BEEP SOUNDS
-          }
-          );
+      if (parsedJson[0]['name'].toLowerCase() == selectloc.toLowerCase() ||
+          parsedJson[0]['iso2'].toLowerCase() == selectloc.toLowerCase()) {
+        setState(() {
+          capital = parsedJson[0]['capital'];
+          currency = parsedJson[0]['currency']['name'];
+          gdp = parsedJson[0]['gdp'];
+          ccode = parsedJson[0]['iso2'];
+          population = parsedJson[0]['population'];
+          flag = "https://flagsapi.com/$ccode/shiny/64.png";
+          countryobj = Country(
+              selectloc, capital, currency, gdp, ccode, population, flag);
+
+          Fluttertoast.showToast(
+              msg: "Found",
+              toastLength: Toast.LENGTH_SHORT,
+              gravity: ToastGravity.BOTTOM,
+              timeInSecForIosWeb: 1,
+              fontSize: 16.0);
+          loadOk();
+        });
+        Navigator.pop(context);
+      } else {
+        setState(() {
+          flag = "";
+          countryobj =
+              Country("No Record", "No Record", "No Record", 0.0, "", 0.0, "");
+          Fluttertoast.showToast(
+              msg: "Search not Found. Please try again.",
+              toastLength: Toast.LENGTH_SHORT,
+              gravity: ToastGravity.BOTTOM,
+              timeInSecForIosWeb: 1,
+              fontSize: 12.0);
+          loadFail(); //NEGATIVE BEEP SOUNDS
+        });
+        Navigator.pop(context);
+      }
     }
   }
 }
@@ -163,7 +166,7 @@ class _CountryGridState extends State<CountryGrid> {
       primary: false,
       physics: const ScrollPhysics(),
       shrinkWrap: true,
-      padding: const EdgeInsets.fromLTRB(16,12, 16, 4),
+      padding: const EdgeInsets.fromLTRB(16, 12, 16, 4),
       crossAxisSpacing: 10,
       mainAxisSpacing: 10,
       crossAxisCount: 2,
@@ -181,7 +184,7 @@ class _CountryGridState extends State<CountryGrid> {
               ),
               Text(widget.countryobj.capital)
             ],
-          ),  
+          ),
         ),
         Container(
           padding: const EdgeInsets.all(8),
@@ -232,6 +235,3 @@ class _CountryGridState extends State<CountryGrid> {
     );
   }
 }
-
-
-
