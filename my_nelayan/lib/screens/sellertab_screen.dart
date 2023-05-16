@@ -1,20 +1,19 @@
 import 'package:flutter/material.dart';
 
-class NewsTabScreen extends StatefulWidget {
-  const NewsTabScreen({super.key});
+class SellerTabScreen extends StatefulWidget {
+  const SellerTabScreen({super.key});
 
   @override
-  State<NewsTabScreen> createState() => _NewsTabScreenState();
+  State<SellerTabScreen> createState() => _SellerTabScreenState();
 }
 
-class _NewsTabScreenState extends State<NewsTabScreen> {
+class _SellerTabScreenState extends State<SellerTabScreen> {
   late List<Widget> tabchildren;
-  String maintitle = "News";
+  String maintitle = "Seller";
 
   @override
   void initState() {
     super.initState();
-  
   }
 
   @override
