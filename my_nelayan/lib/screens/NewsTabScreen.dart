@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:my_nelayan/model/user.dart';
+import 'package:my_nelayan/model/user.dart';
 
 class NewsTabScreen extends StatefulWidget {
-  const NewsTabScreen({super.key});
+  final User user;
+  const NewsTabScreen({super.key, required this.user});
 
   @override
   State<NewsTabScreen> createState() => _NewsTabScreenState();
@@ -14,7 +17,6 @@ class _NewsTabScreenState extends State<NewsTabScreen> {
   @override
   void initState() {
     super.initState();
-  
   }
 
   @override

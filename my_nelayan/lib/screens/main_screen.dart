@@ -26,12 +26,13 @@ class _MainScreenState extends State<MainScreen> {
     super.initState();
     print(widget.user.name);
     print("MainScreen");
+
     tabchildren = [
                     //key?
       BuyerTabScreen(user: widget.user),
-      const SellerTabScreen(),
-      const ProfileTabScreen(),
-      const NewsTabScreen()
+      SellerTabScreen(user: widget.user),
+      ProfileTabScreen(user: widget.user),
+      NewsTabScreen(user: widget.user),
     ];
   }
 

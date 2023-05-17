@@ -35,7 +35,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
       body: SingleChildScrollView(
           child: Column(
         children: [
-          Container(
+          SizedBox(
             height: screenHeight * 0.28,
             width: screenWidth,
             child: Image.asset(
@@ -132,6 +132,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                                       borderSide: BorderSide(width: 2.0),
                                     )),
                               ),
+                              const SizedBox(height: 16),
                               Row(
                                 children: [
                                   Checkbox(

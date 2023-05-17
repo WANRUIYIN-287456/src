@@ -169,13 +169,13 @@ class _LoginScreenState extends State<LoginScreen> {
           .showSnackBar(const SnackBar(content: Text("Check your input")));
       return;
     }
-    String _email = _emailEditingController.text;
-    String _password = _passEditingController.text;
+    String email = _emailEditingController.text;
+    String password = _passEditingController.text;
     http.post(Uri.parse("${Config.server}/MyNelayan/php/login_user.php"),
         //Uri.parse("http://10.19.74.52/MyNelayan/php/login_user.php"),
         body: {
-          "email": _email,
-          "password": _password,
+          "email": email,
+          "password": password,
         }).then((response) {
       //print(response.body);
       try {

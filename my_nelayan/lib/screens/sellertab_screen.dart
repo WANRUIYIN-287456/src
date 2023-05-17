@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:my_nelayan/model/user.dart';
+import 'package:my_nelayan/screens/newcatch_screen.dart';
 
 class SellerTabScreen extends StatefulWidget {
-  const SellerTabScreen({super.key});
+  final User user;
+  const SellerTabScreen({super.key, required this.user});
 
   @override
   State<SellerTabScreen> createState() => _SellerTabScreenState();
@@ -23,8 +26,17 @@ class _SellerTabScreenState extends State<SellerTabScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Center(
-      child: Text(maintitle),
+    return Scaffold(
+      body: Center(),
+      floatingActionButton: FloatingActionButton(onPressed:(){
+        if(widget.user.id != "na"){
+          Navigator.push(context, MaterialPageRoute(builder: (content) => NewCatchScreen(user: widget.user,)));
+        }else{
+          ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Please login/register an account.")));
+        }
+      },
+      child: const Text("+", style: TextStyle(fontSize: 32))), 
+      
     );
   }
 }
