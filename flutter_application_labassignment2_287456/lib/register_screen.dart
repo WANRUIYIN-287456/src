@@ -36,11 +36,11 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
           child: Column(
         children: [
           Container(
-            height: screenHeight * 0.28,
+            height: screenHeight * 0.21,
             width: screenWidth,
             child: Image.asset(
               "assets/images/register2.png",
-              fit: BoxFit.cover,
+              fit: BoxFit.contain,
             ),
           ),
           Padding(
@@ -265,6 +265,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
       try {
         print(response.statusCode);
         if (response.statusCode == 200) {
+           print(response.body);
           var jsondata = jsonDecode(response.body);
           if (jsondata['status'] == 'success') {
             ScaffoldMessenger.of(context).showSnackBar(

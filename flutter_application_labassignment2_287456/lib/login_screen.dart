@@ -32,7 +32,10 @@ class _LoginScreenState extends State<LoginScreen> {
     screenHeight = MediaQuery.of(context).size.height;
     screenWidth = MediaQuery.of(context).size.width;
     return Scaffold(
-      appBar: AppBar(title: const Text("Login")),
+      appBar: AppBar( title: const Text("Login"),
+          backgroundColor: Colors.transparent,
+          foregroundColor: Theme.of(context).colorScheme.secondary,
+          elevation: 0),
       body: SingleChildScrollView(
         child: Column(children: [
           SizedBox(
@@ -214,7 +217,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
 
   void saveremovepref(bool value) async {
-    FocusScope.of(context).requestFocus(FocusNode());
+   // FocusScope.of(context).requestFocus(FocusNode());
     String email = _emailEditingController.text;
     String password = _passEditingController.text;
     SharedPreferences prefs = await SharedPreferences.getInstance();

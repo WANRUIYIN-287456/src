@@ -1,4 +1,5 @@
 <?php
+
 if (!isset($_POST)) {
     $response = array('status' => 'failed', 'data' => null);
     sendJsonResponse($response);
@@ -25,7 +26,6 @@ if ($result->num_rows > 0) {
 		$userarray['datereg'] = $row['user_datereg'];
 		$response = array('status' => 'success', 'data' => $userarray);
 		sendJsonResponse($response);
-		
 	}
 }else{
 	$response = array('status' => 'failed', 'data' => null);
@@ -38,5 +38,4 @@ function sendJsonResponse($sentArray)
     header('Content-Type: application/json');
     echo json_encode($sentArray);
 }
-
 ?>
