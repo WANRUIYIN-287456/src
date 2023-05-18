@@ -1,6 +1,7 @@
 
 import 'dart:async';
 import 'dart:convert';
+import 'package:flutter_application_labassignment2_287456/register_screen.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
 import 'package:flutter_application_labassignment2_287456/config.dart';
@@ -76,23 +77,16 @@ class SplashScreenState extends State<SplashScreen> {
                     MaterialPageRoute(
                         builder: (content) => MainScreen(user: user))));
           } else {
-            user = User(
-                id: "na",
-                name: "na",
-                email: "na",
-                phone: "na",
-                datereg: "na",
-                password: "na",
-                otp: "na");
             Timer(
                 const Duration(seconds: 3),
                 () => Navigator.pushReplacement(
                     context,
                     MaterialPageRoute(
-                        builder: (content) => MainScreen(user: user))));
+                        builder: (content) => const RegistrationScreen())));
           }
         }).timeout(const Duration(seconds: 5), onTimeout: () {
-          // Time has run out, do what you wanted to do.
+         ScaffoldMessenger.of(context)
+          .showSnackBar(const SnackBar(content: Text("Connection Timeout.")));
         });
       } on TimeoutException catch (_) {
         print("Time out");
@@ -109,7 +103,7 @@ class SplashScreenState extends State<SplashScreen> {
       Timer(
           const Duration(seconds: 3),
           () => Navigator.pushReplacement(context,
-              MaterialPageRoute(builder: (content) => MainScreen(user: user))));
+              MaterialPageRoute(builder: (content) => const RegistrationScreen())));
     }
   }
 }

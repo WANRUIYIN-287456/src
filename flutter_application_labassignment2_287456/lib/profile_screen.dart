@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_application_labassignment2_287456/login_screen.dart';
-import 'package:flutter_application_labassignment2_287456/register_screen.dart';
 import 'package:flutter_application_labassignment2_287456/user.dart';
 
 class ProfileTabScreen extends StatefulWidget {
@@ -88,16 +87,12 @@ class _ProfileTabScreenState extends State<ProfileTabScreen> {
                       MaterialPageRoute(
                           builder: (content) => const LoginScreen()));
                 },
-                child: const Text("LOGIN"),
-              ),
-              MaterialButton(
-                onPressed: () {
-                  Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                          builder: (content) => const RegistrationScreen()));
-                },
-                child: const Text("REGISTRATION"),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: const [
+                  Icon(Icons.logout),
+                  Text("Logout"),
+                ]),
               ),
             ],
           ))
@@ -106,4 +101,3 @@ class _ProfileTabScreenState extends State<ProfileTabScreen> {
     );
   }
 }
-

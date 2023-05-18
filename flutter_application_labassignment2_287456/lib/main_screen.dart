@@ -1,11 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_application_labassignment2_287456/profile_screen.dart';
 import 'package:flutter_application_labassignment2_287456/user.dart';
-
 import 'barter_screen.dart';
-
-
-//for buyer screen
 
 class MainScreen extends StatefulWidget {
   final User user;

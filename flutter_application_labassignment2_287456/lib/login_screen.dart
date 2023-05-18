@@ -173,14 +173,16 @@ class _LoginScreenState extends State<LoginScreen> {
         if (response.statusCode == 200) {
           print(response.body);
           var jsondata = jsonDecode(response.body);
-          print(jsondata['data']);
+          //print(jsondata['data']);
           if (jsondata['status'] == 'success') {
+            late User user;
+             user = User.fromJson(jsondata['data']);
             ScaffoldMessenger.of(context)
                 .showSnackBar(const SnackBar(content: Text("Login Success")));
             Navigator.pushReplacement(
                 context,
                 MaterialPageRoute(
-                    builder: (content) => MainScreen(user: User())));
+                    builder: (content) => MainScreen(user: user)));
           } else {
             ScaffoldMessenger.of(context)
                 .showSnackBar(const SnackBar(content: Text("Login Failed")));
@@ -217,7 +219,6 @@ class _LoginScreenState extends State<LoginScreen> {
 
 
   void saveremovepref(bool value) async {
-   // FocusScope.of(context).requestFocus(FocusNode());
     String email = _emailEditingController.text;
     String password = _passEditingController.text;
     SharedPreferences prefs = await SharedPreferences.getInstance();
