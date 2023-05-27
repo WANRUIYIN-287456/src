@@ -3,10 +3,10 @@ class BarterTabScreen extends StatefulWidget {
   const BarterTabScreen({super.key});
 
   @override
-  State<BarterTabScreen> createState() => _ProfileTabScreenState();
+  State<BarterTabScreen> createState() => _BarterTabScreenState();
 }
 
-class _ProfileTabScreenState extends State<BarterTabScreen> {
+class _BarterTabScreenState extends State<BarterTabScreen> {
   @override
   Widget build(BuildContext context) {
     return const Scaffold();

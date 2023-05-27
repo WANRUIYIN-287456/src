@@ -182,6 +182,7 @@ class _LoginScreenState extends State<LoginScreen> {
         print(response.statusCode);
        // var jsondata = jsonDecode(response.body);
         if (response.statusCode == 200) {
+          print(response.body);
           var jsondata = jsonDecode(response.body);
           if (jsondata['status'] == 'success') {
             ScaffoldMessenger.of(context)

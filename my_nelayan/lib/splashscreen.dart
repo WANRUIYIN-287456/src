@@ -150,7 +150,7 @@ class SplashScreenState extends State<SplashScreen> {
             decoration: const BoxDecoration(
                 image: DecorationImage(
                     image: AssetImage('assets/images/splash.png'),
-                    fit: BoxFit.cover))),
+                    fit: BoxFit.contain))),
          Padding(
           padding: const EdgeInsets.fromLTRB(0, 50, 0, 20),
           child: Column(
@@ -161,7 +161,7 @@ class SplashScreenState extends State<SplashScreen> {
                 style: TextStyle(
                     fontSize: 48,
                     fontWeight: FontWeight.bold,
-                    color: Colors.white),
+                    color: Colors.black),
               ),
               CircularProgressIndicator(),
               Text(
@@ -169,7 +169,7 @@ class SplashScreenState extends State<SplashScreen> {
                 style: TextStyle(
                     fontSize: 24,
                     fontWeight: FontWeight.bold,
-                    color: Colors.white),
+                    color: Colors.black),
               )
             ],
           ),
