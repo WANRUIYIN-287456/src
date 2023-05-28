@@ -49,34 +49,37 @@ class _CheckinTabScreenState extends State<CheckinTabScreen> {
                   padding: EdgeInsets.all(8.0),
                   child: Text("Check-in History",
                       style:
-                          TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+                          TextStyle(fontSize: 24, fontWeight: FontWeight.bold)),
                 ),
                 Column(
                   children: List.generate(checkinList.length, (index) {
-                    return Column(
-                      children: [
-                        // Text("${checkinList[index].checkinCourse.toString()}(${checkinList[index].checkinGroup.toString()})",
-                        //             style: const TextStyle(
-                        //                 fontSize: 14,
-                        //                 fontWeight: FontWeight.bold)),
-                        Text("    ${checkinList[index].checkinCourse.toString()}",
-                            style: const TextStyle(
-                                fontSize: 14, fontWeight: FontWeight.bold)),
-
-                        Text(
-                          checkinList[index].checkinGroup.toString(),
-                          style: const TextStyle(fontSize: 14),
-                        ),
-                        Text(
-                          "${checkinList[index].checkinLocation.toString()},${checkinList[index].checkinState.toString()}",
-                          style: const TextStyle(fontSize: 14),
-                        ),
-                        Text(
-                          checkinList[index].checkinDate.toString(),
-                          style: const TextStyle(fontSize: 14),
-                        ),
-                        const Text(""),
-                      ],
+                    return Center(
+                      child: Column(
+                        children: [
+                          const Text(""),
+                          // Text("${checkinList[index].checkinCourse.toString()}(${checkinList[index].checkinGroup.toString()})",
+                          //             style: const TextStyle(
+                          //                 fontSize: 14,
+                          //                 fontWeight: FontWeight.bold)),
+                          Text("    ${checkinList[index].checkinCourse.toString()}",
+                              style: const TextStyle(
+                                  fontSize: 14, fontWeight: FontWeight.bold)),
+                    
+                          Text(
+                            checkinList[index].checkinGroup.toString(),
+                            style: const TextStyle(fontSize: 14),
+                          ),
+                          Text(
+                            "${checkinList[index].checkinLocation.toString()}, ${checkinList[index].checkinState.toString()}",
+                            style: const TextStyle(fontSize: 14),
+                          ),
+                          Text(
+                            checkinList[index].checkinDate.toString(),
+                            style: const TextStyle(fontSize: 14),
+                          ),
+                          const Text(""),
+                        ],
+                      ),
                     );
                   }),
                 ),

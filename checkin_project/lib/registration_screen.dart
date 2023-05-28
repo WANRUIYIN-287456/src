@@ -2,8 +2,8 @@ import 'dart:convert';
 import 'package:checkin_project/config.dart';
 import 'package:checkin_project/login_screen.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart' show rootBundle;
 import 'package:http/http.dart' as http;
-
 
 class RegistrationScreen extends StatefulWidget {
   const RegistrationScreen({super.key});
@@ -19,8 +19,16 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
   final TextEditingController _passEditingController = TextEditingController();
   final TextEditingController _pass2EditingController = TextEditingController();
   bool _isChecked = false;
+  bool _isTap = false;
   final _formKey = GlobalKey<FormState>();
   late double screenHeight, screenWidth, cardwidth;
+  String eula = "";
+
+  @override
+  void initState() {
+    super.initState();
+    loadEula();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -134,25 +142,33 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                               ),
                               Row(
                                 children: [
-                                  Checkbox(
-                                      value: _isChecked,
-                                      onChanged: (bool? value) {
-                                        if(!_isChecked) {
-                                          ScaffoldMessenger.of(context).showSnackBar(
-                                            const SnackBar(content: Text("Terms have been read and accepted."))
-                                          );}
-                                        setState(() {
-                                          _isChecked = value!;
-                                        });
-                                      }),
                                   GestureDetector(
-                                    onTap: null,
+                                    onTap: (){
+                                      showEula();
+                                      _isTap = true;
+                                    },
                                     child: const Text('Agree with terms',
                                         style: TextStyle(
                                           fontSize: 16,
                                           fontWeight: FontWeight.bold,
                                         )),
                                   ),
+                                   Checkbox(
+                                      value: _isChecked,
+                                      onChanged: (bool? value) {
+                                        if (_isTap == false){
+                                          showEula();
+                                        }
+                                        if (!_isChecked) {
+                                          ScaffoldMessenger.of(context)
+                                              .showSnackBar(const SnackBar(
+                                                  content: Text(
+                                                      "Terms have been read and accepted.")));
+                                        }
+                                        setState(() {
+                                          _isChecked = value!;
+                                        });
+                                      }),
                                   const SizedBox(
                                     width: 16,
                                   ),
@@ -170,10 +186,12 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
             ),
           ),
           const SizedBox(height: 8),
-          GestureDetector(onTap: _goLogin,
-          child: const Text("Already registered? Login",
-          style: TextStyle(fontSize: 18),
-          ),
+          GestureDetector(
+            onTap: _goLogin,
+            child: const Text(
+              "Already registered? Login",
+              style: TextStyle(fontSize: 18),
+            ),
           ),
           const SizedBox(height: 16),
         ],
@@ -261,11 +279,11 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
           "phone": phone,
           "password": pass1,
         }).then((response) {
-        print(response.body);
+      print(response.body);
       try {
         print(response.statusCode);
         if (response.statusCode == 200) {
-           print(response.body);
+          print(response.body);
           var jsondata = jsonDecode(response.body);
           if (jsondata['status'] == 'success') {
             ScaffoldMessenger.of(context).showSnackBar(
@@ -281,15 +299,65 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
           ScaffoldMessenger.of(context).showSnackBar(
               const SnackBar(content: Text("Registration Failed")));
           print(2);
-     
         }
       } catch (e, _) {
         debugPrint(e.toString());
       }
     });
   }
+
   void _goLogin() {
-  Navigator.push(
-           context, MaterialPageRoute(builder: (context) => const LoginScreen()));
+    Navigator.push(
+        context, MaterialPageRoute(builder: (context) => const LoginScreen()));
   }
+
+  loadEula() async {
+    WidgetsFlutterBinding.ensureInitialized();
+    eula = await rootBundle.loadString('assets/images/eula.txt');
   }
+
+  showEula() {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text(
+            "EULA",
+            style: TextStyle(),
+          ),
+          content: SizedBox(
+            height: 300,
+            child: Column(
+              children: <Widget>[
+                Expanded(
+                  flex: 1,
+                  child: SingleChildScrollView(
+                      child: RichText(
+                    softWrap: true,
+                    textAlign: TextAlign.justify,
+                    text: TextSpan(
+                        style: const TextStyle(
+                          color: Colors.black,
+                          fontSize: 12.0,
+                        ),
+                        text: eula),
+                  )),
+                ),
+              ],
+            ),
+          ),
+          actions: <Widget>[
+            TextButton(
+              child: const Text(
+                "Close",
+              ),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            )
+          ],
+        );
+      },
+    );
+  }
+}
