@@ -307,7 +307,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
   }
 
   void _goLogin() {
-    Navigator.push(
+    Navigator.pushReplacement(
         context, MaterialPageRoute(builder: (context) => const LoginScreen()));
   }
 

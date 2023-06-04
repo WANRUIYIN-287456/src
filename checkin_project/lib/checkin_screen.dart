@@ -43,57 +43,57 @@ class _CheckinTabScreenState extends State<CheckinTabScreen> {
           ? const Center(
               child: Text("No Data"),
             )
-          : Column(
-              children: [
-                const Padding(
-                  padding: EdgeInsets.all(8.0),
-                  child: Text("Check-in History",
-                      style:
-                          TextStyle(fontSize: 24, fontWeight: FontWeight.bold)),
-                ),
-                Column(
-                  children: List.generate(checkinList.length, (index) {
-                    return Center(
-                      child: Column(
-                        children: [
-                          const Text(""),
-                          // Text("${checkinList[index].checkinCourse.toString()}(${checkinList[index].checkinGroup.toString()})",
-                          //             style: const TextStyle(
-                          //                 fontSize: 14,
-                          //                 fontWeight: FontWeight.bold)),
-                          Text("    ${checkinList[index].checkinCourse.toString()}",
-                              style: const TextStyle(
-                                  fontSize: 14, fontWeight: FontWeight.bold)),
-                    
-                          Text(
-                            checkinList[index].checkinGroup.toString(),
-                            style: const TextStyle(fontSize: 14),
-                          ),
-                          Text(
-                            "${checkinList[index].checkinLocation.toString()}, ${checkinList[index].checkinState.toString()}",
-                            style: const TextStyle(fontSize: 14),
-                          ),
-                          Text(
-                            checkinList[index].checkinDate.toString(),
-                            style: const TextStyle(fontSize: 14),
-                          ),
-                          const Text(""),
-                        ],
-                      ),
-                    );
-                  }),
-                ),
-              ],
+          : SingleChildScrollView(
+              child: Column(
+                children: [
+                  const Padding(
+                    padding: EdgeInsets.all(8.0),
+                    child: Text("Check-in History",
+                        style: TextStyle(
+                            fontSize: 24, fontWeight: FontWeight.bold)),
+                  ),
+                  Column(
+                    children: List.generate(checkinList.length, (index) {
+                      return Center(
+                        child: Column(
+                          children: [
+                            const Text(""),
+                            Text(
+                                "    ${checkinList[index].checkinCourse.toString()}",
+                                style: const TextStyle(
+                                    fontSize: 14, fontWeight: FontWeight.bold),
+                                textAlign: TextAlign.center),
+                            Text(
+                              checkinList[index].checkinGroup.toString(),
+                              style: const TextStyle(fontSize: 14),
+                            ),
+                            Text(
+                              "${checkinList[index].checkinLocation.toString()}, ${checkinList[index].checkinState.toString()}",
+                              style: const TextStyle(fontSize: 14),
+                            ),
+                            Text(
+                              checkinList[index].checkinDate.toString(),
+                              style: const TextStyle(fontSize: 14),
+                            ),
+                            const Text(""),
+                          ],
+                        ),
+                      );
+                    }),
+                  ),
+                ],
+              ),
             ),
       floatingActionButton: FloatingActionButton(
-          onPressed: () {
+          onPressed: () async {
             if (widget.user.id != "na") {
-              Navigator.push(
+              await Navigator.push(
                   context,
                   MaterialPageRoute(
                       builder: (content) => CheckInFormScreen(
                             user: widget.user,
                           )));
+              _loadCheckin();
             } else {
               ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
                   content: Text("Please login/register an account.")));

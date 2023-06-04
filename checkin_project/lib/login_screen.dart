@@ -179,7 +179,7 @@ class _LoginScreenState extends State<LoginScreen> {
              user = User.fromJson(jsondata['data']);
             ScaffoldMessenger.of(context)
                 .showSnackBar(const SnackBar(content: Text("Login Success")));
-            Navigator.push(
+            Navigator.pushReplacement(
                 context,
                 MaterialPageRoute(
                     builder: (content) => MainScreen(user: user)));

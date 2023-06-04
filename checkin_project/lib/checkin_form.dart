@@ -250,6 +250,9 @@ class _CheckInFormScreenState extends State<CheckInFormScreen> {
         if (jsondata['status'] == 'success') {
           ScaffoldMessenger.of(context)
               .showSnackBar(const SnackBar(content: Text("Check-in Success")));
+              setState(() {
+                
+              });
         } else {
           ScaffoldMessenger.of(context)
               .showSnackBar(const SnackBar(content: Text("Check-in Failed")));
