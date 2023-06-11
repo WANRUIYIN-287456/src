@@ -47,6 +47,7 @@ class _ProductTabScreenState extends State<ProductTabScreen> {
       axiscount = 2;
     }
     return Scaffold(
+       appBar: AppBar(title: Text(maintitle)),
       body: productList.isEmpty
           ? const Center(
               child: Text("No Data"),
@@ -54,7 +55,7 @@ class _ProductTabScreenState extends State<ProductTabScreen> {
           : Column(children: [
               Container(
                 height: 24,
-                color: Colors.red,
+                color: Colors.lightBlue,
                 alignment: Alignment.center,
                 child: Text(
                   "${productList.length} Product(s) Found",

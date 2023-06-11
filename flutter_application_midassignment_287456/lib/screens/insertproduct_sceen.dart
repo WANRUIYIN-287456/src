@@ -9,7 +9,6 @@ import 'package:image_picker/image_picker.dart';
 import 'package:image_cropper/image_cropper.dart';
 import 'package:http/http.dart' as http;
 
-
 class NewProductScreen extends StatefulWidget {
   final User user;
 
@@ -20,7 +19,7 @@ class NewProductScreen extends StatefulWidget {
 }
 
 class _NewProductScreenState extends State<NewProductScreen> {
-  File? _image;
+  final List<File?> _images = [null, null, null];
   var pathAsset = "assets/images/camera.png";
   final _formKey = GlobalKey<FormState>();
   late double screenHeight, screenWidth, cardwitdh;
@@ -30,8 +29,7 @@ class _NewProductScreenState extends State<NewProductScreen> {
       TextEditingController();
   final TextEditingController _prpriceEditingController =
       TextEditingController();
-  final TextEditingController _prqtyEditingController =
-      TextEditingController();
+  final TextEditingController _prqtyEditingController = TextEditingController();
   final TextEditingController _prstateEditingController =
       TextEditingController();
   final TextEditingController _prlocalEditingController =
@@ -39,7 +37,7 @@ class _NewProductScreenState extends State<NewProductScreen> {
   String selectedType = "Clothes";
   List<String> prlist = [
     "Clothes",
-    "Digital Products",    
+    "Digital Products",
     "Fashion Accessories",
     "Games & Books",
     "Health & Beauty",
@@ -54,7 +52,7 @@ class _NewProductScreenState extends State<NewProductScreen> {
   String curstate = "";
   String prlat = "";
   String prlong = "";
-
+  int index = 0;
   @override
   void initState() {
     super.initState();
@@ -66,38 +64,56 @@ class _NewProductScreenState extends State<NewProductScreen> {
     screenHeight = MediaQuery.of(context).size.height;
     screenWidth = MediaQuery.of(context).size.width;
     return Scaffold(
-      appBar: AppBar(title: const Text("Insert New Products"), actions: [
-        IconButton(
-            onPressed: () {
-              _determinePosition();
-            },
-            icon: const Icon(Icons.refresh))
-      ]),
+      appBar: AppBar(title: const Text("Insert New Products")),
       body: Column(children: [
-        Flexible(
-            flex: 3,
-            // height: screenHeight / 2.5,
-            // width: screenWidth,
-            child: GestureDetector(
-              onTap: () {
-                _selectImage();
-              },
-              child: Padding(
-                padding: const EdgeInsets.fromLTRB(8, 4, 8, 4),
-                child: Card(
-                  child: Container(
-                      width: screenWidth,
-                      decoration: BoxDecoration(
-                        image: DecorationImage(
-                          image: _image == null
-                              ? AssetImage(pathAsset)
-                              : FileImage(_image!) as ImageProvider,
-                          fit: BoxFit.contain,
+        Expanded(
+          flex: 3,
+          child: ListView(
+            scrollDirection: Axis.horizontal,
+            shrinkWrap: true,
+            children: List.generate(3, (index) {
+              return GestureDetector(
+                onTap: () async {
+                  _selectImage(index);
+                  index++;
+                },
+                child: Padding(
+                  padding: const EdgeInsets.fromLTRB(35, 4, 0, 4),
+                  child: Card(
+                    child: Row(
+                      children: [
+                        Container(
+                          width: screenWidth * 0.78,
+                          decoration: BoxDecoration(
+                            image: DecorationImage(
+                              image: _images[index] == null
+                                  ? AssetImage(pathAsset)
+                                  : FileImage(_images[index]!) as ImageProvider,
+                              fit: BoxFit.contain,
+                            ),
+                          ),
                         ),
-                      )),
+                        Container(
+                          alignment: Alignment.centerRight,
+                          child: IconButton(
+                              onPressed: () {
+                                showRight();
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (context) => GestureDetector()),
+                                );
+                              },
+                              icon: const Icon(Icons.arrow_right)),
+                        )
+                      ],
+                    ),
+                  ),
                 ),
-              ),
-            )),
+              );
+            }),
+          ),
+        ),
         Expanded(
           flex: 6,
           child: Padding(
@@ -259,7 +275,7 @@ class _NewProductScreenState extends State<NewProductScreen> {
                       height: 50,
                       child: ElevatedButton(
                           onPressed: () {
-                            insertDialog();
+                            insertDialog(index);
                           },
                           child: const Text("Insert products")),
                     )
@@ -272,7 +288,8 @@ class _NewProductScreenState extends State<NewProductScreen> {
       ]),
     );
   }
-  void _selectImage() {
+
+  void _selectImage(int index) {
     showDialog(
       context: context,
       builder: (BuildContext context) {
@@ -291,7 +308,7 @@ class _NewProductScreenState extends State<NewProductScreen> {
                   child: const Text('Gallery'),
                   onPressed: () => {
                     Navigator.of(context).pop(),
-                    _selectfromGallery(),
+                    _selectfromGallery(index),
                   },
                 ),
                 ElevatedButton(
@@ -300,7 +317,7 @@ class _NewProductScreenState extends State<NewProductScreen> {
                   child: const Text('Camera'),
                   onPressed: () => {
                     Navigator.of(context).pop(),
-                    _selectFromCamera(),
+                    _selectFromCamera(index),
                   },
                 ),
               ],
@@ -309,7 +326,7 @@ class _NewProductScreenState extends State<NewProductScreen> {
     );
   }
 
-  Future<void> _selectfromGallery() async {
+  Future<void> _selectfromGallery(int index) async {
     final picker = ImagePicker();
     final pickedFile = await picker.pickImage(
       source: ImageSource.gallery,
@@ -317,13 +334,14 @@ class _NewProductScreenState extends State<NewProductScreen> {
       maxWidth: 800,
     );
     if (pickedFile != null) {
-      _image = File(pickedFile.path);
-      cropImage();
+      _images[index] = File(pickedFile.path);
+      cropImage(index);
     } else {
       print('No image selected.');
     }
   }
-  Future<void> _selectFromCamera() async {
+
+  Future<void> _selectFromCamera(int index) async {
     final picker = ImagePicker();
     final pickedFile = await picker.pickImage(
       source: ImageSource.camera,
@@ -332,16 +350,16 @@ class _NewProductScreenState extends State<NewProductScreen> {
     );
 
     if (pickedFile != null) {
-      _image = File(pickedFile.path);
-      cropImage();
+      _images[index] = File(pickedFile.path);
+      cropImage(index);
     } else {
       print('No image selected.');
     }
   }
 
-  Future<void> cropImage() async {
+  Future<void> cropImage(int index) async {
     CroppedFile? croppedFile = await ImageCropper().cropImage(
-      sourcePath: _image!.path,
+      sourcePath: _images[index]!.path,
       aspectRatioPresets: [
         // CropAspectRatioPreset.square,
         CropAspectRatioPreset.ratio3x2,
@@ -363,8 +381,8 @@ class _NewProductScreenState extends State<NewProductScreen> {
     );
     if (croppedFile != null) {
       File imageFile = File(croppedFile.path);
-      _image = imageFile;
-      int? sizeInBytes = _image?.lengthSync();
+      _images[index] = imageFile;
+      int? sizeInBytes = _images[index]?.lengthSync();
       double sizeInMb = sizeInBytes! / (1024 * 1024);
       print(sizeInMb);
 
@@ -372,17 +390,22 @@ class _NewProductScreenState extends State<NewProductScreen> {
     }
   }
 
-  void insertDialog() {
+  void insertDialog(int index) {
     if (!_formKey.currentState!.validate()) {
       ScaffoldMessenger.of(context)
           .showSnackBar(const SnackBar(content: Text("Check your input")));
       return;
     }
-    if (_image == null) {
+    if (_images[index] == null) {
       ScaffoldMessenger.of(context)
           .showSnackBar(const SnackBar(content: Text("Please take picture")));
       return;
     }
+    // if (index < 2) {
+    //   ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+    //       content: Text("You have to insert 3 pictures. Drag to right.")));
+    //   return;
+    // }
     showDialog(
       context: context,
       builder: (BuildContext context) {
@@ -428,8 +451,9 @@ class _NewProductScreenState extends State<NewProductScreen> {
     String prqty = _prqtyEditingController.text;
     String state = _prstateEditingController.text;
     String locality = _prlocalEditingController.text;
-    String base64Image = base64Encode(_image!.readAsBytesSync());
-
+    String base64Image1 = base64Encode(_images[0]!.readAsBytesSync());
+    String base64Image2 = base64Encode(_images[1]!.readAsBytesSync());
+    String base64Image3 = base64Encode(_images[2]!.readAsBytesSync());
     http.post(Uri.parse("${Config.server}/LabAssign2/php/insert_products.php"),
         body: {
           "userid": widget.user.id.toString(),
@@ -442,7 +466,9 @@ class _NewProductScreenState extends State<NewProductScreen> {
           "longitude": prlong,
           "state": state,
           "locality": locality,
-          "image": base64Image
+          "image1": base64Image1,
+          "image2": base64Image2,
+          "image3": base64Image3
         }).then((response) {
       print(response.body);
       if (response.statusCode == 200) {
@@ -504,5 +530,34 @@ class _NewProductScreenState extends State<NewProductScreen> {
       prlong = _currentPosition.longitude.toString();
     }
     setState(() {});
+  }
+
+  void showRight() {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          shape: const RoundedRectangleBorder(
+              borderRadius: BorderRadius.all(Radius.circular(10.0))),
+          title: const Text(
+            "Insert image",
+            style: TextStyle(),
+          ),
+          content:
+              const Text("Please scroll to the right.", style: TextStyle()),
+          actions: <Widget>[
+            TextButton(
+              child: const Text(
+                "Close",
+                style: TextStyle(),
+              ),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
+    );
   }
 }
