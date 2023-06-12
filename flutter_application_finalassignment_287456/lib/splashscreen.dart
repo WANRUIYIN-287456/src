@@ -15,6 +15,7 @@ class SplashScreen extends StatefulWidget {
   State<SplashScreen> createState() => SplashScreenState();
 }
 
+
 class SplashScreenState extends State<SplashScreen> {
   @override
   void initState() {
@@ -28,11 +29,14 @@ class SplashScreenState extends State<SplashScreen> {
         body: Stack(
       alignment: Alignment.center,
       children: [
-          Container(
-            decoration: const BoxDecoration(
-                image: DecorationImage(
-                    image: AssetImage("assets/images/splash.png"),
-                    fit: BoxFit.contain))),
+        Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Container(
+              decoration: const BoxDecoration(
+                  image: DecorationImage(
+                      image: AssetImage("assets/images/splash.png"),
+                      fit: BoxFit.contain))),
+        ),
         Padding(
           padding: const EdgeInsets.fromLTRB(0, 50, 0, 20),
           child: Column(
@@ -49,8 +53,7 @@ class SplashScreenState extends State<SplashScreen> {
               )
             ],
           ),
-        ), 
-            
+        ),
       ],
     ));
   }
@@ -63,8 +66,7 @@ class SplashScreenState extends State<SplashScreen> {
     late User user;
     if (ischeck) {
       try {
-        http.post(
-            Uri.parse("${Config.server}/LabAssign2/php/login_user.php"),
+        http.post(Uri.parse("${Config.server}/LabAssign2/php/login_user.php"),
             body: {"email": email, "password": password}).then((response) {
           if (response.statusCode == 200) {
             var jsondata = jsonDecode(response.body);
@@ -84,8 +86,8 @@ class SplashScreenState extends State<SplashScreen> {
                         builder: (content) => const RegistrationScreen())));
           }
         }).timeout(const Duration(seconds: 5), onTimeout: () {
-         ScaffoldMessenger.of(context)
-          .showSnackBar(const SnackBar(content: Text("Connection Timeout.")));
+          ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(content: Text("Connection Timeout.")));
         });
       } on TimeoutException catch (_) {
         print("Time out");
@@ -101,8 +103,10 @@ class SplashScreenState extends State<SplashScreen> {
           otp: "na");
       Timer(
           const Duration(seconds: 3),
-          () => Navigator.pushReplacement(context,
-              MaterialPageRoute(builder: (content) => const RegistrationScreen())));
+          () => Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(
+                  builder: (content) => const RegistrationScreen())));
     }
   }
 }

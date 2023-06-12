@@ -85,7 +85,7 @@ class EditProductScreenState extends State<EditProductScreen> {
                   width: screenWidth,
                   fit: BoxFit.cover,
                   imageUrl:
-                      "${Config.server}/LabAssign2/assets/images/${widget.product.productId}.png",
+                      "${Config.server}/LabAssign2/assets/images/${widget.product.productId}.1.png",
                   placeholder: (context, url) =>
                       const LinearProgressIndicator(),
                   errorWidget: (context, url, error) => const Icon(Icons.error),

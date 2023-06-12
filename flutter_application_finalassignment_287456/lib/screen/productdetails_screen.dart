@@ -5,7 +5,6 @@ import 'package:flutter_application_finalassignment_287456/model/product.dart';
 import 'package:flutter_application_finalassignment_287456/model/user.dart';
 import 'package:intl/intl.dart';
 
-
 class ProductDetailScreen extends StatefulWidget {
   final Product product;
   final User user;
@@ -18,7 +17,7 @@ class ProductDetailScreen extends StatefulWidget {
 
 class _ProductDetailScreenState extends State<ProductDetailScreen> {
   final df = DateFormat('dd-MM-yyyy hh:mm a');
-
+  int index = 0;
   late double screenHeight, screenWidth, cardwitdh;
   @override
   Widget build(BuildContext context) {
@@ -34,19 +33,28 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
             child: Padding(
               padding: const EdgeInsets.fromLTRB(8, 4, 8, 4),
               child: Card(
-                child: Container(
+                child: ListView(
+                  scrollDirection: Axis.horizontal,
+                  shrinkWrap: true,
+                  children: List.generate(3, (index) {
+                    return 
+                    Container(
                   width: screenWidth,
                   child: CachedNetworkImage(
                     width: screenWidth,
                     fit: BoxFit.cover,
                     imageUrl:
-                        "${Config.server}/LabAssign2/assets/images/${widget.product.productId}.png",
+                        "${Config.server}/LabAssign2/assets/images/${widget.product.productId}.${index++}.png",
                     placeholder: (context, url) =>
                         const LinearProgressIndicator(),
                     errorWidget: (context, url, error) =>
                         const Icon(Icons.error),
-                  ),
+                  )
+                );
+
+                  }),
                 ),
+                
               ),
             )),
         Container(

@@ -156,7 +156,7 @@ class BarterTabScreenState extends State<BarterTabScreen> {
                                   width: screenWidth,
                                   fit: BoxFit.cover,
                                   imageUrl:
-                                      "${Config.server}/LabAssign2/assets/images/${productList[index].productId}.png",
+                                      "${Config.server}/LabAssign2/assets/images/${productList[index].productId}.1.png",
                                   placeholder: (context, url) =>
                                       const LinearProgressIndicator(),
                                   errorWidget: (context, url, error) =>

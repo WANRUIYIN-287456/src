@@ -47,7 +47,6 @@ class _NewProductScreenState extends State<NewProductScreen> {
     "Others",
   ];
   late Position _currentPosition;
-
   String curaddress = "";
   String curstate = "";
   String prlat = "";
@@ -98,11 +97,6 @@ class _NewProductScreenState extends State<NewProductScreen> {
                           child: IconButton(
                               onPressed: () {
                                 showRight();
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                      builder: (context) => GestureDetector()),
-                                );
                               },
                               icon: const Icon(Icons.arrow_right)),
                         )
@@ -370,7 +364,7 @@ class _NewProductScreenState extends State<NewProductScreen> {
       uiSettings: [
         AndroidUiSettings(
             toolbarTitle: 'Cropper',
-            toolbarColor: Colors.deepOrange,
+            toolbarColor: Color.fromARGB(255, 93, 34, 255),
             toolbarWidgetColor: Colors.white,
             initAspectRatio: CropAspectRatioPreset.ratio3x2,
             lockAspectRatio: true),
@@ -401,11 +395,6 @@ class _NewProductScreenState extends State<NewProductScreen> {
           .showSnackBar(const SnackBar(content: Text("Please take picture")));
       return;
     }
-    // if (index < 2) {
-    //   ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-    //       content: Text("You have to insert 3 pictures. Drag to right.")));
-    //   return;
-    // }
     showDialog(
       context: context,
       builder: (BuildContext context) {

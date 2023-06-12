@@ -24,7 +24,8 @@ class _ProductTabScreenState extends State<ProductTabScreen> {
   late List<Widget> tabchildren;
   String maintitle = "Product";
   List<Product> productList = <Product>[];
-
+  final GlobalKey<RefreshIndicatorState> _refreshIndicatorKey =
+      GlobalKey<RefreshIndicatorState>();
   @override
   void initState() {
     super.initState();
@@ -52,56 +53,60 @@ class _ProductTabScreenState extends State<ProductTabScreen> {
           ? const Center(
               child: Text("No Data"),
             )
-          : Column(children: [
-              Container(
-                height: 24,
-                color: Colors.red,
-                alignment: Alignment.center,
-                child: Text(
-                  "${productList.length} Product(s) Found",
-                  style: const TextStyle(color: Colors.white, fontSize: 18),
+          : RefreshIndicator(
+            key: _refreshIndicatorKey,
+            onRefresh: _refresh,
+            child: Column(children: [
+                Container(
+                  height: 24,
+                  color: const Color.fromARGB(255, 21, 95, 243),
+                  alignment: Alignment.center,
+                  child: Text(
+                    "${productList.length} Product(s) Found",
+                    style: const TextStyle(color: Colors.white, fontSize: 18),
+                  ),
                 ),
-              ),
-              Expanded(
-                  child: GridView.count(
-                      crossAxisCount: axiscount,
-                      children: List.generate(
-                        productList.length,
-                        (index) {
-                          return Card(
-                            child: InkWell(
-                              onLongPress: () {
-                                onDeleteDialog(index);
-                              },
-                              child: Column(children: [
-                                CachedNetworkImage(
-                                  width: screenWidth,
-                                  fit: BoxFit.cover,
-                                  imageUrl:
-                                      "${Config.server}/LabAssign2/assets/images/${productList[index].productId}.1.png",
-                                  placeholder: (context, url) =>
-                                      const LinearProgressIndicator(),
-                                  errorWidget: (context, url, error) =>
-                                      const Icon(Icons.error),
-                                ),
-                                Text(
-                                  productList[index].productName.toString(),
-                                  style: const TextStyle(fontSize: 20),
-                                ),
-                                Text(
-                                  "RM ${double.parse(productList[index].productPrice.toString()).toStringAsFixed(2)}",
-                                  style: const TextStyle(fontSize: 14),
-                                ),
-                                Text(
-                                  "${productList[index].productQty} available",
-                                  style: const TextStyle(fontSize: 14),
-                                ),
-                              ]),
-                            ),
-                          );
-                        },
-                      )))
-            ]),
+                Expanded(
+                    child: GridView.count(
+                        crossAxisCount: axiscount,
+                        children: List.generate(
+                          productList.length,
+                          (index) {
+                            return Card(
+                              child: InkWell(
+                                onLongPress: () {
+                                  onDeleteDialog(index);
+                                },
+                                child: Column(children: [
+                                  CachedNetworkImage(
+                                    width: screenWidth,
+                                    fit: BoxFit.cover,
+                                    imageUrl:
+                                        "${Config.server}/LabAssign2/assets/images/${productList[index].productId}.1.png",
+                                    placeholder: (context, url) =>
+                                        const LinearProgressIndicator(),
+                                    errorWidget: (context, url, error) =>
+                                        const Icon(Icons.error),
+                                  ),
+                                  Text(
+                                    productList[index].productName.toString(),
+                                    style: const TextStyle(fontSize: 20),
+                                  ),
+                                  Text(
+                                    "RM ${double.parse(productList[index].productPrice.toString()).toStringAsFixed(2)}",
+                                    style: const TextStyle(fontSize: 14),
+                                  ),
+                                  Text(
+                                    "${productList[index].productQty} available",
+                                    style: const TextStyle(fontSize: 14),
+                                  ),
+                                ]),
+                              ),
+                            );
+                          },
+                        )))
+              ]),
+          ),
       floatingActionButton: FloatingActionButton(
           onPressed: () async {
             if (widget.user.id != "na") {
@@ -209,4 +214,8 @@ class _ProductTabScreenState extends State<ProductTabScreen> {
       }
     });
   }
+
+Future<void> _refresh() async {
+  loadProduct();
+}
 }
