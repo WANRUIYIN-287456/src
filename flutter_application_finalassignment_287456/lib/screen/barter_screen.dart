@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:flutter_application_finalassignment_287456/screen/bartercart_screen.dart';
 import 'package:flutter_application_finalassignment_287456/screen/productdetails_screen.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
@@ -13,10 +14,10 @@ class BarterTabScreen extends StatefulWidget {
   const BarterTabScreen({super.key, required this.user});
 
   @override
-  State<BarterTabScreen> createState() => BarterTabScreenState();
+  State<BarterTabScreen> createState() => _BarterTabScreenState();
 }
 
-class BarterTabScreenState extends State<BarterTabScreen> {
+class _BarterTabScreenState extends State<BarterTabScreen> {
   late double screenHeight, screenWidth;
   late int axiscount = 2;
   late List<Widget> tabchildren;
@@ -56,11 +57,15 @@ class BarterTabScreenState extends State<BarterTabScreen> {
     "Selangor",
     "Terengganu",
   ];
+  int numofpage = 1, curpage = 1;
+  int numberofresult = 0;
+  var color;
+  int cartqty = 0;
 
   @override
   void initState() {
     super.initState();
-    loadProduct();
+    loadpageProduct(1);
     print("Product");
   }
 
@@ -80,7 +85,33 @@ class BarterTabScreenState extends State<BarterTabScreen> {
       axiscount = 2;
     }
     return Scaffold(
-      appBar: AppBar(title: Text(maintitle)),
+      appBar: AppBar(
+        title: Text(maintitle),
+        actions: [
+          TextButton.icon(
+            icon: const Icon(
+              Icons.shopping_cart,
+              color: Colors.white60,
+            ), // Your icon here
+            label: Text(cartqty.toString(),
+                style:
+                    const TextStyle(color: Colors.white60)), // Your text here
+            onPressed: () {
+              if (cartqty > 0) {
+                Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (content) => BarterCartScreen(
+                              user: widget.user,
+                            )));
+              } else {
+                ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(content: Text("No item in cart")));
+              }
+            },
+          )
+        ],
+      ),
       body: productList.isEmpty
           ? const Center(
               child: Text("No Data"),
@@ -128,7 +159,7 @@ class BarterTabScreenState extends State<BarterTabScreen> {
                 color: Colors.lightBlue,
                 alignment: Alignment.center,
                 child: Text(
-                  "${productList.length} Product(s) Found",
+                  "${numberofresult.toString()} Product(s) Found",
                   style: const TextStyle(color: Colors.white, fontSize: 18),
                 ),
               ),
@@ -178,33 +209,141 @@ class BarterTabScreenState extends State<BarterTabScreen> {
                             ),
                           );
                         },
-                      )))
+                      ))),
+              SizedBox(
+                height: 50,
+                child: ListView.builder(
+                  shrinkWrap: true,
+                  itemCount: numofpage,
+                  scrollDirection: Axis.horizontal,
+                  itemBuilder: (context, index) {
+                    //build the list for textbutton with scroll
+                    if ((curpage - 1) == index) {
+                      //set current page number active
+                      color = Colors.red;
+                    } else {
+                      color = Colors.black;
+                    }
+                    return TextButton(
+                        onPressed: () {
+                          curpage = index + 1;
+                          loadProduct(index + 1);
+                        },
+                        child: Text(
+                          (index + 1).toString(),
+                          style: TextStyle(color: color, fontSize: 18),
+                        ));
+                  },
+                ),
+              ),
             ]),
     );
   }
 
-  void loadProduct() {
+  void loadpageProduct(int pg) {
+    curpage = pg;
+    numofpage;
     if (widget.user.id == "na") {
       setState(() {});
       return;
     }
-
-    http.post(Uri.parse("${Config.server}/LabAssign2/php/load_product.php"),
+     showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return const AlertDialog(
+          title: Text("Loading..."),
+          content: CircularProgressIndicator(),
+        );
+      },
+    );
+    http.post(Uri.parse("${Config.server}/LabAssign2/php/load_pageproduct.php"),
         body: {
-          "userid": widget.user.id,
+          "cartuserid": widget.user.id,
+          "pageno": pg.toString()
         }).then((response) {
-      //print(response.body);
-      productList.clear();
-      if (response.statusCode == 200) {
-        var jsondata = jsonDecode(response.body);
-        if (jsondata['status'] == "success") {
-          var extractdata = jsondata['data'];
-          extractdata['product'].forEach((v) {
-            productList.add(Product.fromJson(v));
-          });
-          print(productList[0].productName);
+      print(response.body);
+      try {
+        productList.clear();
+        print(response.statusCode);
+        if (response.statusCode == 200) {
+          var jsondata = jsonDecode(response.body);
+          print(jsondata);
+          if (jsondata['status'] == "success") {
+            numofpage = int.parse(jsondata['numofpage']); //get number of pages
+            numberofresult = int.parse(jsondata['numberofresult']);
+            print(numberofresult);
+            var extractdata = jsondata['data'];
+
+            extractdata['product'].forEach((v) {
+              productList.add(Product.fromJson(v));
+            });
+            try {
+              cartqty = int.parse(jsondata['cartqty'].toString());
+            } catch (e) {
+              print('Error parsing cartqty: $e');
+            }
+            print(cartqty);
+            print(productList[0].productName);
+          }
+          setState(() {});
         }
-        setState(() {});
+      } catch (e, _) {
+        debugPrint(e.toString());
+      }
+    });
+  }
+
+  void loadProduct(int pg) {
+    curpage = pg;
+    numofpage;
+    if (widget.user.id == "na") {
+      setState(() {});
+      return;
+    }
+     showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return const AlertDialog(
+          title: Text("Loading..."),
+          content: CircularProgressIndicator(),
+        );
+      },
+    );
+    http.post(
+        Uri.parse("${Config.server}/LabAssign2/php/load_barterproduct.php"),
+        body: {
+          "cartuserid": widget.user.id,
+          //"userid": widget.product.userId,
+          "pageno": pg.toString()
+        }).then((response) {
+      print(response.body);
+      try {
+        productList.clear();
+        print(response.statusCode);
+        if (response.statusCode == 200) {
+          var jsondata = jsonDecode(response.body);
+          print(jsondata);
+          if (jsondata['status'] == "success") {
+            numofpage = int.parse(jsondata['numofpage']); //get number of pages
+            numberofresult = int.parse(jsondata['numberofresult']);
+            print(numberofresult);
+            var extractdata = jsondata['data'];
+
+            extractdata['product'].forEach((v) {
+              productList.add(Product.fromJson(v));
+            });
+            try {
+              cartqty = int.parse(jsondata['cartqty']);
+            } catch (e) {
+              print('Error parsing cartqty: $e');
+            }
+            print(cartqty);
+            print(productList[0].productName);
+          }
+          setState(() {});
+        }
+      } catch (e, _) {
+        debugPrint(e.toString());
       }
     });
   }
@@ -215,7 +354,8 @@ class BarterTabScreenState extends State<BarterTabScreen> {
       return;
     }
 
-    http.post(Uri.parse("${Config.server}/LabAssign2/php/load_allproduct.php"),
+    http.post(
+        Uri.parse("${Config.server}/LabAssign2/php/load_barterproduct.php"),
         body: {
           "userid": widget.user.id,
           "type": selectedType,
@@ -247,7 +387,8 @@ class BarterTabScreenState extends State<BarterTabScreen> {
       return;
     }
 
-    http.post(Uri.parse("${Config.server}/LabAssign2/php/load_allproduct.php"),
+    http.post(
+        Uri.parse("${Config.server}/LabAssign2/php/load_barterproduct.php"),
         body: {
           "userid": widget.user.id,
           "search": search,
