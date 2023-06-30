@@ -251,7 +251,7 @@ class _BarterTabScreenState extends State<BarterTabScreen> {
     http.post(Uri.parse("${Config.server}/LabAssign2/php/load_pageproduct.php"),
         body: {
           "pageno": pg.toString(),
-          if (widget.user.id != "na") "cartuserid": widget.user.id
+          if (widget.user.id != "na") "userid": widget.user.id
         }).then((response) {
       print(response.body);
       try {
@@ -296,7 +296,7 @@ class _BarterTabScreenState extends State<BarterTabScreen> {
         Uri.parse("${Config.server}/LabAssign2/php/load_barterproduct.php"),
         body: {
           "pageno": pg.toString(),
-          if (widget.user.id != "na") "cartuserid": widget.user.id,
+          if (widget.user.id != "na") "userid": widget.user.id,
           //"userid": widget.product.userId,
         }).then((response) {
       print(response.body);
@@ -347,7 +347,7 @@ class _BarterTabScreenState extends State<BarterTabScreen> {
           "state": state,
           "valuea": valueaEditingController.text,
           "valueb": valuebEditingController.text,
-          if (widget.user.id != "na") "cartuserid": widget.user.id,
+          if (widget.user.id != "na") "userid": widget.user.id,
         }).then((response) {
       print(response.body);
       productList.clear();
@@ -383,7 +383,7 @@ class _BarterTabScreenState extends State<BarterTabScreen> {
         body: {
           "pageno": pg.toString(),
           "search": search,
-          if (widget.user.id != "na") "cartuserid": widget.user.id,
+          if (widget.user.id != "na") "userid": widget.user.id,
         }).then((response) {
       //print(response.body);
       productList.clear();
