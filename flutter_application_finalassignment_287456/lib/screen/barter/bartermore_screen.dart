@@ -9,10 +9,10 @@ import 'package:flutter_application_finalassignment_287456/screen/product/produc
 import 'package:http/http.dart' as http;
 
 class BarterMoreScreen extends StatefulWidget {
-  final Product product;
+  final String productuserID;
   final User user;
   const BarterMoreScreen(
-      {super.key, required this.product, required this.user});
+      {super.key,required this.user, required this.productuserID});
 
   @override
   State<BarterMoreScreen> createState() => _BarterMoreScreenState();
@@ -87,7 +87,7 @@ class _BarterMoreScreenState extends State<BarterMoreScreen> {
                                 width: screenWidth,
                                 fit: BoxFit.cover,
                                 imageUrl:
-                                    "${Config.server}/LabAssign2/assets/images/${productList[index].productId}.png",
+                                    "${Config.server}/LabAssign2/assets/images/${productList[index].productId}.1.png",
                                 placeholder: (context, url) =>
                                     const LinearProgressIndicator(),
                                 errorWidget: (context, url, error) =>
@@ -116,9 +116,9 @@ class _BarterMoreScreenState extends State<BarterMoreScreen> {
 
   void loadUserItems() {
     http.post(
-        Uri.parse("${Config.server}/LabAssign2/php/load_singleuser.php"),
+        Uri.parse("${Config.server}/LabAssign2/php/load_product.php"),
         body: {
-          "userid": widget.product.userId,
+          "userid": widget.productuserID,
         }).then((response) {
       //print(response.body);
       //log(response.body);
@@ -139,7 +139,7 @@ class _BarterMoreScreenState extends State<BarterMoreScreen> {
   void loadUser() {
     http.post(Uri.parse("${Config.server}/LabAssign2/php/load_user.php"),
         body: {
-          "userid": widget.product.userId,
+          "userid": widget.productuserID,
         }).then((response) {
       log(response.body);
       if (response.statusCode == 200) {

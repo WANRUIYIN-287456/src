@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter_application_finalassignment_287456/screen/barter/barterorder_screen.dart';
+import 'package:flutter_application_finalassignment_287456/screen/barter/bill_screen.dart';
 import 'package:flutter_application_finalassignment_287456/screen/barter/cart_screen.dart';
 import 'package:flutter_application_finalassignment_287456/screen/product/productdetails_screen.dart';
 import 'package:http/http.dart' as http;
@@ -127,6 +128,10 @@ class _BarterTabScreenState extends State<BarterTabScreen> {
                 value: 0,
                 child: Text("My Order"),
               ),
+              const PopupMenuItem<int>(
+                value: 1,
+                child: Text("My Bill"),
+              ),
             ];
           }, onSelected: (value) async {
             if (value == 0) {
@@ -142,6 +147,17 @@ class _BarterTabScreenState extends State<BarterTabScreen> {
                             user: widget.user,
                           )));
             } else if (value == 1) {
+               if (widget.user.id.toString() == "na") {
+                ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+                    content: Text("Please login/register an account")));
+                return;
+              }
+              await Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (content) => BillScreen(
+                            user: widget.user,
+                          )));
             } else if (value == 2) {}
           }),
         ],

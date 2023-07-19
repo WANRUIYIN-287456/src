@@ -27,7 +27,6 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
   int userqty = 1;
   double totalprice = 0.0;
   double singleprice = 0.0;
-  late Product product;
 
   @override
   void initState() {
@@ -43,18 +42,27 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
     screenWidth = MediaQuery.of(context).size.width;
     return Scaffold(
       appBar: AppBar(title: const Text("Product Details"), actions: [
-        IconButton(
-          onPressed: () async {
-                await Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (content) => UserProfileScreen(
-                            user: widget.user, product: product)));
-              },
-          
-          icon: const Icon(Icons.more_horiz_outlined),
-          tooltip: "See user profile",
-        )
+        PopupMenuButton(
+            // add icon, by default "3 dot" icon
+            // icon: Icon(Icons.book)
+            itemBuilder: (context) {
+          return [
+            const PopupMenuItem<int>(
+              value: 0,
+              child: Text("Visit Seller Page"),
+            ),
+          ];
+        }, onSelected: (value) async {
+          if (value == 0) {
+            await Navigator.push(
+                context,
+                MaterialPageRoute(
+                    builder: (content) => UserProfileScreen(
+                          user: widget.user,
+                          productUserId: widget.product.userId.toString(),
+                        )));
+          }
+        }),
       ]),
       body: Column(children: [
         Flexible(
@@ -266,10 +274,10 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
       return;
     }
     if (widget.user.id.toString() == "na") {
-      ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text("Please register/login to use this feature.")));
-           Navigator.pushReplacement(context,
-                MaterialPageRoute(builder: (context) => const LoginScreen()));
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+          content: Text("Please register/login to use this feature.")));
+      Navigator.pushReplacement(context,
+          MaterialPageRoute(builder: (context) => const LoginScreen()));
       return;
     }
     showDialog(
@@ -323,7 +331,6 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
       if (response.statusCode == 200) {
         var jsondata = jsonDecode(response.body);
         if (jsondata['status'] == 'success') {
-
           ScaffoldMessenger.of(context)
               .showSnackBar(const SnackBar(content: Text("Success")));
         } else {

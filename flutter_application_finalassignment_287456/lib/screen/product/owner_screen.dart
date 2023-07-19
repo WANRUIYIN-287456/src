@@ -10,10 +10,10 @@ import 'package:flutter_application_finalassignment_287456/screen/message_screen
 import 'package:http/http.dart' as http;
 
 class UserProfileScreen extends StatefulWidget {
-  final Product product;
   final User user;
+  final String productUserId;
   const UserProfileScreen(
-      {super.key, required this.user, required this.product});
+      {super.key, required this.user, required this.productUserId});
 
   @override
   State<UserProfileScreen> createState() => _UserProfileScreenState();
@@ -31,7 +31,6 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
       datereg: "na",
       password: "na",
       otp: "na");
-  late Product product;
   @override
   void initState() {
     super.initState();
@@ -46,42 +45,46 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
     return Scaffold(
       appBar: AppBar(title: const Text("User Profile")),
       body: Column(children: [
-        Container(
-          padding: const EdgeInsets.all(2),
-          height: screenHeight * 0.25,
-          width: screenWidth,
+        Padding(
+          padding: const EdgeInsets.all(10.0),
           child: Card(
-            child: Row(mainAxisAlignment: MainAxisAlignment.center, children: [
-              Container(
-                  width: screenWidth * 0.92,
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Container(
+                  margin: const EdgeInsets.all(4),
+                  width: screenWidth * 0.4,
                   child: CachedNetworkImage(
-                    fit: BoxFit.cover,
-                    imageUrl:
-                        "${Config.server}/LabAssign2/assets/images/profile/${widget.product.userId}.png",
-                    placeholder: (context, url) =>
-                        const LinearProgressIndicator(),
-                    errorWidget: (context, url, error) =>
-                        const Icon(Icons.error),
-                  )),
-              Expanded(
-                  flex: 3,
-                  child: Padding(
-                    padding: const EdgeInsets.fromLTRB(2, 2, 2, 6),
-                    child: Column(
-                      children: [
-                        const SizedBox(
-                          height: 16,
-                        ),
-                        Text(
-                          widget.user.name.toString(),
-                          style: const TextStyle(fontSize: 24),
-                        ),
-                        Text(widget.user.email.toString()),
-                        //Text(widget.user.phone.toString()),
-                      ],
-                    ),
-                  )),
-            ]),
+                      imageUrl:
+                          "${Config.server}/LabAssign2/assets/images/profile/${widget.productUserId}.png?",
+                      placeholder: (context, url) =>
+                          const LinearProgressIndicator(),
+                      errorWidget: (context, url, error) => Image.network(
+                            "${Config.server}/LabAssign2/assets/images/profile/0.png",
+                            scale: 2,
+                          )),
+                ),
+                Expanded(
+                  flex: 6,
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Column(
+                        children: [
+                          Text(
+                            user.name.toString(),
+                            style: const TextStyle(fontSize: 24),
+                          ),
+                          const Divider(),
+                          Text(user.email.toString()),
+                          Text(user.phone.toString()),
+                        ],
+                      )
+                    ],
+                  ),
+                ),
+              ],
+            ),
           ),
         ),
         Container(
@@ -107,14 +110,14 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
                     context,
                     MaterialPageRoute(
                         builder: (content) => BarterMoreScreen(
-                            user: widget.user, product: product)));
+                            user: widget.user, productuserID: widget.productUserId.toString() )));
               },
               child: Padding(
-                padding: const EdgeInsets.fromLTRB(120, 20, 80, 0),
+                padding: const EdgeInsets.fromLTRB(90, 40, 40, 20),
                 child: Row(children: const [
                   Icon(Icons.shopping_bag),
                   SizedBox(width: 15),
-                  Text("More Products from the user"),
+                  Text("More from this user"),
                 ]),
               ),
             ),
@@ -125,13 +128,16 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
                     MaterialPageRoute(
                         builder: (content) => const MessageTabScreen()));
               },
-              child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: const [
-                    Icon(Icons.logout),
-                    SizedBox(width: 15),
-                    Text("Message"),
-                  ]),
+              child: Padding(
+                padding: const EdgeInsets.fromLTRB(52, 10, 100, 10),
+                child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: const [
+                      Icon(Icons.message),
+                      SizedBox(width: 15),
+                      Text("Message"),
+                    ]),
+              ),
             ),
           ],
         ))
@@ -157,9 +163,10 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
   // }
 
   void loadUser() {
-    http.post(Uri.parse("${Config.server}/LabAssign2/php/load_user.php"), body: {
-      "userid": widget.product.userId,
-    }).then((response) {
+    http.post(Uri.parse("${Config.server}/LabAssign2/php/load_user.php"),
+        body: {
+          "userid": widget.productUserId,
+        }).then((response) {
       log(response.body);
       if (response.statusCode == 200) {
         var jsondata = jsonDecode(response.body);
