@@ -66,6 +66,8 @@ if ($result->num_rows > 0) {
         $productList['product_state'] = $row['product_state'];
         $productList['product_locality'] = $row['product_locality'];
 		$productList['product_date'] = $row['product_date'];
+        $productList['product_option'] = $row['product_option'];
+        $productList['product_status'] = $row['product_status'];
         array_push($product["product"],$productList);
     }
     $response = array('status' => 'success', 'data' => $product, 'numofpage'=>"$number_of_page",'numberofresult'=>"$number_of_result", 'cartqty'=> $totalcart);

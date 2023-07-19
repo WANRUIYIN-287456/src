@@ -6,10 +6,10 @@ if (!isset($_POST)) {
 }
 
 include_once("dbconnect.php");
-if($_POST['userid']){
+
     $userid = $_POST['userid'];
     $sqlcart = "SELECT * FROM `tbl_cart` INNER JOIN `tbl_products` ON tbl_cart.product_id = tbl_products.product_id WHERE tbl_cart.barteruser_id = '$userid'";
-}
+
 // else{
 //     $sqlcart = "SELECT * FROM `tbl_cart` INNER JOIN `tbl_products` ON tbl_cart.product_id = tbl_products.product_id";
 // }

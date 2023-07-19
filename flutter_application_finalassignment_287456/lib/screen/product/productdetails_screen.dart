@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:flutter_application_finalassignment_287456/screen/product/owner_screen.dart';
+import 'package:flutter_application_finalassignment_287456/screen/shared/login_screen.dart';
 import 'package:http/http.dart' as http;
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
@@ -262,6 +263,13 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
     if (widget.user.id.toString() == widget.product.userId.toString()) {
       ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text("User cannot add own item")));
+      return;
+    }
+    if (widget.user.id.toString() == "na") {
+      ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text("Please register/login to use this feature.")));
+           Navigator.pushReplacement(context,
+                MaterialPageRoute(builder: (context) => const LoginScreen()));
       return;
     }
     showDialog(

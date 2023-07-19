@@ -179,7 +179,7 @@ class _SellCartScreenState extends State<SellCartScreen> {
                 TableRow(children: [
                   const TableCell(
                     child: Text(
-                      "\nBarter Status",
+                      "\nOrder Status",
                       style: TextStyle(fontWeight: FontWeight.bold),
                     ),
                   ),
@@ -286,6 +286,8 @@ class _SellCartScreenState extends State<SellCartScreen> {
           "orderstatus": status,
           "paymentstatus": paymentstatus,
           "cartid" : widget.cart.cartId,
+          "owner" : "Submit",
+          "buyer" : "Submit"
         }).then((response) {
       print(response.body);
       if (response.statusCode == 200) {

@@ -182,7 +182,7 @@ class _BarterCartScreenState extends State<BarterCartScreen> {
                           Navigator.push(
                       context,
                       MaterialPageRoute(
-                          builder: (content) => BarterProductScreen(user: widget.user, productID: widget.cart.productId.toString(), cartPrice: widget.cart.cartPrice.toString(), cartQty: widget.cart.cartQty.toString(), cartID: widget.cart.cartId.toString(),)));
+                          builder: (content) => BarterProductScreen(user: widget.user, productID: widget.cart.productId.toString(),  productuserID: widget.cart.userId.toString(), cartPrice: widget.cart.cartPrice.toString(), cartQty: widget.cart.cartQty.toString(), cartID: widget.cart.cartId.toString(),)));
                         },
                         child: const Text("Choose own item")),
                   ),

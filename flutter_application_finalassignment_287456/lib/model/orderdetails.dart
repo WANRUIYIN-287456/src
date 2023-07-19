@@ -1,4 +1,4 @@
-class Order {
+class OrderDetails {
   String? orderId;
   String? productId;
   String? barteruserId;
@@ -6,8 +6,6 @@ class Order {
   String? orderDate;
   String? orderQty;
   String? orderStatus;
-  String? ownerStatus;
-  String? buyerStatus;
   String? barterorderId;
   String? barterproductId;
   String? barterproductName;
@@ -26,7 +24,7 @@ class Order {
   String? productOption;
   String? productStatus;
 
-  Order(
+  OrderDetails(
       {this.orderId,
       this.productId,
       this.barteruserId,
@@ -34,8 +32,6 @@ class Order {
       this.orderDate,
       this.orderQty,
       this.orderStatus,
-      this.ownerStatus,
-      this.buyerStatus,
       this.barterorderId,   
       this.barterproductId,
       this.barterproductName,    
@@ -54,7 +50,7 @@ class Order {
       this.productOption,
       this.productStatus});
 
-  Order.fromJson(Map<String, dynamic> json) {
+  OrderDetails.fromJson(Map<String, dynamic> json) {
     orderId = json['order_id'];
     productId = json['product_id'];
     barteruserId = json['barteruser_id'];
@@ -62,8 +58,6 @@ class Order {
     orderDate = json['order_date'];
     orderQty = json['order_qty'];
     orderStatus = json['order_status'];
-    ownerStatus = json['owner_status'];
-    buyerStatus = json['buyer_status'];
     barterorderId = json['barterorder_id'];
     barterproductId = json['barterproduct_id'];
     barterproductName = json['barterproduct_name'];
@@ -92,8 +86,6 @@ class Order {
     data['order_date'] = orderDate;
     data['order_qty'] = orderQty;
     data['order_status'] = orderStatus;
-    data['owner_status'] = ownerStatus;
-    data['buyer_status'] = buyerStatus;
     data['barterorder_id'] = barterorderId;
     data['barterproduct_id'] = barterproductId;
     data['barterproduct_name'] = barterproductName;

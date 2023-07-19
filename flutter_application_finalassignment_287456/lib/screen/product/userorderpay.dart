@@ -9,22 +9,23 @@ import 'package:flutter_application_finalassignment_287456/screen/message_screen
 import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
 
-class BarterOrderPayScreen extends StatefulWidget {
+class UserOrderPayScreen extends StatefulWidget {
   final Order order;
-  const BarterOrderPayScreen({super.key, required this.order});
+  const UserOrderPayScreen({super.key, required this.order});
 
   @override
-  State<BarterOrderPayScreen> createState() => _BarterOrderPayScreenState();
+  State<UserOrderPayScreen> createState() => _UserOrderPayScreenState();
 }
 
 // ignore: duplicate_ignore
-class _BarterOrderPayScreenState extends State<BarterOrderPayScreen> {
+class _UserOrderPayScreenState extends State<UserOrderPayScreen> {
   final df = DateFormat('dd-MM-yyyy hh:mm a');
   late double screenHeight, screenWidth;
   late Order order;
   String submitstatus = "Submit";
-  bool isButtonEnabled = false;
   String paymentstatus = "Processing";
+  bool isButtonEnabled = false;
+  bool isListEnabled = true;
   List<String> paymentstatuslist = [
     "Processing",
     "Ready",
@@ -38,16 +39,17 @@ class _BarterOrderPayScreenState extends State<BarterOrderPayScreen> {
       password: "na",
       otp: "na");
 
- @override
+  @override
   void initState() {
     super.initState();
     loadbarteruser();
     loaduserorders();
     paymentstatus = widget.order.paymentOrderStatus.toString();
-     if( paymentstatus == "Ready"){
-      isButtonEnabled = true;
+    submitstatus = widget.order.ownerStatus.toString();
+    print(submitstatus);
+    if (submitstatus == "Completed"){
+      isListEnabled = false;
     }
-    submitstatus = widget.order.buyerStatus.toString();
   }
 
   @override
@@ -132,19 +134,20 @@ class _BarterOrderPayScreenState extends State<BarterOrderPayScreen> {
               child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceAround,
                   children: [
-                    const Text("Set order status as completed"),
+                    const Text("Please update the order status here."),
                     ElevatedButton(
-                        onPressed: isButtonEnabled == false ||
-                              submitstatus == "Completed"
+                      onPressed: isButtonEnabled == false || submitstatus == "Completed"
                           ? null
                           : () {
                               setState(() {
                                 submitstatus = "Completed";
-                                submitStatus();
+                                submitStatus(); 
                                 isButtonEnabled = false;
+                                isListEnabled = false;
                               });
                             },
-                        child: Text(submitstatus))
+                      child: Text(submitstatus),
+                    ),
                   ]),
             ),
           ),
@@ -171,7 +174,9 @@ class _BarterOrderPayScreenState extends State<BarterOrderPayScreen> {
                         child: Text(
                           "${widget.order.productName}",
                           style: const TextStyle(
-                              fontSize: 20, fontWeight: FontWeight.bold, color: Colors.blueAccent),
+                              fontSize: 20,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.blueAccent),
                         )),
                   ],
                 ),
@@ -226,34 +231,39 @@ class _BarterOrderPayScreenState extends State<BarterOrderPayScreen> {
                   )
                 ]),
                 TableRow(children: [
-                  const TableCell(
-                    child: Text(
-                      "\nOrder Status",
-                      style: TextStyle(fontWeight: FontWeight.bold),
-                    ),
-                  ),
-                  TableCell(
-                    child: DropdownButton(
-                      isExpanded: true,
-                      value: paymentstatus,
-                      onChanged: null,
-                      //  (newValue) {
-                      //   setState(() {
-                      //     paymentstatus = newValue!;
-                      //     print(paymentstatus);
-                      //   });
-                      // },
-                      items: paymentstatuslist.map((paymentstatus) {
-                        return DropdownMenuItem(
-                          value: paymentstatus,
-                          child: Text(
-                            paymentstatus,
-                          ),
-                        );
-                      }).toList(),
-                    ),
-                  )
-                ]),
+      const TableCell(
+        child: Text(
+          "\nOrder Status",
+          style: TextStyle(fontWeight: FontWeight.bold),
+        ),
+      ),
+      TableCell(
+        child: DropdownButton(
+          isExpanded: true,
+          value: paymentstatus,
+          onChanged: isListEnabled
+              ? (newValue) {
+                  setState(() {
+                    paymentstatus = newValue as String;
+                    if (paymentstatus == "Ready") {
+                      isButtonEnabled = true;
+                      isListEnabled = false;
+                    } else {
+                      isListEnabled = true;
+                    }
+                    print(paymentstatus);
+                  });
+                }
+              : null,
+          items: paymentstatuslist.map((paymentstatus) {
+            return DropdownMenuItem(
+              value: paymentstatus,
+              child: Text(paymentstatus),
+            );
+          }).toList(),
+        ),
+      ),
+    ]),
               ],
             ),
           )
@@ -262,11 +272,8 @@ class _BarterOrderPayScreenState extends State<BarterOrderPayScreen> {
 
   void loaduserorders() {
     http.post(
-        Uri.parse("${Config.server}/LabAssign2/php/load_barterorderbarter.php"),
-        body: {
-          "barteruserid": widget.order.barteruserId,
-          "pay": "pay"
-        }).then((response) {
+        Uri.parse("${Config.server}/LabAssign2/php/load_userorderbarter.php"),
+        body: {"userid": widget.order.userId, "pay": "pay"}).then((response) {
       print(response.statusCode);
       log(response.body);
       if (response.statusCode == 200) {
@@ -306,9 +313,10 @@ class _BarterOrderPayScreenState extends State<BarterOrderPayScreen> {
 
   void submitStatus() {
     http.post(
-        Uri.parse("${Config.server}/LabAssign2/php/set_orderstatus.php"),
+        Uri.parse("${Config.server}/LabAssign2/php/set_orderpaymentstatus.php"),
         body: {
-          "orderid": widget.order.orderId,
+          "paymentorderid": widget.order.paymentorderId,
+          "status": paymentstatus,
           "submitstatus": submitstatus
         }).then((response) {
       log(response.body);
@@ -317,7 +325,9 @@ class _BarterOrderPayScreenState extends State<BarterOrderPayScreen> {
         var jsondata = jsonDecode(response.body);
         if (jsondata['status'] == "success") {
         } else {}
+        //widget.order.orderStatus = st;
         //selectStatus = st;
+        submitstatus == "Completed";
         setState(() {});
         ScaffoldMessenger.of(context)
             .showSnackBar(const SnackBar(content: Text("Success")));

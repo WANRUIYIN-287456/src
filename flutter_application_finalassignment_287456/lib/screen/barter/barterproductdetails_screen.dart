@@ -15,7 +15,8 @@ class BarterProductDetailsScreen extends StatefulWidget {
   final String cartQty;
   final String cartPrice;
   final String productID;
-  const BarterProductDetailsScreen({super.key, required this.user, required this.product, required this.productID, required this.cartQty, required this.cartPrice, required this.cartId});
+  final String productuserID;
+  const BarterProductDetailsScreen({super.key, required this.user, required this.product, required this.productID, required this.cartQty, required this.cartPrice, required this.cartId, required this.productuserID});
 
   @override
   State<BarterProductDetailsScreen> createState() => _BarterProductDetailsScreenState();
@@ -282,13 +283,16 @@ List<String> barterstatuslist = [
         body: {
           "productid": widget.productID,
           "barterproductid": widget.product.productId.toString(),
+          "barterproductname": widget.product.productName.toString(),
           "orderqty": widget.cartQty.toString(),
           "orderprice": widget.cartPrice.toString(),
           "barteruserid": widget.user.id,
-          "userid": widget.product.userId,
+          "userid": widget.productuserID,
           "orderstatus": status,
           "barterstatus": barterstatus,
           "cartid": widget.cartId,
+          "owner" : "Submit",
+          "buyer" : "Submit"
         }).then((response) {
       print(response.body);
       if (response.statusCode == 200) {

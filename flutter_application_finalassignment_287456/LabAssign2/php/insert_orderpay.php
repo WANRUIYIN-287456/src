@@ -14,11 +14,13 @@ $userid = $_POST['userid'];
 $orderstatus = $_POST['orderstatus'];
 $paymentstatus = $_POST['paymentstatus'];
 $cartid = $_POST['cartid'];
+$owner = $_POST['owner'];
+$buyer = $_POST['buyer'];
 
-$sql1 = "INSERT INTO tbl_order (product_id, order_qty, barteruser_id, user_id, order_status) VALUES ('$productid', '$orderqty', '$barteruserid', '$userid', '$orderstatus')";
+$sql1 = "INSERT INTO tbl_orderpay ( product_id, product_name, payment_amount, paymentorder_status) VALUES ( '$productid', '$productname','$orderprice', '$paymentstatus')";
 if ($conn->query($sql1) === TRUE) {
     $last_id = $conn->insert_id;
-    $sql2 = "INSERT INTO tbl_orderpay (order_id, product_id, product_name, payment_amount, paymentorder_status) VALUES ('$last_id', '$productid', '$productname','$orderprice', '$paymentstatus')";
+    $sql2 = "INSERT INTO tbl_order (paymentorder_id, product_id, order_qty, barteruser_id, user_id, order_status, owner_status, buyer_status) VALUES ('$last_id', '$productid', '$orderqty', '$barteruserid', '$userid', '$orderstatus', '$owner', '$buyer')";
     if ($conn->query($sql2) === TRUE) {
         $cartid = $_POST['cartid'];
         $sql3 = "DELETE FROM tbl_cart WHERE cart_id = '$cartid'";

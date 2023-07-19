@@ -7,6 +7,7 @@ import 'package:flutter_application_finalassignment_287456/model/user.dart';
 import 'package:flutter_application_finalassignment_287456/screen/product/editproduct_screen.dart';
 import 'package:flutter_application_finalassignment_287456/screen/product/insertproduct2_screen.dart';
 import 'package:flutter_application_finalassignment_287456/screen/product/insertproduct_screen.dart';
+import 'package:flutter_application_finalassignment_287456/screen/product/owner_screen.dart';
 import 'package:flutter_application_finalassignment_287456/screen/product/userorder_screen.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
@@ -59,11 +60,11 @@ class ProductTabScreenState extends State<ProductTabScreen> {
             return [
               const PopupMenuItem<int>(
                 value: 0,
-                child: Text("My Order"),
+                child: Text("Owner's Order"),
               ),
               const PopupMenuItem<int>(
                 value: 1,
-                child: Text("New"),
+                child: Text("Owner Screen"),
               ),
             ];
           }, onSelected: (value) async {
@@ -80,7 +81,17 @@ class ProductTabScreenState extends State<ProductTabScreen> {
                             user: widget.user,
                           )));
             } else if (value == 1) {
-              print("Settings menu is selected.");
+              if (widget.user.id.toString() == "na") {
+                ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+                    content: Text("Please login/register an account")));
+                return;
+              }
+              // await Navigator.push(
+              //     context,
+              //     MaterialPageRoute(
+              //         builder: (content) => UserProfileScreen(
+              //               user: widget.user, product: productList[index].productId,
+              //             )));
             } else if (value == 2) {
               print("Logout menu is selected.");
             }
@@ -183,14 +194,15 @@ class ProductTabScreenState extends State<ProductTabScreen> {
               mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: [
                 TextButton.icon(
-                    onPressed: () => {
-                          Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (content) => NewProductScreen(
-                                        user: widget.user,
-                                      )))
-                        },
+                    onPressed: () async {
+                      await Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (content) => NewProductScreen(
+                                    user: widget.user,
+                                  )));
+                      Navigator.of(context).pop();
+                    },
                     icon: const Icon(Icons.currency_pound),
                     label: const Text("For Sell")),
                 TextButton.icon(
@@ -204,7 +216,6 @@ class ProductTabScreenState extends State<ProductTabScreen> {
                         },
                     icon: const Icon(Icons.data_object),
                     label: const Text("For Barter")),
-                
               ],
             ));
       },

@@ -7,11 +7,13 @@ if (!isset($_POST)) {
 
 include_once("dbconnect.php");
 
-$orderid = $_POST['orderid'];
+$paymentorderid = $_POST['paymentorderid'];
+$status = $_POST['status'];
 $submitstatus = $_POST['submitstatus'];
-$sqlupdate = "UPDATE `tbl_order` SET `buyer_status`='$submitstatus' WHERE order_id = '$orderid'";
+$sqlupdate1 = "UPDATE `tbl_orderpay` SET `paymentorder_status`='$status' WHERE paymentorder_id = '$paymentorderid'";
+$sqlupdate2 = "UPDATE `tbl_order` SET `owner_status`='$submitstatus' WHERE paymentorder_id = '$paymentorderid'";
 
-if ($conn->query($sqlupdate) === TRUE) {
+if ($conn->query($sqlupdate1) === TRUE && $conn->query($sqlupdate2) === TRUE) {
 	$response = array('status' => 'success', 'data' => null);
     sendJsonResponse($response);
 }else{

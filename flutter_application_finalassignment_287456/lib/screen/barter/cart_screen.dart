@@ -9,6 +9,9 @@ import 'package:flutter_application_finalassignment_287456/screen/barter/barterc
 import 'package:flutter_application_finalassignment_287456/screen/barter/sellcart_screen.dart';
 import 'package:http/http.dart' as http;
 
+//bartertabscreen => cart => bartercart => barterproduct => barterproductdetails <-bartertabscreen
+//bartertabscreen => cart => sellcart => payment <- bartertabscreen
+
 class CartScreen extends StatefulWidget {
   final User user;
   const CartScreen({super.key, required this.user});

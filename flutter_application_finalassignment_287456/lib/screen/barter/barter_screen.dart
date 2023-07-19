@@ -127,10 +127,6 @@ class _BarterTabScreenState extends State<BarterTabScreen> {
                 value: 0,
                 child: Text("My Order"),
               ),
-              const PopupMenuItem<int>(
-                value: 1,
-                child: Text("New"),
-              ),
             ];
           }, onSelected: (value) async {
             if (value == 0) {

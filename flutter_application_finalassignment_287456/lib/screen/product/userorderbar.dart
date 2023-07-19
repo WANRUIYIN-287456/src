@@ -9,25 +9,28 @@ import 'package:flutter_application_finalassignment_287456/screen/message_screen
 import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
 
-class BarterOrderPayScreen extends StatefulWidget {
+class UserOrderBarScreen extends StatefulWidget {
   final Order order;
-  const BarterOrderPayScreen({super.key, required this.order});
+  const UserOrderBarScreen({super.key, required this.order});
 
   @override
-  State<BarterOrderPayScreen> createState() => _BarterOrderPayScreenState();
+  State<UserOrderBarScreen> createState() => _UserOrderBarScreenState();
 }
 
 // ignore: duplicate_ignore
-class _BarterOrderPayScreenState extends State<BarterOrderPayScreen> {
+class _UserOrderBarScreenState extends State<UserOrderBarScreen> {
+  //List<OrderBarter> orderbarterlist = <OrderBarter>[];
   final df = DateFormat('dd-MM-yyyy hh:mm a');
+  bool isButtonDisabled = false;
   late double screenHeight, screenWidth;
-  late Order order;
   String submitstatus = "Submit";
+  String barterstatus = "Waiting for response...";
   bool isButtonEnabled = false;
-  String paymentstatus = "Processing";
-  List<String> paymentstatuslist = [
-    "Processing",
-    "Ready",
+  bool isListEnabled = true;
+  List<String> barterstatuslist = [
+    "Waiting for response...",
+    "Accepted",
+    "Rejected",
   ];
   late User user = User(
       id: "na",
@@ -37,17 +40,19 @@ class _BarterOrderPayScreenState extends State<BarterOrderPayScreen> {
       datereg: "na",
       password: "na",
       otp: "na");
+  late Order order;
 
- @override
+  @override
   void initState() {
     super.initState();
     loadbarteruser();
     loaduserorders();
-    paymentstatus = widget.order.paymentOrderStatus.toString();
-     if( paymentstatus == "Ready"){
-      isButtonEnabled = true;
+    barterstatus = widget.order.barterOrderStatus.toString();
+    submitstatus = widget.order.ownerStatus.toString();
+    print(submitstatus);
+    if (submitstatus == "Completed") {
+      isListEnabled = false;
     }
-    submitstatus = widget.order.buyerStatus.toString();
   }
 
   @override
@@ -132,9 +137,9 @@ class _BarterOrderPayScreenState extends State<BarterOrderPayScreen> {
               child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceAround,
                   children: [
-                    const Text("Set order status as completed"),
+                    const Text("Please update the order status here."),
                     ElevatedButton(
-                        onPressed: isButtonEnabled == false ||
+                      onPressed: isButtonEnabled == false ||
                               submitstatus == "Completed"
                           ? null
                           : () {
@@ -142,40 +147,89 @@ class _BarterOrderPayScreenState extends State<BarterOrderPayScreen> {
                                 submitstatus = "Completed";
                                 submitStatus();
                                 isButtonEnabled = false;
+                                isListEnabled = false;
                               });
                             },
-                        child: Text(submitstatus))
+                      child: Text(submitstatus),
+                    ),
                   ]),
             ),
           ),
           Padding(
             padding: const EdgeInsets.all(8.0),
-            child: Card(
-              child: Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Column(
-                  children: [
-                    CachedNetworkImage(
-                      width: screenWidth * 0.40,
-                      fit: BoxFit.contain,
-                      imageUrl:
-                          "${Config.server}/LabAssign2/assets/images/${widget.order.productId}.1.png",
-                      placeholder: (context, url) =>
-                          const LinearProgressIndicator(),
-                      errorWidget: (context, url, error) =>
-                          const Icon(Icons.error),
+            child: Row(
+              children: [
+                Card(
+                  child: Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Column(
+                      children: [
+                        const Text(
+                          "Barter Item",
+                          style: TextStyle(
+                              fontSize: 20, fontWeight: FontWeight.bold),
+                        ),
+                        const SizedBox(height: 10),
+                        CachedNetworkImage(
+                          width: screenWidth * 0.40,
+                          fit: BoxFit.contain,
+                          imageUrl:
+                              "${Config.server}/LabAssign2/assets/images/${widget.order.productId}.1.png",
+                          placeholder: (context, url) =>
+                              const LinearProgressIndicator(),
+                          errorWidget: (context, url, error) =>
+                              const Icon(Icons.error),
+                        ),
+                        const SizedBox(height: 8),
+                        Container(
+                            padding: const EdgeInsets.fromLTRB(8, 0, 8, 0),
+                            child: Text(
+                              "${widget.order.productName}",
+                              style: const TextStyle(
+                                  fontSize: 18,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.blueAccent),
+                            )),
+                      ],
                     ),
-                    const SizedBox(height: 8),
-                    Container(
-                        padding: const EdgeInsets.fromLTRB(8, 0, 8, 0),
-                        child: Text(
-                          "${widget.order.productName}",
-                          style: const TextStyle(
-                              fontSize: 20, fontWeight: FontWeight.bold, color: Colors.blueAccent),
-                        )),
-                  ],
+                  ),
                 ),
-              ),
+                Card(
+                  child: Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Column(
+                      children: [
+                        const Text(
+                          "Own Item",
+                          style: TextStyle(
+                              fontSize: 20, fontWeight: FontWeight.bold),
+                        ),
+                        const SizedBox(height: 10),
+                        CachedNetworkImage(
+                          width: screenWidth * 0.40,
+                          fit: BoxFit.contain,
+                          imageUrl:
+                              "${Config.server}/LabAssign2/assets/images/${widget.order.barterproductId}.1.png",
+                          placeholder: (context, url) =>
+                              const LinearProgressIndicator(),
+                          errorWidget: (context, url, error) =>
+                              const Icon(Icons.error),
+                        ),
+                        const SizedBox(height: 8),
+                        Container(
+                            padding: const EdgeInsets.fromLTRB(8, 0, 8, 0),
+                            child: Text(
+                              "${widget.order.barterproductName}",
+                              style: const TextStyle(
+                                  fontSize: 18,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.blueAccent),
+                            )),
+                      ],
+                    ),
+                  ),
+                ),
+              ],
             ),
           ),
           Padding(
@@ -215,39 +269,33 @@ class _BarterOrderPayScreenState extends State<BarterOrderPayScreen> {
                 TableRow(children: [
                   const TableCell(
                     child: Text(
-                      "\nOrder Price",
-                      style: TextStyle(fontWeight: FontWeight.bold),
-                    ),
-                  ),
-                  TableCell(
-                    child: Text(
-                      "\nRM ${widget.order.paymentAmount}",
-                    ),
-                  )
-                ]),
-                TableRow(children: [
-                  const TableCell(
-                    child: Text(
-                      "\nOrder Status",
+                      "\nBarter Status",
                       style: TextStyle(fontWeight: FontWeight.bold),
                     ),
                   ),
                   TableCell(
                     child: DropdownButton(
                       isExpanded: true,
-                      value: paymentstatus,
-                      onChanged: null,
-                      //  (newValue) {
-                      //   setState(() {
-                      //     paymentstatus = newValue!;
-                      //     print(paymentstatus);
-                      //   });
-                      // },
-                      items: paymentstatuslist.map((paymentstatus) {
+                      value: barterstatus,
+                      onChanged: isListEnabled
+                          ? (newValue) {
+                              setState(() {
+                                barterstatus = newValue as String;
+                                if (barterstatus == "Accepted") {
+                                  isButtonEnabled = true;
+                                  isListEnabled = false;
+                                } else {
+                                  isListEnabled = true;
+                                }
+                                print(barterstatus);
+                              });
+                            }
+                          : null,
+                      items: barterstatuslist.map((barterstatus) {
                         return DropdownMenuItem(
-                          value: paymentstatus,
+                          value: barterstatus,
                           child: Text(
-                            paymentstatus,
+                            barterstatus,
                           ),
                         );
                       }).toList(),
@@ -262,10 +310,10 @@ class _BarterOrderPayScreenState extends State<BarterOrderPayScreen> {
 
   void loaduserorders() {
     http.post(
-        Uri.parse("${Config.server}/LabAssign2/php/load_barterorderbarter.php"),
+        Uri.parse("${Config.server}/LabAssign2/php/load_userorderbarter.php"),
         body: {
-          "barteruserid": widget.order.barteruserId,
-          "pay": "pay"
+          "userid": widget.order.userId,
+          "barter": "barter"
         }).then((response) {
       print(response.statusCode);
       log(response.body);
@@ -306,9 +354,10 @@ class _BarterOrderPayScreenState extends State<BarterOrderPayScreen> {
 
   void submitStatus() {
     http.post(
-        Uri.parse("${Config.server}/LabAssign2/php/set_orderstatus.php"),
+        Uri.parse("${Config.server}/LabAssign2/php/set_orderbarterstatus.php"),
         body: {
-          "orderid": widget.order.orderId,
+          "barterorderid": widget.order.barterorderId,
+          "status": barterstatus,
           "submitstatus": submitstatus
         }).then((response) {
       log(response.body);

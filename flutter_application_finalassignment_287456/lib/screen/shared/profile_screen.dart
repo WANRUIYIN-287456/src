@@ -68,9 +68,9 @@ class _ProfileTabScreenState extends State<ProfileTabScreen> {
             child: Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: const [
-                  Icon(Icons.login, color: Colors.white),
+                  Icon(Icons.login, color: Colors.white54),
                   SizedBox(width: 10),
-                  Text("Login", style: TextStyle(color: Colors.white)),
+                  Text("Login", style: TextStyle(color: Colors.white54)),
                 ]),
           ),
         ],

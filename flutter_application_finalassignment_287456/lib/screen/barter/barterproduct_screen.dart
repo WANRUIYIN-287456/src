@@ -12,10 +12,11 @@ import 'package:flutter/material.dart';
 class BarterProductScreen extends StatefulWidget {
   final User user;
   final String productID;
+  final String productuserID;
   final String cartPrice;
   final String cartQty;
   final String cartID;
-  const BarterProductScreen({super.key, required this.user, required this.productID, required this.cartPrice, required this.cartQty, required this.cartID});
+  const BarterProductScreen({super.key, required this.user, required this.productID, required this.cartPrice, required this.cartQty, required this.cartID, required this.productuserID});
 
   @override
   State<BarterProductScreen> createState() => BarterProductScreenState();
@@ -86,7 +87,7 @@ class BarterProductScreenState extends State<BarterProductScreen> {
                                         builder: (content) =>
                                             BarterProductDetailsScreen(
                                                 user: widget.user,
-                                                product: product, productID: widget.productID, cartPrice: widget.cartPrice, cartQty: widget.cartQty, cartId: widget.cartID,)));
+                                                product: product, productID: widget.productID, productuserID: widget.productuserID, cartPrice: widget.cartPrice, cartQty: widget.cartQty, cartId: widget.cartID,)));
                                 loadProduct();
                               },
                               child: Column(children: [

@@ -1,10 +1,12 @@
 import 'dart:convert';
 import 'dart:developer';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_application_finalassignment_287456/config.dart';
 import 'package:flutter_application_finalassignment_287456/model/order.dart';
 import 'package:flutter_application_finalassignment_287456/model/user.dart';
-import 'package:flutter_application_finalassignment_287456/screen/barter/barterorderdetails_screen.dart';
+import 'package:flutter_application_finalassignment_287456/screen/barter/barterorderbar.dart';
+import 'package:flutter_application_finalassignment_287456/screen/barter/barterorderpay.dart';
 import 'package:http/http.dart' as http;
 
 class BarterOrderScreen extends StatefulWidget {
@@ -44,43 +46,52 @@ class _BarterOrderScreenState extends State<BarterOrderScreen> {
                       child: Row(
                         children: [
                           Flexible(
-                              flex: 7,
+                              flex: 5,
                               child: Row(
                                 children: [
-                                  const CircleAvatar(
-                                    backgroundImage: AssetImage(
-                                      "assets/images/profile.png",
-                                    ),
+                                  Container(
+                                    margin: const EdgeInsets.all(20),
+                                    width: screenWidth * 0.4,
+                                    child: CachedNetworkImage(
+                                        imageUrl:
+                                            "${Config.server}/LabAssign2/assets/images/profile/${widget.user.id}.png?",
+                                        placeholder: (context, url) =>
+                                            const LinearProgressIndicator(),
+                                        errorWidget: (context, url, error) =>
+                                            Image.network(
+                                              "${Config.server}/LabAssign2/assets/images/profile/0.png",
+                                              scale: 2,
+                                            )),
                                   ),
                                   const SizedBox(
                                     width: 8,
                                   ),
                                   Text(
-                                    "Hello ${widget.user.name}!",
+                                    "Hello, ${widget.user.name}!",
                                     style: const TextStyle(
                                         fontSize: 16,
                                         fontWeight: FontWeight.bold),
                                   ),
                                 ],
                               )),
-                          // Expanded(
-                          //   flex: 3,
-                          //   child: Row(children: [
-                          //     IconButton(
-                          //       icon: const Icon(Icons.notifications),
-                          //       onPressed: () {},
-                          //     ),
-                          //     IconButton(
-                          //       icon: const Icon(Icons.search),
-                          //       onPressed: () {},
-                          //     ),
-                          //   ]),
-                          // )
                         ],
                       ),
                     ),
                   ),
-                  const Text("Your Current Order"),
+                  Container(
+                    width: screenWidth,
+                    alignment: Alignment.center,
+                    color: Theme.of(context).colorScheme.background,
+                    child: const Padding(
+                      padding: EdgeInsets.fromLTRB(0, 2, 0, 2),
+                      child: Text("Your Current Order",
+                          style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                          )),
+                    ),
+                  ),
+                  const SizedBox(height: 30),
                   Expanded(
                     child: ListView.builder(
                       itemCount: orderList.length,
@@ -94,7 +105,7 @@ class _BarterOrderScreenState extends State<BarterOrderScreen> {
                                 context,
                                 MaterialPageRoute(
                                   builder: (context) =>
-                                      BarterOrderDetailsScreen(order: myorder),
+                                      BarterOrderPayScreen(order: myorder),
                                 ),
                               );
                             } else if (orderList[index].orderStatus ==
@@ -103,21 +114,38 @@ class _BarterOrderScreenState extends State<BarterOrderScreen> {
                                 context,
                                 MaterialPageRoute(
                                   builder: (context) =>
-                                      BarterOrderDetailsScreen(order: myorder),
+                                      BarterOrderBarScreen(order: myorder),
                                 ),
                               );
                             }
                             loaduserorders();
                           },
-                          subtitle: Row(
+                          subtitle: Column(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
-                              Column(
+                              Row(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  Text("Order ID: ${orderList[index].orderId}"),
-                                  Text(
-                                      "Status: ${orderList[index].orderStatus}")
+                                  CachedNetworkImage(
+                                    width: screenWidth / 3,
+                                    fit: BoxFit.cover,
+                                    imageUrl:
+                                        "${Config.server}/LabAssign2/assets/images/${orderList[index].productId}.1.png",
+                                    placeholder: (context, url) =>
+                                        const LinearProgressIndicator(),
+                                    errorWidget: (context, url, error) =>
+                                        const Icon(Icons.error),
+                                  ),
+                                  const SizedBox(width: 40),
+                                  Column(
+                                    children: [
+                                      const SizedBox(height: 25),
+                                      Text(
+                                          "Order ID: ${orderList[index].orderId}"),
+                                      Text(
+                                          "Status: ${orderList[index].orderStatus}")
+                                    ],
+                                  ),
                                 ],
                               ),
                             ],
@@ -131,32 +159,19 @@ class _BarterOrderScreenState extends State<BarterOrderScreen> {
       ),
     );
   }
-  // Column(
-  //   children: [
-  //     Text(
-  //       "RM ${double.parse(orderList[index].orderPaid.toString()).toStringAsFixed(2)}",
-  //       style: const TextStyle(
-  //           fontSize: 16,
-  //           fontWeight: FontWeight.bold),
-  //     ),
-  //     const Text("")
-  //   ],
-  // )
-  //  Text(orderList[index].orderBill.toString()),
-  //                               Text(orderList[index].orderStatus.toString()),
-  //                               Text(orderList[index].orderPaid.toString()),
 
   void loaduserorders() {
-    http.post(Uri.parse("${Config.server}/LabAssign2/php/load_barterorder.php"),
+    http.post(Uri.parse("${Config.server}/LabAssign2/php/load_barterorderbarter.php"),
         body: {"barteruserid": widget.user.id}).then((response) {
+      print(response.statusCode);
       log(response.body);
-      //orderList.clear();
+      orderList.clear();
       if (response.statusCode == 200) {
         var jsondata = jsonDecode(response.body);
         if (jsondata['status'] == "success") {
           orderList.clear();
           var extractdata = jsondata['data'];
-          extractdata['orders'].forEach((v) {
+          extractdata['order'].forEach((v) {
             orderList.add(Order.fromJson(v));
           });
         } else {
@@ -167,6 +182,10 @@ class _BarterOrderScreenState extends State<BarterOrderScreen> {
               const SnackBar(content: Text("No Order Available.")));
         }
         setState(() {});
+      } else {
+        Navigator.of(context).pop();
+        ScaffoldMessenger.of(context)
+            .showSnackBar(const SnackBar(content: Text("No Order Available.")));
       }
     });
   }

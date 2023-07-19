@@ -418,6 +418,7 @@ class _NewProductScreen2State extends State<NewProductScreen2> {
               onPressed: () {
                 Navigator.of(context).pop();
                 insertproduct();
+
                 //registerUser();
               },
             ),
