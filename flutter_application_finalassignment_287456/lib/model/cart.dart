@@ -6,6 +6,11 @@ class Cart {
   String? productDesc;
   String? productPrice;
   String? productQty;
+  String? productDate;
+  String? productLocality;
+  String? productState;
+  String? productOption;
+  String? productStatus;
   String? cartPrice;
   String? cartQty;
   String? userId;
@@ -20,6 +25,11 @@ class Cart {
       this.productDesc,
       this.productPrice,
       this.productQty,
+      this.productDate,
+      this.productLocality,
+      this.productState,
+      this.productOption,
+      this.productStatus,
       this.cartPrice,
       this.cartQty,
       this.userId,
@@ -33,7 +43,12 @@ class Cart {
     productType = json['product_type'];
     productDesc = json['product_desc'];
     productPrice = json['product_price'];
+    productLocality = json['product_locality'];
+    productState = json['product_state'];
+    productOption = json['product_option'];
+    productStatus = json['product_status'];
     productQty = json['product_qty'];
+    productDate = json['product_date'];
     cartPrice = json['cart_price'];
     cartQty = json['cart_qty'];
     userId = json['user_id'];
@@ -49,7 +64,12 @@ class Cart {
     data['product_type'] = productType;
     data['product_desc'] = productDesc;
     data['product_price'] = productPrice;
+    data['product_locality'] = productLocality;
+    data['product_state'] = productState;
+    data['product_option'] = productOption;
+    data['product_status'] = productStatus;
     data['product_qty'] = productQty;
+    data['product_date'] = productDate;
     data['cart_price'] = cartPrice;
     data['cart_qty'] = cartQty;
     data['user_id'] = userId;

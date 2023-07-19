@@ -5,6 +5,7 @@ import 'package:http/http.dart' as http;
 import 'package:checkin_project/checkin_form.dart';
 import 'package:checkin_project/user.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 
 class CheckinTabScreen extends StatefulWidget {
   final User user;
@@ -15,6 +16,7 @@ class CheckinTabScreen extends StatefulWidget {
 }
 
 class _CheckinTabScreenState extends State<CheckinTabScreen> {
+  final df = DateFormat('dd-MM-yyyy hh:mm a');
   late List<Widget> tabchildren;
   String maintitle = "Checkin";
   List<Check> checkinList = <Check>[];
@@ -72,7 +74,8 @@ class _CheckinTabScreenState extends State<CheckinTabScreen> {
                               style: const TextStyle(fontSize: 14),
                             ),
                             Text(
-                              checkinList[index].checkinDate.toString(),
+                              df.format(DateTime.parse(
+                                  checkinList[index].checkinDate.toString())),
                               style: const TextStyle(fontSize: 14),
                             ),
                             const Text(""),

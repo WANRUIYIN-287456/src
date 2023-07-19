@@ -248,6 +248,15 @@ class _BarterTabScreenState extends State<BarterTabScreen> {
     //   setState(() {});
     //   return;
     // }
+     showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return const AlertDialog(
+          title: Text("Loading..."),
+          content: CircularProgressIndicator(),
+        );
+      },
+    );
     http.post(Uri.parse("${Config.server}/LabAssign2/php/load_pageproduct.php"),
         body: {
           "pageno": pg.toString(),
