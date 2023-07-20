@@ -21,6 +21,7 @@ class ProfileTabScreen extends StatefulWidget {
 }
 
 class _ProfileTabScreenState extends State<ProfileTabScreen> {
+  late var _updatedImageUrl = "${Config.server}/LabAssign2/assets/images/profile/0.png";
   final df = DateFormat('dd-MM-yyyy hh:mm a');
   late List<Widget> tabchildren;
   String maintitle = "Profile";
@@ -32,8 +33,8 @@ class _ProfileTabScreenState extends State<ProfileTabScreen> {
   bool isDisable = false;
   double userid = 0;
   // late String _updatedImageUrl;
-    Random random = Random();
- 
+  Random random = Random();
+
   @override
   void initState() {
     super.initState();
@@ -44,6 +45,7 @@ class _ProfileTabScreenState extends State<ProfileTabScreen> {
     //   userid = double.parse(widget.user.id.toString());
     // }
     loadProfile();
+    _updatedImageUrl = "${Config.server}/LabAssign2/assets/images/profile/${widget.user.id}.png";
   }
 
   @override
@@ -100,16 +102,15 @@ class _ProfileTabScreenState extends State<ProfileTabScreen> {
                             margin: const EdgeInsets.all(4),
                             width: screenWidth * 0.4,
                             child: CachedNetworkImage(
-                              imageUrl:
-                                  "${Config.server}/LabAssign2/assets/images/profile/${widget.user.id}.png?",
-                              placeholder: (context, url) =>
-                                  const LinearProgressIndicator(),
-                              errorWidget: (context, url, error) =>
-                                  Image.network(
-                                "${Config.server}/LabAssign2/assets/images/profile/0.png",
-                                scale: 2,
-                              )
-                            ),
+                                imageUrl:
+                                    _updatedImageUrl,
+                                placeholder: (context, url) =>
+                                    const LinearProgressIndicator(),
+                                errorWidget: (context, url, error) =>
+                                    Image.network(
+                                      "${Config.server}/LabAssign2/assets/images/profile/0.png",
+                                      scale: 2,
+                                    )),
                           ),
                         ),
                   Expanded(
@@ -172,7 +173,8 @@ class _ProfileTabScreenState extends State<ProfileTabScreen> {
                   await Navigator.push(
                       context,
                       MaterialPageRoute(
-                          builder: (content) => EditProfileScreen(user: widget.user)));
+                          builder: (content) =>
+                              EditProfileScreen(user: widget.user)));
                   loadProfile();
                 },
                 child: Padding(
@@ -273,12 +275,16 @@ class _ProfileTabScreenState extends State<ProfileTabScreen> {
                     onPressed: () => {
                           Navigator.of(context).pop(),
                           _galleryPicker(),
+                          _updateProfileImage(),
                         },
                     icon: const Icon(Icons.browse_gallery),
                     label: const Text("Gallery")),
                 TextButton.icon(
-                    onPressed: () =>
-                        {Navigator.of(context).pop(), _cameraPicker()},
+                    onPressed: () => {
+                          Navigator.of(context).pop(),
+                          _cameraPicker(),
+                          _updateProfileImage(),
+                        },
                     icon: const Icon(Icons.camera_alt),
                     label: const Text("Camera")),
               ],
@@ -340,100 +346,102 @@ class _ProfileTabScreenState extends State<ProfileTabScreen> {
     }
   }
 
-  void _updateProfileImage() {
-    File imageFile = File(_image!.path);
-    print(imageFile);
-    String base64Image = base64Encode(imageFile.readAsBytesSync());
-
-    http.post(Uri.parse("${Config.server}/Labassign2/php/update_image.php"),
-        body: {
-          "userid": widget.user.id.toString(),
-          "image": base64Image.toString(),
-        }).then((response) {
-      var jsondata = jsonDecode(response.body);
-      if (response.statusCode == 200 && jsondata['status'] == 'success') {
-        ScaffoldMessenger.of(context)
-            .showSnackBar(const SnackBar(content: Text("Update Success.")));
-        //Navigator.of(context).pop();
-        setState(() {
-        // _updatedImageUrl = "${Config.server}/LabAssign2/assets/images/profile/${widget.user.id}.png";
-        // "${Config.server}/LabAssign2/assets/images/profile/${widget.user.id}.png?time=${DateTime.now().millisecondsSinceEpoch}";
-        });
-        // DefaultCacheManager manager = DefaultCacheManager();
-        // manager.emptyCache(); //clears all data in cache.
-      } else {
-        ScaffoldMessenger.of(context)
-            .showSnackBar(const SnackBar(content: Text("Update Failed")));
-        Navigator.of(context).pop();
-      }
-    });
+ void _updateProfileImage() {
+  if (_image == null) {
+    return;
   }
+  File imageFile = File(_image!.path);
+  print(imageFile);
+  String base64Image = base64Encode(imageFile.readAsBytesSync());
 
-void _changePassDialog() {
-  showDialog(
-    context: context,
-    builder: (BuildContext context) {
-      // return object of type Dialog
-      return AlertDialog(
-        shape: const RoundedRectangleBorder(
-            borderRadius: BorderRadius.all(Radius.circular(20.0))),
-        title: const Text(
-          "Change Password?",
-          style: TextStyle(),
-        ),
-        content: SingleChildScrollView(
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              TextFormField(
-                controller: _oldpasswordController,
-                obscureText: true,
-                decoration: InputDecoration(
-                  labelText: 'Old Password',
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(5.0),
-                  ),
-                ),
-              ),
-              const SizedBox(height: 5),
-              TextFormField(
-                controller: _newpasswordController,
-                obscureText: true,
-                decoration: InputDecoration(
-                  labelText: 'New Password',
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(5.0),
-                  ),
-                ),
-              ),
-            ],
-          ),
-        ),
-        actions: <Widget>[
-          TextButton(
-            child: const Text(
-              "Yes",
-              style: TextStyle(),
-            ),
-            onPressed: () {
-              Navigator.of(context).pop();
-              changePass();
-            },
-          ),
-          TextButton(
-            child: const Text(
-              "No",
-              style: TextStyle(),
-            ),
-            onPressed: () {
-              Navigator.of(context).pop();
-            },
-          ),
-        ],
-      );
-    },
-  );
+  http.post(Uri.parse("${Config.server}/LabAssign2/php/update_image.php"),
+      body: {
+        "userid": widget.user.id.toString(),
+        "image": base64Image.toString(),
+      }).then((response) {
+    var jsondata = jsonDecode(response.body);
+    if (response.statusCode == 200 && jsondata['status'] == 'success') {
+      ScaffoldMessenger.of(context)
+          .showSnackBar(const SnackBar(content: Text("Update Success.")));
+      // Update the image URL with a timestamp to bust the cache.
+      setState(() {
+        _updatedImageUrl =
+            "${Config.server}/LabAssign2/assets/images/profile/${widget.user.id}.png?time=${DateTime.now().millisecondsSinceEpoch}";
+      });
+    } else {
+      ScaffoldMessenger.of(context)
+          .showSnackBar(const SnackBar(content: Text("Update Failed")));
+      Navigator.of(context).pop();
+    }
+  });
 }
+
+
+  void _changePassDialog() {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        // return object of type Dialog
+        return AlertDialog(
+          shape: const RoundedRectangleBorder(
+              borderRadius: BorderRadius.all(Radius.circular(20.0))),
+          title: const Text(
+            "Change Password?",
+            style: TextStyle(),
+          ),
+          content: SingleChildScrollView(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                TextFormField(
+                  controller: _oldpasswordController,
+                  obscureText: true,
+                  decoration: InputDecoration(
+                    labelText: 'Old Password',
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(5.0),
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 5),
+                TextFormField(
+                  controller: _newpasswordController,
+                  obscureText: true,
+                  decoration: InputDecoration(
+                    labelText: 'New Password',
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(5.0),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+          actions: <Widget>[
+            TextButton(
+              child: const Text(
+                "Yes",
+                style: TextStyle(),
+              ),
+              onPressed: () {
+                Navigator.of(context).pop();
+                changePass();
+              },
+            ),
+            TextButton(
+              child: const Text(
+                "No",
+                style: TextStyle(),
+              ),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
 
   void changePass() {
     http.post(Uri.parse("${Config.server}/LabAssign2/php/update_password.php"),
@@ -442,13 +450,12 @@ void _changePassDialog() {
           "oldpass": _oldpasswordController.text,
           "newpass": _newpasswordController.text,
         }).then((response) {
-          print(response.body);
-          print(response.statusCode);
+      print(response.body);
+      print(response.statusCode);
       var jsondata = jsonDecode(response.body);
       if (response.statusCode == 200 && jsondata['status'] == 'success') {
         ScaffoldMessenger.of(context)
             .showSnackBar(const SnackBar(content: Text("Update Success.")));
-        
       } else {
         ScaffoldMessenger.of(context)
             .showSnackBar(const SnackBar(content: Text("Update Failed")));

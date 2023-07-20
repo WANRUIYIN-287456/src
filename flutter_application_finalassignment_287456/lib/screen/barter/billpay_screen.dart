@@ -42,21 +42,40 @@ class _BillPayScreenState extends State<BillPayScreen> {
             "Payment Bill",
             style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
           ),
-          Padding(
-            padding: const EdgeInsets.fromLTRB(40, 30, 30, 30),
-            child: Container(
-                alignment: Alignment.topRight,
-                child: Column(
-                  // ignore: prefer_interpolation_to_compose_strings
-                  children: [
-                    Text(
-                        "Bill No:                 ${10000 + int.parse(widget.order.orderId.toString())}"),
-                    Text(
-                        "Order Date: ${df.format(DateTime.parse(widget.order.orderDate.toString()))}"),
-                  ],
-                )),
+          Row(
+            children: [
+              Padding(
+                padding: const EdgeInsets.fromLTRB(20, 20, 70, 8),
+                child: Container(
+                  alignment: Alignment.topRight,
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    // ignore: prefer_interpolation_to_compose_strings
+                    children: [
+                      Text(user.name.toString(), style: const TextStyle(fontWeight: FontWeight.bold),),
+                      Text(user.phone.toString()),
+                    ], 
+                  ),
+                ),
+              ),
+               Padding(
+                padding: const EdgeInsets.fromLTRB(45, 20, 20, 10),
+                child: Container(
+                    alignment: Alignment.topRight,
+                    child: Column(
+                      // ignore: prefer_interpolation_to_compose_strings
+                      children: [
+                        Text(
+                            "Bill No:                 ${10000 + int.parse(widget.order.orderId.toString())}", style: TextStyle(fontSize: 12)),
+                        Text(
+                            "Order Date: ${df.format(DateTime.parse(widget.order.orderDate.toString()))}", style: TextStyle(fontSize: 12)),
+                      ],
+                    )),
+              ),
+            ],
           ),
-          const SizedBox(height : 40),
+         
+          const SizedBox(height: 40),
           Padding(
             padding: const EdgeInsets.fromLTRB(40, 20, 20, 20),
             child: Table(
@@ -107,20 +126,30 @@ class _BillPayScreenState extends State<BillPayScreen> {
             ),
           ),
           Padding(
-            padding: const EdgeInsets.fromLTRB(110,60, 0, 8),
-            child: Text("Total Price:      RM ${widget.order.paymentAmount}", style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),),
+            padding: const EdgeInsets.fromLTRB(110, 60, 0, 8),
+            child: Text(
+              "Total Price:      RM ${widget.order.paymentAmount}",
+              style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+            ),
           ),
-          const SizedBox(height : 40),
+          const SizedBox(height: 40),
           Padding(
             padding: const EdgeInsets.fromLTRB(0, 10, 200, 10),
-                child: Column(
-                  children: [
-                    const Text("Seller, ", style: TextStyle(fontSize: 18),),
-                    const SizedBox(height : 10),
-                    Text(user.name.toString(), style: const TextStyle(fontSize: 16)),
-                    const Text("--------------------", style: TextStyle(fontSize: 18),),
-                  ],
-              ),
+            child: Column(
+              children: [
+                const Text(
+                  "Seller, ",
+                  style: TextStyle(fontSize: 18),
+                ),
+                const SizedBox(height: 10),
+                Text(user.name.toString(),
+                    style: const TextStyle(fontSize: 16)),
+                const Text(
+                  "--------------------",
+                  style: TextStyle(fontSize: 18),
+                ),
+              ],
+            ),
           ),
         ],
       ),

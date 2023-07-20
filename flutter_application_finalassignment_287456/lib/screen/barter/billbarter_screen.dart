@@ -39,7 +39,7 @@ class _BillBarterScreenState extends State<BillBarterScreen> {
         children: [
          const SizedBox(height: 20),
           const Text(
-            "Payment Bill",
+            "Transaction Bill",
             style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
           ),
           Padding(
