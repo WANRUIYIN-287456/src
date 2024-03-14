@@ -1,0 +1,88 @@
+h2{
+	color: #666;
+	font-family: monospace;
+	text-align: center;
+}
+				
+.background{
+	table-layout: fixed;
+	border-spacing: 0;
+}
+				
+.background td {
+	padding: 0;
+}
+
+.lava, .actor{
+	background: #e55;
+}
+
+.wall{
+	background: #444;
+	border: solid 3px #333;
+	box-sizing: content-box;
+}
+				
+.actor{
+	position: absolute;
+}
+				
+.coin{
+	background: #e2e838;
+	border-radius: 50%;
+}
+				
+.player{
+	background: #335699;
+	box-shadow: none;
+}
+
+.npc{
+	background: #d121fc;
+	box-shadow: none;
+}
+				
+.lost .player{
+	background: rgb(160, 64, 64);
+}
+
+.won .player{
+	background: green;
+}
+				
+.game{
+	position: relative;
+	overflow: hidden;
+}
+
+.chat-bubble {
+  position: absolute;
+  background-color: white;
+  border: 1px solid black;
+  padding: 5px;
+  font-size: 12px;
+  white-space: nowrap;
+  transform: translate(-50%, -100%);
+  top: 0;
+  left: 50%;
+}
+
+.intro {
+  width: 200px;
+  height: 150px;
+  position: absolute;
+  font-weight: 600;
+  font-size: 0.8em;
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  text-align: center;
+  transition: opacity 2s;
+}
+
+.container {
+    display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+}
+
+	
