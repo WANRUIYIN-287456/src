@@ -111,7 +111,7 @@ class _NewServiceScreenState extends State<NewServiceScreen> {
   List<String> typeList = [];
 
   String unit = "hour";
-  List<String> unitList = ["hour", "square foot", "item", "person", "visit" ];
+  List<String> unitList = ["hour", "square foot", "item", "person", "visit", ];
 
   late Position _currentPosition;
 
@@ -301,7 +301,7 @@ class _NewServiceScreenState extends State<NewServiceScreen> {
                                 print(unit);
                               });
                             },
-                            items: unitList.map((selectedType) {
+                            items: unitList.map((unit) {
                               return DropdownMenuItem(
                                 value: unit,
                                 child: Text(

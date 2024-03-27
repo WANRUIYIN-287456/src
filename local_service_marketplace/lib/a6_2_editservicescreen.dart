@@ -304,7 +304,7 @@ class _EditServiceScreenState extends State<EditServiceScreen> {
                                 print(unit);
                               });
                             },
-                            items: unitList.map((selectedType) {
+                            items: unitList.map((unit) {
                               return DropdownMenuItem(
                                 value: unit,
                                 child: Text(

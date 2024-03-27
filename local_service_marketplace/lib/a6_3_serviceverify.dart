@@ -15,7 +15,8 @@ import 'package:path_provider/path_provider.dart';
 class SellerVerificationScreen extends StatefulWidget {
   final User user;
   final Seller seller;
-  const SellerVerificationScreen({super.key, required this.user, required this.seller});
+  const SellerVerificationScreen(
+      {super.key, required this.user, required this.seller});
 
   @override
   State<SellerVerificationScreen> createState() =>
@@ -45,429 +46,463 @@ class _SellerVerificationScreenState extends State<SellerVerificationScreen> {
     loadVerify();
   }
 
-    @override
-  void dispose() {
+  @override
+  void dispose(){
     super.dispose();
-    print("dispose");
     loadVerify();
-    if (widget.seller.icName.toString() != "") {
-      isUpload = true;
-    } 
   }
 
   @override
   Widget build(BuildContext context) {
     screenHeight = MediaQuery.of(context).size.height;
     screenWidth = MediaQuery.of(context).size.width;
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text("Identity Verification"),
-        actions: [
-          IconButton(
-            onPressed: () {
-              showDialog(
-                context: context,
-                builder: (BuildContext context) {
-                  return showStatus(); // Call showStatus() method here
-                },
-              );
-            },
-            icon: const Icon(Icons.info),
-          )
-        ],
-      ),
-      body: SingleChildScrollView(
-child: isUpload 
-                ? Expanded(
-
-                      child: Expanded(
-                          child: Column(
-                        children: [
-                          isVerify
-                              ? Column(
-                                  children: [
-                                    verifyDialog(),
-                                    Padding(
-                                      padding: const EdgeInsets.all(10.0),
-                                      child: Card(
-                                        child: Column(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.center,
-                                          children: [
-                                            Column(
+     return Scaffold(
+                appBar: AppBar(
+                  title: const Text("Identity Verification"),
+                  actions: [
+                    IconButton(
+                      onPressed: () {
+                        showDialog(
+                          context: context,
+                          builder: (BuildContext context) {
+                            return showStatus(); // Call showStatus() method here
+                          },
+                        );
+                      },
+                      icon: const Icon(Icons.info),
+                    )
+                  ],
+                ),
+                body: SingleChildScrollView(
+                    child: widget.seller.icName.toString() !=
+                            "Select Identity Card"
+                        ? Expanded(
+                            child: Expanded(
+                                child: Column(
+                            children: [
+                              widget.seller.verifyStatus.toString() == "Yes"
+                                  ? Column(
+                                      children: [
+                                        verifyDialog(),
+                                        Padding(
+                                          padding: const EdgeInsets.all(10.0),
+                                          child: Card(
+                                            child: Column(
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment.center,
                                               children: [
-                                                const Text(""),
-                                                Text(
-                                                  widget.user.name.toString(),
-                                                  style: const TextStyle(
-                                                      fontSize: 24),
-                                                ),
-                                                const Divider(),
-                                                Text(widget.user.email
-                                                    .toString()),
-                                                Text(widget.user.phone
-                                                    .toString()),
-                                                Text(df.format(DateTime.parse(
-                                                    widget.user.datereg
-                                                        .toString()))),
-                                                const Text(""),
-                                                if (isPro)
-                                                  Container(
-                                                    color: Colors.orangeAccent,
-                                                    decoration:
-                                                        const BoxDecoration(
-                                                      borderRadius:
-                                                          BorderRadius.all(
-                                                              Radius.circular(
-                                                                  2.0)),
+                                                Column(
+                                                  children: [
+                                                    const Text(""),
+                                                    Text(
+                                                      widget.user.name
+                                                          .toString(),
+                                                      style: const TextStyle(
+                                                          fontSize: 24),
                                                     ),
-                                                    child: const Text("Pro"),
-                                                  ),
-                                                if (isPreferred)
-                                                  Container(
-                                                    color: Colors.orangeAccent,
-                                                    decoration:
-                                                        const BoxDecoration(
-                                                      borderRadius:
-                                                          BorderRadius.all(
-                                                              Radius.circular(
-                                                                  2.0)),
-                                                    ),
-                                                    child:
-                                                        const Text("Preferred"),
-                                                  ),
-                                              ],
-                                            )
-                                          ],
-                                        ),
-                                      ), //
-                                    ),
-                                    Padding(
-                                      padding: const EdgeInsets.fromLTRB(
-                                          20, 5, 20, 5),
-                                      child: Form(
-                                        child: Column(
-                                          children: [
-                                            Row(
-                                              children: [
-                                                const SizedBox(width: 30),
-                                                const Icon(Icons.person),
-                                                const SizedBox(width: 20),
-                                                SizedBox(
-                                                    width: 170,
-                                                    child: Text("1" +
-                                                        widget.seller.icName.toString())),
-                                                const SizedBox(width: 10),
-                                                const IconButton(
-                                                  onPressed: null,
-                                                  icon: Icon(Icons.upload_file),
+                                                    const Divider(),
+                                                    Text(widget.user.email
+                                                        .toString()),
+                                                    Text(widget.user.phone
+                                                        .toString()),
+                                                    Text(df.format(
+                                                        DateTime.parse(widget
+                                                            .user.datereg
+                                                            .toString()))),
+                                                    const Text(""),
+                                                    if (widget.seller.proStatus
+                                                            .toString() ==
+                                                        "Yes")
+                                                      Container(
+                                                        color:
+                                                            Colors.orangeAccent,
+                                                        decoration:
+                                                            const BoxDecoration(
+                                                          borderRadius:
+                                                              BorderRadius.all(
+                                                                  Radius
+                                                                      .circular(
+                                                                          2.0)),
+                                                        ),
+                                                        child:
+                                                            const Text("Pro"),
+                                                      ),
+                                                    if (widget.seller
+                                                            .preferredStatus
+                                                            .toString() ==
+                                                        "Yes")
+                                                      Container(
+                                                        color:
+                                                            Colors.orangeAccent,
+                                                        decoration:
+                                                            const BoxDecoration(
+                                                          borderRadius:
+                                                              BorderRadius.all(
+                                                                  Radius
+                                                                      .circular(
+                                                                          2.0)),
+                                                        ),
+                                                        child: const Text(
+                                                            "Preferred"),
+                                                      ),
+                                                  ],
                                                 )
                                               ],
                                             ),
-                                            const SizedBox(
-                                              height: 20,
-                                            ),
-                                            Row(
-                                              children: [
-                                                const SizedBox(width: 30),
-                                                const Icon(Icons.file_copy),
-                                                const SizedBox(width: 20),
-                                                SizedBox(
-                                                    width: 150,
-                                                    child: Text(
-                                                        widget.seller.certName.toString())),
-                                                const SizedBox(width: 10),
-                                                const IconButton(
-                                                  onPressed: null,
-                                                  icon: Icon(Icons.upload_file),
-                                                )
-                                              ],
-                                            ),
-                                            const SizedBox(
-                                              height: 35,
-                                            ),
-                                            SizedBox(
-                                              width: screenWidth / 1.2,
-                                              height: 50,
-                                              child: const ElevatedButton(
-                                                  onPressed: null,
-                                                  child:
-                                                      Text("Verify Identity")),
-                                            )
-                                          ],
+                                          ), //
                                         ),
-                                      ),
-                                    ),
-                                  ],
-                                )
-                              : Column(
-                                  children: [
-                                    uploadDialog(),
-                                    Padding(
-                                      padding: const EdgeInsets.all(10.0),
-                                      child: Card(
-                                        child: Column(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.center,
-                                          children: [
-                                            Column(
+                                        Padding(
+                                          padding: const EdgeInsets.fromLTRB(
+                                              20, 5, 20, 5),
+                                          child: Form(
+                                            child: Column(
                                               children: [
-                                                const Text(""),
-                                                Text(
-                                                  widget.user.name.toString(),
-                                                  style: const TextStyle(
-                                                      fontSize: 24),
+                                                Row(
+                                                  children: [
+                                                    const SizedBox(width: 30),
+                                                    const Icon(Icons.person),
+                                                    const SizedBox(width: 20),
+                                                    SizedBox(
+                                                        width: 170,
+                                                        child: Text("1" +
+                                                            widget.seller.icName
+                                                                .toString())),
+                                                    const SizedBox(width: 10),
+                                                    const IconButton(
+                                                      onPressed: null,
+                                                      icon: Icon(
+                                                          Icons.upload_file),
+                                                    )
+                                                  ],
                                                 ),
-                                                const Divider(),
-                                                Text(widget.user.email
-                                                    .toString()),
-                                                Text(widget.user.phone
-                                                    .toString()),
-                                                Text(df.format(DateTime.parse(
-                                                    widget.user.datereg
-                                                        .toString()))),
-                                                const Text(""),
-                                              ],
-                                            )
-                                          ],
-                                        ),
-                                      ), //
-                                    ),
-                                    Padding(
-                                      padding: const EdgeInsets.fromLTRB(
-                                          20, 5, 20, 5),
-                                      child: Form(
-                                        child: Column(
-                                          children: [
-                                            Row(
-                                              children: [
-                                                const SizedBox(width: 30),
-                                                const Icon(Icons.person),
-                                                const SizedBox(width: 20),
-                                                GestureDetector(
-                                                  onTap: () {
-                                                    //updateFileName();
-                                                    downloadDocument(
-                                                        widget.seller.icName.toString());
-                                                  },
-                                                  child: SizedBox(
-                                                      width: 170,
-                                                      child: Text("2" +
-                                                           widget.seller.icName.toString())),
+                                                const SizedBox(
+                                                  height: 20,
                                                 ),
-                                                IconButton(
-                                                  onPressed: () async {
-                                                    FilePickerResult? result =
-                                                        await FilePicker
-                                                            .platform
-                                                            .pickFiles(
-                                                      type: FileType.custom,
-                                                      allowedExtensions: [
-                                                        'pdf'
-                                                      ],
-                                                    );
-                                                    if (result != null) {
-                                                      File file = File(result
-                                                          .files.single.path!);
-                                                      icfileName = file.path
-                                                          .split('/')
-                                                          .last;
-                                                      setState(() {
-                                                        _icEditingController
-                                                            .text = file.path;
-                                                      });
-                                                    }
-                                                  },
-                                                  icon: const Icon(
-                                                      Icons.upload_file),
+                                                Row(
+                                                  children: [
+                                                    const SizedBox(width: 30),
+                                                    const Icon(Icons.file_copy),
+                                                    const SizedBox(width: 20),
+                                                    SizedBox(
+                                                        width: 150,
+                                                        child: Text(widget
+                                                            .seller.certName
+                                                            .toString())),
+                                                    const SizedBox(width: 10),
+                                                    const IconButton(
+                                                      onPressed: null,
+                                                      icon: Icon(
+                                                          Icons.upload_file),
+                                                    )
+                                                  ],
+                                                ),
+                                                const SizedBox(
+                                                  height: 35,
+                                                ),
+                                                SizedBox(
+                                                  width: screenWidth / 1.2,
+                                                  height: 50,
+                                                  child: const ElevatedButton(
+                                                      onPressed: null,
+                                                      child: Text(
+                                                          "Verify Identity")),
                                                 )
                                               ],
                                             ),
-                                            const SizedBox(
-                                              height: 20,
-                                            ),
-                                            Row(
-                                              children: [
-                                                const SizedBox(width: 30),
-                                                const Icon(Icons.file_copy),
-                                                const SizedBox(width: 20),
-                                                GestureDetector(
-                                                    onTap: () {
-                                                      //updateFileName();
-                                                      downloadDocument(
-                                                           widget.seller.certName.toString());
-                                                    },
-                                                    child: SizedBox(
-                                                        width: 160,
-                                                        child: Text(
-                                                             widget.seller.certName.toString()))),
-                                                const SizedBox(width: 10),
-                                                IconButton(
-                                                  onPressed: () async {
-                                                    FilePickerResult? result =
-                                                        await FilePicker
-                                                            .platform
-                                                            .pickFiles(
-                                                      type: FileType.custom,
-                                                      allowedExtensions: [
-                                                        'pdf'
-                                                      ],
-                                                    );
-                                                    if (result != null) {
-                                                      File file = File(result
-                                                          .files.single.path!);
-                                                      certfileName = file.path
-                                                          .split('/')
-                                                          .last;
-                                                      setState(() {
-                                                        _certEditingController
-                                                            .text = file.path;
-                                                      });
-                                                    }
-                                                  },
-                                                  icon: const Icon(
-                                                      Icons.upload_file),
-                                                )
-                                              ],
-                                            ),
-                                            const SizedBox(
-                                              height: 35,
-                                            ),
-                                            SizedBox(
-                                              width: screenWidth / 1.2,
-                                              height: 50,
-                                              child: ElevatedButton(
-                                                  onPressed: () {
-                                                    insertDialog();
-                                                  },
-                                                  child: const Text(
-                                                      "Verify Identity")),
-                                            )
-                                          ],
+                                          ),
                                         ),
-                                      ),
+                                      ],
                                     )
-                                  ],
-                                )
-                        ],
-                      ))
-                  )
-                : Column(
-                    children: [
-                      Padding(
-                        padding: const EdgeInsets.all(10.0),
-                        child: Card(
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
+                                  : Column(
+                                      children: [
+                                        uploadDialog(),
+                                        Padding(
+                                          padding: const EdgeInsets.all(10.0),
+                                          child: Card(
+                                            child: Column(
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment.center,
+                                              children: [
+                                                Column(
+                                                  children: [
+                                                    const Text(""),
+                                                    Text(
+                                                      widget.user.name
+                                                          .toString(),
+                                                      style: const TextStyle(
+                                                          fontSize: 24),
+                                                    ),
+                                                    const Divider(),
+                                                    Text(widget.user.email
+                                                        .toString()),
+                                                    Text(widget.user.phone
+                                                        .toString()),
+                                                    Text(df.format(
+                                                        DateTime.parse(widget
+                                                            .user.datereg
+                                                            .toString()))),
+                                                    const Text(""),
+                                                  ],
+                                                )
+                                              ],
+                                            ),
+                                          ), //
+                                        ),
+                                        Padding(
+                                          padding: const EdgeInsets.fromLTRB(
+                                              20, 5, 20, 5),
+                                          child: Form(
+                                            child: Column(
+                                              children: [
+                                                Row(
+                                                  children: [
+                                                    const SizedBox(width: 30),
+                                                    const Icon(Icons.person),
+                                                    const SizedBox(width: 20),
+                                                    GestureDetector(
+                                                      onTap: () {
+                                                        //updateFileName();
+                                                        downloadDocument(widget
+                                                            .seller.icName
+                                                            .toString());
+                                                      },
+                                                      child: SizedBox(
+                                                          width: 170,
+                                                          child: Text("2" +
+                                                              widget
+                                                                  .seller.icName
+                                                                  .toString())),
+                                                    ),
+                                                    IconButton(
+                                                      onPressed: () async {
+                                                        FilePickerResult?
+                                                            result =
+                                                            await FilePicker
+                                                                .platform
+                                                                .pickFiles(
+                                                          type: FileType.custom,
+                                                          allowedExtensions: [
+                                                            'pdf'
+                                                          ],
+                                                        );
+                                                        if (result != null) {
+                                                          File file = File(
+                                                              result
+                                                                  .files
+                                                                  .single
+                                                                  .path!);
+                                                          icfileName = file.path
+                                                              .split('/')
+                                                              .last;
+                                                          setState(() {
+                                                            _icEditingController
+                                                                    .text =
+                                                                file.path;
+                                                          });
+                                                        }
+                                                      },
+                                                      icon: const Icon(
+                                                          Icons.upload_file),
+                                                    )
+                                                  ],
+                                                ),
+                                                const SizedBox(
+                                                  height: 20,
+                                                ),
+                                                Row(
+                                                  children: [
+                                                    const SizedBox(width: 30),
+                                                    const Icon(Icons.file_copy),
+                                                    const SizedBox(width: 20),
+                                                    GestureDetector(
+                                                        onTap: () {
+                                                          //updateFileName();
+                                                          downloadDocument(
+                                                              widget.seller
+                                                                  .certName
+                                                                  .toString());
+                                                        },
+                                                        child: SizedBox(
+                                                            width: 160,
+                                                            child: Text(widget
+                                                                .seller.certName
+                                                                .toString()))),
+                                                    const SizedBox(width: 10),
+                                                    IconButton(
+                                                      onPressed: () async {
+                                                        FilePickerResult?
+                                                            result =
+                                                            await FilePicker
+                                                                .platform
+                                                                .pickFiles(
+                                                          type: FileType.custom,
+                                                          allowedExtensions: [
+                                                            'pdf'
+                                                          ],
+                                                        );
+                                                        if (result != null) {
+                                                          File file = File(
+                                                              result
+                                                                  .files
+                                                                  .single
+                                                                  .path!);
+                                                          certfileName = file
+                                                              .path
+                                                              .split('/')
+                                                              .last;
+                                                          setState(() {
+                                                            _certEditingController
+                                                                    .text =
+                                                                file.path;
+                                                          });
+                                                        }
+                                                      },
+                                                      icon: const Icon(
+                                                          Icons.upload_file),
+                                                    )
+                                                  ],
+                                                ),
+                                                const SizedBox(
+                                                  height: 35,
+                                                ),
+                                                SizedBox(
+                                                  width: screenWidth / 1.2,
+                                                  height: 50,
+                                                  child: ElevatedButton(
+                                                      onPressed: () {
+                                                        insertDialog();
+                                                      },
+                                                      child: const Text(
+                                                          "Verify Identity")),
+                                                )
+                                              ],
+                                            ),
+                                          ),
+                                        )
+                                      ],
+                                    )
+                            ],
+                          )))
+                        : Column(
                             children: [
-                              Column(
-                                children: [
-                                  const Text(""),
-                                  Text(
-                                    widget.user.name.toString(),
-                                    style: const TextStyle(fontSize: 24),
+                              Padding(
+                                padding: const EdgeInsets.all(10.0),
+                                child: Card(
+                                  child: Column(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      Column(
+                                        children: [
+                                          const Text(""),
+                                          Text(
+                                            widget.user.name.toString(),
+                                            style:
+                                                const TextStyle(fontSize: 24),
+                                          ),
+                                          const Divider(),
+                                          Text(widget.user.email.toString()),
+                                          Text(widget.user.phone.toString()),
+                                          Text(df.format(DateTime.parse(
+                                              widget.user.datereg.toString()))),
+                                          const Text(""),
+                                        ],
+                                      )
+                                    ],
                                   ),
-                                  const Divider(),
-                                  Text(widget.user.email.toString()),
-                                  Text(widget.user.phone.toString()),
-                                  Text(df.format(DateTime.parse(
-                                      widget.user.datereg.toString()))),
-                                  const Text(""),
-                                ],
+                                ), //
+                              ),
+                              Padding(
+                                padding:
+                                    const EdgeInsets.fromLTRB(20, 5, 20, 5),
+                                child: Form(
+                                  child: Column(
+                                    children: [
+                                      Row(
+                                        children: [
+                                          const SizedBox(width: 30),
+                                          const Icon(Icons.person),
+                                          const SizedBox(width: 20),
+                                          SizedBox(
+                                              width: 170,
+                                              child: Text("3" + icfileName)),
+                                          IconButton(
+                                            onPressed: () async {
+                                              FilePickerResult? result =
+                                                  await FilePicker.platform
+                                                      .pickFiles(
+                                                type: FileType.custom,
+                                                allowedExtensions: ['pdf'],
+                                              );
+                                              if (result != null) {
+                                                File file = File(
+                                                    result.files.single.path!);
+                                                icfileName =
+                                                    file.path.split('/').last;
+                                                setState(() {
+                                                  _icEditingController.text =
+                                                      file.path;
+                                                });
+                                              }
+                                            },
+                                            icon: const Icon(Icons.upload_file),
+                                          )
+                                        ],
+                                      ),
+                                      const SizedBox(
+                                        height: 20,
+                                      ),
+                                      Row(
+                                        children: [
+                                          const SizedBox(width: 30),
+                                          const Icon(Icons.file_copy),
+                                          const SizedBox(width: 20),
+                                          SizedBox(
+                                              width: 160,
+                                              child: Text(certfileName)),
+                                          const SizedBox(width: 10),
+                                          IconButton(
+                                            onPressed: () async {
+                                              FilePickerResult? result =
+                                                  await FilePicker.platform
+                                                      .pickFiles(
+                                                type: FileType.custom,
+                                                allowedExtensions: ['pdf'],
+                                              );
+                                              if (result != null) {
+                                                File file = File(
+                                                    result.files.single.path!);
+                                                certfileName =
+                                                    file.path.split('/').last;
+                                                setState(() {
+                                                  _certEditingController.text =
+                                                      file.path;
+                                                });
+                                              }
+                                            },
+                                            icon: const Icon(Icons.upload_file),
+                                          )
+                                        ],
+                                      ),
+                                      const SizedBox(
+                                        height: 35,
+                                      ),
+                                      SizedBox(
+                                        width: screenWidth / 1.2,
+                                        height: 50,
+                                        child: ElevatedButton(
+                                            onPressed: () {
+                                              insertDialog();
+                                            },
+                                            child:
+                                                const Text("Verify Identity")),
+                                      )
+                                    ],
+                                  ),
+                                ),
                               )
                             ],
-                          ),
-                        ), //
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.fromLTRB(20, 5, 20, 5),
-                        child: Form(
-                          child: Column(
-                            children: [
-                              Row(
-                                children: [
-                                  const SizedBox(width: 30),
-                                  const Icon(Icons.person),
-                                  const SizedBox(width: 20),
-                                  SizedBox(
-                                      width: 170,
-                                      child: Text("3" + icfileName)),
-                                  IconButton(
-                                    onPressed: () async {
-                                      FilePickerResult? result =
-                                          await FilePicker.platform.pickFiles(
-                                        type: FileType.custom,
-                                        allowedExtensions: ['pdf'],
-                                      );
-                                      if (result != null) {
-                                        File file =
-                                            File(result.files.single.path!);
-                                        icfileName = file.path.split('/').last;
-                                        setState(() {
-                                          _icEditingController.text = file.path;
-                                        });
-                                      }
-                                    },
-                                    icon: const Icon(Icons.upload_file),
-                                  )
-                                ],
-                              ),
-                              const SizedBox(
-                                height: 20,
-                              ),
-                              Row(
-                                children: [
-                                  const SizedBox(width: 30),
-                                  const Icon(Icons.file_copy),
-                                  const SizedBox(width: 20),
-                                 SizedBox(
-                                          width: 160,
-                                          child: Text(certfileName)),
-                                  const SizedBox(width: 10),
-                                  IconButton(
-                                    onPressed: () async {
-                                      FilePickerResult? result =
-                                          await FilePicker.platform.pickFiles(
-                                        type: FileType.custom,
-                                        allowedExtensions: ['pdf'],
-                                      );
-                                      if (result != null) {
-                                        File file =
-                                            File(result.files.single.path!);
-                                        certfileName =
-                                            file.path.split('/').last;
-                                        setState(() {
-                                          _certEditingController.text =
-                                              file.path;
-                                        });
-                                      }
-                                    },
-                                    icon: const Icon(Icons.upload_file),
-                                  )
-                                ],
-                              ),
-                              const SizedBox(
-                                height: 35,
-                              ),
-                              SizedBox(
-                                width: screenWidth / 1.2,
-                                height: 50,
-                                child: ElevatedButton(
-                                    onPressed: () {
-                                      insertDialog();
-                                    },
-                                    child: const Text("Verify Identity")),
-                              )
-                            ],
-                          ),
-                        ),
-                      )
-                    ],
-                  )));
-          }
-        
-   
-  
+                          )));
+  }
 
   loadStatus() async {
     WidgetsFlutterBinding.ensureInitialized();
@@ -535,6 +570,7 @@ child: isUpload
               onPressed: () {
                 Navigator.of(context).pop();
                 updateservice();
+                loadVerify();
                 //updateFileName();
                 //registerUser();
               },
@@ -676,9 +712,9 @@ child: isUpload
     );
   }
 
-  void loadVerify() {
-    http.post(Uri.parse("${Config.server}/lsm/php/load_verify.php"), body: {
-      "sellerid": widget.user.id}).then((response) {
+loadVerify() async {
+    http.post(Uri.parse("${Config.server}/lsm/php/load_verify.php"),
+        body: {"sellerid": widget.user.id}).then((response) {
       print(response.body);
       try {
         print(response.statusCode);
@@ -696,18 +732,6 @@ child: isUpload
               widget.seller.availableStatus = extractdata['available_status'];
               widget.seller.verifyStatus = extractdata['verify_status'];
               val = random.nextInt(1000);
-              if(widget.seller.icName.toString() != ""){
-                isUpload = true;
-              }
-              if(widget.seller.proStatus.toString() == "Yes"){
-                isPro = true;
-              }
-              if(widget.seller.preferredStatus.toString() == "Yes"){
-                isPreferred = true;
-              }
-              if(widget.seller.verifyStatus.toString() == "Yes"){
-                isVerify = true;
-              }
             });
           } else {
             print(1);
