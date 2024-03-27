@@ -2,7 +2,7 @@ import 'dart:developer';
 
 import 'package:flutter/material.dart';
 import 'package:local_service_marketplace/a5_hometabscreen.dart';
-import 'package:local_service_marketplace/a6_servicetabscreen.dart';
+import 'package:local_service_marketplace/a6_0_servicetabscreen.dart';
 import 'package:local_service_marketplace/a8_0_accounttabscreen.dart';
 import 'package:local_service_marketplace/a7_notificationtabscreen.dart';
 import 'package:local_service_marketplace/model/user.dart';
@@ -35,7 +35,7 @@ class _MainScreenState extends State<MainScreen> {
       //BarterTabScreen(user: widget.user),
       //ProductTabScreen(user: widget.user),
       const HomeTabScreen(),
-      const ServiceTabScreen(),
+      ServiceTabScreen(user: widget.user),
       const NotificationTabScreen(),
       AccountTabScreen(user: widget.user),
     ];
