@@ -223,7 +223,7 @@ class _AccountTabScreenState extends State<AccountTabScreen> {
                                 context,
                                 MaterialPageRoute(
                                     builder: (content) =>
-                                        const FavouriteScreen()));
+                                        FavouriteScreen(user: widget.user)));
                           },
                           child: Padding(
                             padding: const EdgeInsets.fromLTRB(95, 20, 50, 0),

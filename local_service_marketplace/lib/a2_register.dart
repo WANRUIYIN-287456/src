@@ -46,7 +46,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
           child: Column(
         children: [
           SizedBox(
-            height: screenHeight * 0.21,
+            height: screenHeight * 0.15,
             width: screenWidth,
             child: Image.asset(
               "assets/images/register2.png",
@@ -54,11 +54,11 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
             ),
           ),
           Padding(
-            padding: const EdgeInsets.all(8.0),
+            padding: const EdgeInsets.fromLTRB(16, 12, 16, 0),
             child: Card(
               elevation: 8,
               child: Container(
-                  margin: const EdgeInsets.all(16),
+                  margin: const EdgeInsets.fromLTRB(16, 12, 16, 2),
                   child: Column(
                     children: [
                       const Text("Registration Form"),
@@ -187,7 +187,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                   )),
             ),
           ),
-          const SizedBox(height: 8),
+          const SizedBox(height: 2),
           GestureDetector(
             onTap: _goLogin,
             child: const Text(

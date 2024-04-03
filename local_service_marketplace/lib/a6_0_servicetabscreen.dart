@@ -91,7 +91,11 @@ class ServiceTabScreenState extends State<ServiceTabScreen> {
                     content: Text("Please login/register an account")));
                 return;
               }
-              loadVerify();
+               Navigator.push(
+                context,
+                MaterialPageRoute(
+                    builder: (content) => SellerVerificationScreen(
+                        user: widget.user)));
             } else if (value == 2) {
               print("Logout menu is selected.");
             }
@@ -116,7 +120,11 @@ class ServiceTabScreenState extends State<ServiceTabScreen> {
                       alignment: Alignment.topCenter,
                       child: GestureDetector(
                         onTap: () {
-                          loadVerify();
+                          Navigator.push(
+                context,
+                MaterialPageRoute(
+                    builder: (content) => SellerVerificationScreen(
+                        user: widget.user)));
                         },
                         child: const Text(
                           "\nPlease upload verify your identity and certifications to get PRO/PREFERRED status here or Verify later at the \"More\" button.",
@@ -229,36 +237,6 @@ class ServiceTabScreenState extends State<ServiceTabScreen> {
         loadService();
       });
     }
-  }
-
-  void loadVerify() {
-    http.post(Uri.parse("${Config.server}/lsm/php/load_verify.php"),
-        body: {"sellerid": widget.user.id}).then((response) {
-      print(response.body);
-      try {
-        print(response.statusCode);
-        if (response.statusCode == 200) {
-          print(response.body);
-          var jsondata = jsonDecode(response.body);
-          //print(jsondata['data']);
-          if (jsondata['status'] == 'success') {
-            late Seller seller;
-            seller = Seller.fromJson(jsondata['data']);
-            Navigator.push(
-                context,
-                MaterialPageRoute(
-                    builder: (content) => SellerVerificationScreen(
-                        user: widget.user, seller: seller)));
-          } else {
-            print(1);
-          }
-        } else {
-          print(2);
-        }
-      } catch (e, _) {
-        debugPrint(e.toString());
-      }
-    });
   }
 
   void loadService() {
