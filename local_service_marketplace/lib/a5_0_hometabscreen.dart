@@ -2,8 +2,8 @@ import 'dart:convert';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:local_service_marketplace/a5_1_userservicedetails.dart';
-import 'package:local_service_marketplace/a5_3_userorderscreen.dart';
-import 'package:local_service_marketplace/a5_4_userbillscreen.dart';
+import 'package:local_service_marketplace/a5_6_userorderlistscreen.dart';
+// import 'package:local_service_marketplace/a5_4_userbilllscreen.dart';
 import 'package:local_service_marketplace/config.dart';
 import 'package:local_service_marketplace/model/service.dart';
 import 'package:local_service_marketplace/model/user.dart';
@@ -154,10 +154,10 @@ class _HomeTabScreenState extends State<HomeTabScreen> {
                 value: 0,
                 child: Text("My Order"),
               ),
-              const PopupMenuItem<int>(
-                value: 1,
-                child: Text("My Bill"),
-              ),
+              // const PopupMenuItem<int>(
+              //   value: 1,
+              //   child: Text("My Bill"),
+              // ),
             ];
           }, onSelected: (value) async {
             if (value == 0) {
@@ -171,19 +171,20 @@ class _HomeTabScreenState extends State<HomeTabScreen> {
                   MaterialPageRoute(
                       builder: (content) =>
                           UserOrderScreen(user: widget.user)));
-            } else if (value == 1) {
-              if (widget.user.id.toString() == "na") {
-                ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-                    content: Text("Please login/register an account")));
-                return;
-              }
-              await Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                      builder: (content) => BillScreen(
-                            user: widget.user,
-                          )));
-            } else if (value == 2) {}
+            }
+            //  else if (value == 1) {
+            //   if (widget.user.id.toString() == "na") {
+            //     ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+            //         content: Text("Please login/register an account")));
+            //     return;
+            //   }
+            //   await Navigator.push(
+            //       context,
+            //       MaterialPageRoute(
+            //           builder: (content) => BillScreen(
+            //                 user: widget.user,
+            //               )));
+            // } else if (value == 2) {}
           }),
         ],
       ),
@@ -229,13 +230,15 @@ class _HomeTabScreenState extends State<HomeTabScreen> {
                   ),
                 )
               ]),
-              Container(
-                height: 24,
-                color: Color.fromARGB(255, 60, 213, 198),
-                alignment: Alignment.center,
-                child: Text(
-                  "${numberofresult.toString()} Service(s) Found",
-                  style: const TextStyle(color: Colors.white, fontSize: 18),
+              SingleChildScrollView(
+                child: Container(
+                  height: 24,
+                  color: Color.fromARGB(255, 60, 213, 198),
+                  alignment: Alignment.center,
+                  child: Text(
+                    "${numberofresult.toString()} Service(s) Found",
+                    style: const TextStyle(color: Colors.white, fontSize: 18),
+                  ),
                 ),
               ),
               Expanded(
@@ -260,7 +263,7 @@ class _HomeTabScreenState extends State<HomeTabScreen> {
                               },
                               child: Column(children: [
                                 CachedNetworkImage(
-                                  width: screenWidth * 0.4,
+                                  width: screenWidth * 0.35,
                                   fit: BoxFit.cover,
                                   imageUrl:
                                       "${Config.server}/lsm/assets/images/${serviceList[index].serviceId}.png",
@@ -271,7 +274,7 @@ class _HomeTabScreenState extends State<HomeTabScreen> {
                                 ),
                                 Text(
                                   serviceList[index].serviceName.toString(),
-                                  style: const TextStyle(fontSize: 20),
+                                  style: const TextStyle(fontSize: 15),
                                 ),
                                 Text(
                                   "RM ${double.parse(serviceList[index].servicePrice.toString()).toStringAsFixed(2)}",

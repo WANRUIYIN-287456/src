@@ -4,8 +4,8 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:local_service_marketplace/a3_login.dart';
-import 'package:local_service_marketplace/a5_2_userserviceorderscreen.dart';
-import 'package:local_service_marketplace/a5_5_sellerprofilescreen.dart';
+import 'package:local_service_marketplace/a5_2_userinsertorderscreen.dart';
+import 'package:local_service_marketplace/a5_8_sellerprofilescreen.dart';
 import 'package:local_service_marketplace/config.dart';
 import 'package:local_service_marketplace/model/service.dart';
 import 'package:local_service_marketplace/model/user.dart';
@@ -286,7 +286,7 @@ class _ServiceDetailScreenState extends State<ServiceDetailScreen> {
     Navigator.push(
         context,
         MaterialPageRoute(
-            builder: (content) => ServiceOrderScreen(user: widget.user)));
+            builder: (content) => ServiceOrderScreen(user: widget.user, service: widget.service)));
     // showDialog(
     //   context: context,
     //   builder: (BuildContext context) {

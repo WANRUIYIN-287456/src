@@ -519,13 +519,13 @@ class _NewServiceScreenState extends State<NewServiceScreen> {
   }
 
   void insertproduct() {
-    String ic = "";
-    String cert = "";
-    String pro = "No";
-    String prefer = "No";
-    String available = "No";
+    String ic = "Select Identity Card";
+    String cert = "Select Certificate";
+    String pro = "false";
+    String prefer = "false";
+    String available = "false";
     String admin = "0";
-    String verify = "No";
+    String verify = "false";
     String prname = _prnameEditingController.text;
     String prdesc = _prdescEditingController.text;
     String prprice = _prpriceEditingController.text;
@@ -548,7 +548,9 @@ class _NewServiceScreenState extends State<NewServiceScreen> {
       "pro": pro,
       "prefer": prefer,
       "available": available,
+      "upload": "false",
       "verify": verify,
+      "token": "0",
       "userid": widget.user.id.toString(),
       "category": selectedCategory,
       "type": selectedType,

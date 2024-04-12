@@ -8,8 +8,8 @@ import 'package:local_service_marketplace/a3_login.dart';
 import 'package:local_service_marketplace/a8_1_editprofilescreen.dart';
 import 'package:local_service_marketplace/a8_2_favouritescreen.dart';
 import 'package:local_service_marketplace/a8_3_historyscreen.dart';
-import 'package:local_service_marketplace/a8_4_settingscreen.dart';
-import 'package:local_service_marketplace/a8_5_messagescreen.dart';
+import 'package:local_service_marketplace/a8_10_settingscreen.dart';
+import 'package:local_service_marketplace/a8_9_messagescreen.dart';
 import 'package:local_service_marketplace/config.dart';
 import 'package:local_service_marketplace/model/user.dart';
 
@@ -41,19 +41,13 @@ class _AccountTabScreenState extends State<AccountTabScreen> {
     print(maintitle);
     loadProfile();
     print(widget.user.id);
-  }
-
-  @override
-  void dispose() {
-    super.dispose();
-    print("dispose");
-    loadProfile();
-    if (widget.user.name.toString() != "na") {
+      if (widget.user.name.toString() != "na") {
       isDisable = false;
     } else if (widget.user.name.toString() == "na") {
       isDisable = true;
     }
   }
+
 
   @override
   Widget build(BuildContext context) {
@@ -240,7 +234,7 @@ class _AccountTabScreenState extends State<AccountTabScreen> {
                                 context,
                                 MaterialPageRoute(
                                     builder: (content) =>
-                                        const HistoryScreen()));
+                                        HistoryScreen(user: widget.user)));
                           },
                           child: Padding(
                             padding: const EdgeInsets.fromLTRB(95, 20, 50, 0),

@@ -8,7 +8,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:local_service_marketplace/a6_1_newservicescreen.dart';
 import 'package:local_service_marketplace/a6_2_editservicescreen.dart';
 import 'package:local_service_marketplace/a6_3_serviceverify.dart';
-import 'package:local_service_marketplace/a6_4_sellerorderscreen.dart';
+import 'package:local_service_marketplace/a6_4_sellerorderlistmainscreen.dart';
 import 'package:local_service_marketplace/config.dart';
 import 'package:local_service_marketplace/model/seller.dart';
 import 'package:local_service_marketplace/model/service.dart';
@@ -65,7 +65,7 @@ class ServiceTabScreenState extends State<ServiceTabScreen> {
             return [
               const PopupMenuItem<int>(
                 value: 0,
-                child: Text("Upcoming Order"),
+                child: Text("Your Order"),
               ),
               const PopupMenuItem<int>(
                 value: 1,
@@ -151,7 +151,7 @@ class ServiceTabScreenState extends State<ServiceTabScreen> {
                 child: Text(
                   "${serviceList.length} Service(s) Found",
                   style: const TextStyle(
-                      color: Color.fromARGB(255, 147, 141, 141), fontSize: 18),
+                      color: Colors.white, fontSize: 18),
                 ),
               ),
               Expanded(
@@ -179,7 +179,7 @@ class ServiceTabScreenState extends State<ServiceTabScreen> {
                               },
                               child: Column(children: [
                                 CachedNetworkImage(
-                                  width: screenWidth * 0.4,
+                                  width: screenWidth * 0.35,
                                   fit: BoxFit.contain,
                                   imageUrl:
                                       "${Config.server}/lsm/assets/images/${serviceList[index].serviceId}.png?v=$val",
@@ -191,7 +191,7 @@ class ServiceTabScreenState extends State<ServiceTabScreen> {
                                 const SizedBox(height: 5),
                                 Text(
                                   serviceList[index].serviceName.toString(),
-                                  style: const TextStyle(fontSize: 18),
+                                  style: const TextStyle(fontSize: 15),
                                 ),
                                 Text(
                                   "RM ${double.parse(serviceList[index].servicePrice.toString()).toStringAsFixed(2)}",

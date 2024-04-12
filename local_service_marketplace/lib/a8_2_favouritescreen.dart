@@ -2,8 +2,6 @@ import 'dart:convert';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:local_service_marketplace/a5_1_userservicedetails.dart';
-import 'package:local_service_marketplace/a5_3_userorderscreen.dart';
-import 'package:local_service_marketplace/a5_4_userbillscreen.dart';
 import 'package:local_service_marketplace/config.dart';
 import 'package:local_service_marketplace/model/service.dart';
 import 'package:local_service_marketplace/model/user.dart';

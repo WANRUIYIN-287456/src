@@ -1,30 +1,33 @@
 import 'package:flutter/material.dart';
-import 'package:local_service_marketplace/a8_4_userordercompletedlist.dart';
-import 'package:local_service_marketplace/a8_7_userordercancellist.dart';
+import 'package:local_service_marketplace/a6_5_sellerorderupcominglist.dart';
+import 'package:local_service_marketplace/a6_7_sellerordercompletelist.dart';
+import 'package:local_service_marketplace/a6_9_sellerordercancellist.dart';
 import 'package:local_service_marketplace/model/user.dart';
 
-class HistoryScreen extends StatefulWidget {
+class SellerOrderScreen extends StatefulWidget {
   final User user;
-  const HistoryScreen({super.key, required this.user});
+
+  const SellerOrderScreen({Key? key, required this.user}) : super(key: key);
 
   @override
-  State<HistoryScreen> createState() => _HistoryScreenState();
+  State<SellerOrderScreen> createState() => _SellerOrderScreenState();
 }
 
-class _HistoryScreenState extends State<HistoryScreen> {
-@override
+class _SellerOrderScreenState extends State<SellerOrderScreen> {
+  @override
   Widget build(BuildContext context) {
     return DefaultTabController(
-      length: 2, // Number of tabs
+      length: 3, // Number of tabs
       child: Scaffold(
         appBar: AppBar(
-          title: const Text('My Bookings'),
+          title: const Text('Your Order'),
           bottom: PreferredSize(
             preferredSize: Size.fromHeight(kToolbarHeight),
             child: Container(
               color: Colors.white, // Set the background color of the TabBar
               child: const TabBar(
                 tabs: [
+                  Tab(text: 'Upcoming'), // Text label for Tab 1
                   Tab(text: 'Completed'), // Text label for Tab 2
                   Tab(text: 'Cancelled'), // Text label for Tab 3
                 ],
@@ -47,8 +50,9 @@ class _HistoryScreenState extends State<HistoryScreen> {
         ),
         body: TabBarView(
           children: [
-            UserOrderCompleteList(user: widget.user),
-            UserOrderCancelList(user: widget.user),
+            SellerOrderUpcomingList(user: widget.user),
+            SellerOrderCompleteList(user: widget.user),
+            SellerOrderCancelList(user: widget.user),
           ],
         ),
       ),

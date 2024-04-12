@@ -9,6 +9,7 @@ class Seller {
   String? certName;
   String? uploadDate;
   String? verifyStatus;
+  String? token;
 
   Seller(
       {this.adminId,
@@ -21,6 +22,7 @@ class Seller {
       this.certName,
       this.uploadDate,
       this.verifyStatus,
+      this.token,
     });
 
   Seller.fromJson(Map<String?, dynamic> json) {
@@ -34,6 +36,7 @@ class Seller {
     certName = json['cert'];
     uploadDate = json['upload_date'];
     verifyStatus = json['verify'];
+    token = json['token'];
   }
 
   Map<String?, dynamic> toJson() {
@@ -48,6 +51,7 @@ class Seller {
     data['cert'] = certName;
     data['upload_date'] = uploadDate;
     data['verify'] = verifyStatus;
+    data['token'] = token;
     return data;
   }
 }
