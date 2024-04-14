@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
 import 'package:local_service_marketplace/a5_3_orderpaymentscreen.dart';
+import 'package:local_service_marketplace/a5_6_userorderlistscreen.dart';
 import 'package:local_service_marketplace/a8_9_messagescreen.dart';
 import 'package:local_service_marketplace/config.dart';
 import 'package:local_service_marketplace/model/order.dart';
@@ -18,7 +19,7 @@ class UserOrderDetailsScreen extends StatefulWidget {
   State<UserOrderDetailsScreen> createState() => _UserOrderDetailsScreenState();
 }
 
-// ignore: duplicate_ignore
+
 class _UserOrderDetailsScreenState extends State<UserOrderDetailsScreen> {
   final df = DateFormat('dd-MM-yyyy hh:mm a');
   late double screenHeight, screenWidth;
@@ -39,16 +40,28 @@ class _UserOrderDetailsScreenState extends State<UserOrderDetailsScreen> {
       datereg: "na",
       password: "na",
       otp: "na");
+       late User user2 = User(
+      id: "na",
+      name: "na",
+      email: "na",
+      phone: "na",
+      datereg: "na",
+      password: "na",
+      otp: "na");
 
   @override
   void initState() {
     super.initState();
     loaduser();
+    loadownuser();
     loaduserorders();
     paymentstatus = widget.order.paymentStatus.toString();
     submitstatus = widget.order.orderUserstatus.toString();
     sellerstatus = widget.order.orderSellerstatus.toString();
+     if (widget.order.orderServicedate != null) {
+    // Parse the date string only if it's not null
     servicedate = DateTime.parse(widget.order.orderServicedate.toString());
+  }
     if (widget.order.orderSellerstatus.toString() == "Arrived") {
       isCompletedEnabled = true;
     }
@@ -72,6 +85,19 @@ class _UserOrderDetailsScreenState extends State<UserOrderDetailsScreen> {
     return Scaffold(
         appBar: AppBar(
           title: const Text("Order Details"),
+          leading: IconButton(
+      icon: const Icon(Icons.arrow_back),
+      onPressed: () {
+         Navigator.pushReplacement(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => UserOrderScreen(
+                            user: user2,
+                          ),
+                        ),
+                      );
+      },
+    ),
           actions: [
             IconButton(
                 onPressed: () {}, icon: const Icon(Icons.location_on_outlined)),
@@ -322,7 +348,7 @@ class _UserOrderDetailsScreenState extends State<UserOrderDetailsScreen> {
                             Expanded(
                               child: ElevatedButton(
                                 onPressed: ()  {
-                                   Navigator.push(
+                                   Navigator.pushReplacement(
                                     context,
                                     MaterialPageRoute(
                                       builder: (content) => PaymentScreen(
@@ -334,7 +360,7 @@ class _UserOrderDetailsScreenState extends State<UserOrderDetailsScreen> {
                                   );
                                    setState(() {
                                       loaduserorders();
-                                      paymentstatus = order.paymentStatus.toString();
+                                      paymentstatus = widget.order.paymentStatus.toString();
                                    });
                                  
                                 },
@@ -363,7 +389,11 @@ class _UserOrderDetailsScreenState extends State<UserOrderDetailsScreen> {
         var jsondata = jsonDecode(response.body);
         if (jsondata['status'] == "success") {
           order = Order.fromJson(jsondata['data']);
-          setState(() {});
+          setState(() {
+            
+            paymentstatus = order.paymentStatus.toString();
+             
+          });
         } else {
           setState(() {});
           Navigator.of(context).pop();
@@ -388,6 +418,21 @@ class _UserOrderDetailsScreenState extends State<UserOrderDetailsScreen> {
         var jsondata = jsonDecode(response.body);
         if (jsondata['status'] == 'success') {
           user = User.fromJson(jsondata['data']);
+        }
+      }
+      setState(() {});
+    });
+  }
+
+    void loadownuser() {
+    http.post(Uri.parse("${Config.server}/lsm/php/load_user.php"), body: {
+      "userid": widget.order.userId,
+    }).then((response) {
+      log(response.body);
+      if (response.statusCode == 200) {
+        var jsondata = jsonDecode(response.body);
+        if (jsondata['status'] == 'success') {
+          user2 = User.fromJson(jsondata['data']);
         }
       }
       setState(() {});

@@ -166,7 +166,7 @@ class _HomeTabScreenState extends State<HomeTabScreen> {
                     content: Text("Please login/register an account")));
                 return;
               }
-              await Navigator.push(
+              await Navigator.pushReplacement(
                   context,
                   MaterialPageRoute(
                       builder: (content) =>

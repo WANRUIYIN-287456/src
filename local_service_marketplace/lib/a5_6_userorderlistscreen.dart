@@ -3,6 +3,8 @@ import 'dart:developer';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:local_service_marketplace/a4_mainscreen.dart';
+import 'package:local_service_marketplace/a5_0_hometabscreen.dart';
 import 'package:local_service_marketplace/a5_7_userorderdetailsscreen.dart';
 import 'package:local_service_marketplace/config.dart';
 import 'package:local_service_marketplace/model/order.dart';
@@ -34,7 +36,15 @@ class _UserOrderScreenState extends State<UserOrderScreen> {
     screenHeight = MediaQuery.of(context).size.height;
     screenWidth = MediaQuery.of(context).size.width;
     return Scaffold(
-      appBar: AppBar(title: const Text("Your Order")),
+      appBar: AppBar(
+        title: const Text("Your Order"),
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back),
+          onPressed: () {
+            Navigator.popUntil(context, (route) => route.isFirst);
+          },
+        ),
+      ),
       body: Container(
         child: orderList.isEmpty
             ? Container()
@@ -101,11 +111,12 @@ class _UserOrderScreenState extends State<UserOrderScreen> {
                           onTap: () async {
                             Order order =
                                 Order.fromJson(orderList[index].toJson());
-                            await Navigator.push(
+                            await Navigator.pushReplacement(
                               context,
                               MaterialPageRoute(
-                                builder: (context) =>
-                                    UserOrderDetailsScreen(order: order),
+                                builder: (context) => UserOrderDetailsScreen(
+                                  order: order
+                                ),
                               ),
                             );
                             loaduserorders();
