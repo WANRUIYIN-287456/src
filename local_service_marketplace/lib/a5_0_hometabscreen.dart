@@ -166,7 +166,7 @@ class _HomeTabScreenState extends State<HomeTabScreen> {
                     content: Text("Please login/register an account")));
                 return;
               }
-              await Navigator.pushReplacement(
+              await Navigator.push(
                   context,
                   MaterialPageRoute(
                       builder: (content) =>
@@ -188,7 +188,7 @@ class _HomeTabScreenState extends State<HomeTabScreen> {
           }),
         ],
       ),
-      body: serviceList.isEmpty
+      body: serviceList.isEmpty  
           ? const Center(
               child: Text("No Data"),
             )

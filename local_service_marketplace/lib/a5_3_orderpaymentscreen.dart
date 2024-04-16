@@ -1,10 +1,8 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:developer';
-
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
-import 'package:local_service_marketplace/a5_7_userorderdetailsscreen.dart';
 import 'package:local_service_marketplace/config.dart';
 import 'package:local_service_marketplace/model/order.dart';
 import 'package:local_service_marketplace/model/user.dart';
@@ -116,9 +114,16 @@ class _PaymentScreenState extends State<PaymentScreen> {
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
           onPressed: () {
-            Navigator.popUntil(context, (route) => route.isFirst);
+            Navigator.pop(context);
+            Navigator.pop(context);
           },
         ),
+        actions: [
+          TextButton(onPressed: (){
+            Navigator.popUntil(context, (route) => route.isFirst);
+          }, child: const Text("Done", style: TextStyle( color: Colors.white,
+                            decoration: TextDecoration.underline,),))
+        ],
       ),
       body: Stack(
         children: [

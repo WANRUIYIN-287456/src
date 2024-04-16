@@ -85,19 +85,19 @@ class _UserOrderDetailsScreenState extends State<UserOrderDetailsScreen> {
     return Scaffold(
         appBar: AppBar(
           title: const Text("Order Details"),
-          leading: IconButton(
-      icon: const Icon(Icons.arrow_back),
-      onPressed: () {
-         Navigator.pushReplacement(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => UserOrderScreen(
-                            user: user2,
-                          ),
-                        ),
-                      );
-      },
-    ),
+    //       leading: IconButton(
+    //   icon: const Icon(Icons.arrow_back),
+    //   onPressed: () {
+    //      Navigator.pushReplacement(
+    //                     context,
+    //                     MaterialPageRoute(
+    //                       builder: (context) => UserOrderScreen(
+    //                         user: user2,
+    //                       ),
+    //                     ),
+    //                   );
+    //   },
+    // ),
           actions: [
             IconButton(
                 onPressed: () {}, icon: const Icon(Icons.location_on_outlined)),
@@ -360,7 +360,7 @@ class _UserOrderDetailsScreenState extends State<UserOrderDetailsScreen> {
                                   );
                                    setState(() {
                                       loaduserorders();
-                                      paymentstatus = widget.order.paymentStatus.toString();
+                                    
                                    });
                                  
                                 },
@@ -391,7 +391,7 @@ class _UserOrderDetailsScreenState extends State<UserOrderDetailsScreen> {
           order = Order.fromJson(jsondata['data']);
           setState(() {
             
-            paymentstatus = order.paymentStatus.toString();
+            paymentstatus = widget.order.paymentStatus.toString();
              
           });
         } else {

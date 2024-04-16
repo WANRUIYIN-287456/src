@@ -105,8 +105,8 @@ class _ServiceDetailScreenState extends State<ServiceDetailScreen> {
                 child: ListView(
                   scrollDirection: Axis.horizontal,
                   shrinkWrap: true,
-                  children: List.generate(3, (index) {
-                    return Padding(
+                  children: [
+                    Padding(
                       padding: const EdgeInsets.fromLTRB(10, 10, 10, 10),
                       child: Container(
                           width: screenWidth * 0.92,
@@ -119,8 +119,9 @@ class _ServiceDetailScreenState extends State<ServiceDetailScreen> {
                             errorWidget: (context, url, error) =>
                                 const Icon(Icons.error),
                           )),
-                    );
-                  }),
+                    
+                  ),
+                  ]
                 ),
               ),
             )),

@@ -10,7 +10,6 @@ import 'package:local_service_marketplace/a6_2_editservicescreen.dart';
 import 'package:local_service_marketplace/a6_3_serviceverify.dart';
 import 'package:local_service_marketplace/a6_4_sellerorderlistmainscreen.dart';
 import 'package:local_service_marketplace/config.dart';
-import 'package:local_service_marketplace/model/seller.dart';
 import 'package:local_service_marketplace/model/service.dart';
 import 'package:local_service_marketplace/model/user.dart';
 

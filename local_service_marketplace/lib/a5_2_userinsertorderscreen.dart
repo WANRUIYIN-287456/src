@@ -309,7 +309,7 @@ class _ServiceOrderScreenState extends State<ServiceOrderScreen> {
                     Order? result = await orderService();
                     if (result != null) {
                       // Navigate to UserOrderDetailsScreen
-                      Navigator.pushReplacement(
+                      Navigator.push(
                         context,
                         MaterialPageRoute(
                           builder: (context) => UserOrderDetailsScreen(

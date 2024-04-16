@@ -23,7 +23,6 @@ class _UserOrderScreenState extends State<UserOrderScreen> {
 
   String status = "Loading...";
   List<Order> orderList = <Order>[];
-  late bool isPaid = false;
 
   @override
   void initState() {
@@ -38,12 +37,12 @@ class _UserOrderScreenState extends State<UserOrderScreen> {
     return Scaffold(
       appBar: AppBar(
         title: const Text("Your Order"),
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back),
-          onPressed: () {
-            Navigator.popUntil(context, (route) => route.isFirst);
-          },
-        ),
+        // leading: IconButton(
+        //   icon: const Icon(Icons.arrow_back),
+        //   onPressed: () {
+        //     Navigator.popUntil(context, (route) => route.isFirst);
+        //   },
+        // ),
       ),
       body: Container(
         child: orderList.isEmpty
@@ -111,7 +110,7 @@ class _UserOrderScreenState extends State<UserOrderScreen> {
                           onTap: () async {
                             Order order =
                                 Order.fromJson(orderList[index].toJson());
-                            await Navigator.pushReplacement(
+                            await Navigator.push(
                               context,
                               MaterialPageRoute(
                                 builder: (context) => UserOrderDetailsScreen(
@@ -148,7 +147,7 @@ class _UserOrderScreenState extends State<UserOrderScreen> {
                                           )),
                                       Text(
                                           "Order Status: ${orderList[index].orderStatus}"),
-                                      if (!isPaid)
+
                                         Text(
                                             "Payment Status: ${orderList[index].paymentStatus}"),
                                     ],
@@ -184,9 +183,7 @@ class _UserOrderScreenState extends State<UserOrderScreen> {
           extractdata['order'].forEach((v) {
             Order order = Order.fromJson(v);
             orderList.add(order);
-            setState(() {
-              isPaid = order.paymentStatus == "Paid";
-            });
+            
           });
         } else {
           status = "Please register an account first";
