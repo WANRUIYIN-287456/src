@@ -721,4 +721,6 @@ class _SellerVerificationScreenState extends State<SellerVerificationScreen> {
       }
     });
   }
+
+  
 }

@@ -10,6 +10,7 @@ class Seller {
   String? uploadDate;
   String? verifyStatus;
   String? token;
+  String? sellerName;
 
   Seller(
       {this.adminId,
@@ -23,6 +24,7 @@ class Seller {
       this.uploadDate,
       this.verifyStatus,
       this.token,
+      this.sellerName,
     });
 
   Seller.fromJson(Map<String?, dynamic> json) {
@@ -37,6 +39,7 @@ class Seller {
     uploadDate = json['upload_date'];
     verifyStatus = json['verify'];
     token = json['token'];
+    sellerName = json['seller_name'];
   }
 
   Map<String?, dynamic> toJson() {
@@ -52,6 +55,7 @@ class Seller {
     data['upload_date'] = uploadDate;
     data['verify'] = verifyStatus;
     data['token'] = token;
+    data['seller_name'] = sellerName;
     return data;
   }
 }

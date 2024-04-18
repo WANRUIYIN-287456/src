@@ -523,7 +523,7 @@ class _NewServiceScreenState extends State<NewServiceScreen> {
     String cert = "Select Certificate";
     String pro = "false";
     String prefer = "false";
-    String available = "false";
+    String available = "true";
     String admin = "0";
     String verify = "false";
     String prname = _prnameEditingController.text;

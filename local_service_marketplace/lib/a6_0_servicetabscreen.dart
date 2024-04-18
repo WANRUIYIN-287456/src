@@ -177,6 +177,42 @@ class ServiceTabScreenState extends State<ServiceTabScreen> {
                                 loadService();
                               },
                               child: Column(children: [
+           Padding(
+                                  padding: EdgeInsets.fromLTRB(15, 0, 17, 0),
+                                  child: Row(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      if (serviceList[index]
+                                              .proStatus
+                                              .toString() ==
+                                          "true")
+                                        Container(
+                                          decoration: const BoxDecoration(
+                                            borderRadius: BorderRadius.all(
+                                              Radius.circular(5.0),
+                                            ),
+                                            color: Colors.orangeAccent,
+                                          ),
+                                          child: const Text("  Pro  "),
+                                        ),
+                                      const SizedBox(width: 8),
+                                      if (serviceList[index]
+                                              .preferredStatus
+                                              .toString() ==
+                                          "true")
+                                        Container(
+                                          //margin: const EdgeInsets.all(10),
+                                          decoration: const BoxDecoration(
+                                            borderRadius: BorderRadius.all(
+                                                Radius.circular(5.0)),
+                                            color: Colors.orangeAccent,
+                                          ),
+                                          child: const Text("  Preferred  "),
+                                        ),
+                                    ],
+                                  ),
+                                ),
+                                SizedBox(height: 5),
                                 CachedNetworkImage(
                                   width: screenWidth * 0.35,
                                   fit: BoxFit.contain,

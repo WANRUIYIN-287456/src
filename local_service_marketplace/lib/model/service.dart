@@ -12,22 +12,26 @@ class Service {
   String? serviceState;
   String? serviceLocality;
   String? serviceDate;
+  String? proStatus;
+  String? preferredStatus;
 
-  Service(
-      {this.serviceId,
-      this.sellerId,
-      this.serviceName,
-      this.serviceCategory,
-      this.serviceType,
-      this.serviceDesc,
-      this.servicePrice,
-      this.serviceUnit,
-      this.serviceLong,
-      this.serviceLat,
-      this.serviceState,
-      this.serviceLocality,
-      this.serviceDate,
-    });
+  Service({
+    this.serviceId,
+    this.sellerId,
+    this.serviceName,
+    this.serviceCategory,
+    this.serviceType,
+    this.serviceDesc,
+    this.servicePrice,
+    this.serviceUnit,
+    this.serviceLong,
+    this.serviceLat,
+    this.serviceState,
+    this.serviceLocality,
+    this.serviceDate,
+    this.proStatus,
+    this.preferredStatus,
+  });
 
   Service.fromJson(Map<String?, dynamic> json) {
     serviceId = json['service_id'];
@@ -43,6 +47,8 @@ class Service {
     serviceState = json['service_state'];
     serviceLocality = json['service_locality'];
     serviceDate = json['service_date'];
+    proStatus = json['pro_status'];
+    preferredStatus = json['preferred_status'];
   }
 
   Map<String?, dynamic> toJson() {
@@ -60,6 +66,8 @@ class Service {
     data['service_state'] = serviceState;
     data['service_locality'] = serviceLocality;
     data['service_date'] = serviceDate;
+    data['pro_status'] = proStatus;
+    data['preferred_status'] = preferredStatus;
     return data;
   }
 }

@@ -139,7 +139,7 @@ class _EditServiceScreenState extends State<EditServiceScreen> {
     screenWidth = MediaQuery.of(context).size.width;
      typeList = categoryToTypes[selectedCategory] ?? [];
     return Scaffold(
-      appBar: AppBar(title: const Text("Edit New services")),
+      appBar: AppBar(title: const Text("Edit services")),
       body: Column(children: [
         Flexible(
           flex:3,

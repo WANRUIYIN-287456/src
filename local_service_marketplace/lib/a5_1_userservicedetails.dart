@@ -7,6 +7,7 @@ import 'package:local_service_marketplace/a3_login.dart';
 import 'package:local_service_marketplace/a5_2_userinsertorderscreen.dart';
 import 'package:local_service_marketplace/a5_8_sellerprofilescreen.dart';
 import 'package:local_service_marketplace/config.dart';
+import 'package:local_service_marketplace/model/seller.dart';
 import 'package:local_service_marketplace/model/service.dart';
 import 'package:local_service_marketplace/model/user.dart';
 
@@ -32,10 +33,13 @@ class _ServiceDetailScreenState extends State<ServiceDetailScreen> {
   late bool isLike = false;
   late String likeString = "";
   late Icon love = Icon(Icons.favorite_border_rounded);
+  List<Seller> sellerList = <Seller>[];
+  late bool isAvailable = true;
 
   @override
   void initState() {
     super.initState();
+    loadVerify(0);
     loadLike();
     totalprice = double.parse(widget.service.servicePrice.toString());
     singleprice = double.parse(widget.service.servicePrice.toString());
@@ -103,26 +107,24 @@ class _ServiceDetailScreenState extends State<ServiceDetailScreen> {
               padding: const EdgeInsets.fromLTRB(8, 4, 8, 8),
               child: Card(
                 child: ListView(
-                  scrollDirection: Axis.horizontal,
-                  shrinkWrap: true,
-                  children: [
-                    Padding(
-                      padding: const EdgeInsets.fromLTRB(10, 10, 10, 10),
-                      child: Container(
-                          width: screenWidth * 0.92,
-                          child: CachedNetworkImage(
-                            fit: BoxFit.cover,
-                            imageUrl:
-                                "${Config.server}/lsm/assets/images/${widget.service.serviceId}.png",
-                            placeholder: (context, url) =>
-                                const LinearProgressIndicator(),
-                            errorWidget: (context, url, error) =>
-                                const Icon(Icons.error),
-                          )),
-                    
-                  ),
-                  ]
-                ),
+                    scrollDirection: Axis.horizontal,
+                    shrinkWrap: true,
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.fromLTRB(10, 10, 10, 10),
+                        child: Container(
+                            width: screenWidth * 0.92,
+                            child: CachedNetworkImage(
+                              fit: BoxFit.cover,
+                              imageUrl:
+                                  "${Config.server}/lsm/assets/images/${widget.service.serviceId}.png",
+                              placeholder: (context, url) =>
+                                  const LinearProgressIndicator(),
+                              errorWidget: (context, url, error) =>
+                                  const Icon(Icons.error),
+                            )),
+                      ),
+                    ]),
               ),
             )),
         Container(
@@ -228,42 +230,19 @@ class _ServiceDetailScreenState extends State<ServiceDetailScreen> {
               padding: const EdgeInsets.fromLTRB(8, 80, 8, 0),
               child: Column(
                 children: [
-                  //Row(
-                  //     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                  //     children: [
-                  //       const Text(
-                  //         "Quantity",
-                  //         style: TextStyle(
-                  //             fontSize: 16, fontWeight: FontWeight.bold),
-                  //       ),
-                  //       TextFormField(
-                  //         textInputAction: TextInputAction.next,
-                  //         validator: (val) => val!.isEmpty
-                  //             ? "Quantity ordered must contain number"
-                  //             : null,
-                  //         onFieldSubmitted: (v) {
-                  //           setState(() {
-                  //             totalprice = singleprice * userqty;
-                  //           });
-                  //         },
-                  //         controller: qtyEditingController,
-                  //         keyboardType: TextInputType.number,
-                  //         decoration: const InputDecoration(
-                  //           labelText: 'Quantity ordered',
-                  //           border: OutlineInputBorder(),
-                  //         ),
-                  //       ),
-                  //     ]),
-                  // Text(
-                  //   "RM ${totalprice.toStringAsFixed(2)}",
-                  //   style: const TextStyle(
-                  //       fontSize: 24, fontWeight: FontWeight.bold),
-                  // ),
-                  ElevatedButton(
-                      onPressed: () {
-                        submitOrderDialog();
-                      },
-                      child: const Text("Order Now"))
+                  isAvailable
+                      ? ElevatedButton(
+                          onPressed: () {
+                            submitOrderDialog();
+                          },
+                          child: const Text("Order Now"))
+                      : Column(
+                          children: const [
+                            ElevatedButton(
+                                onPressed: null, child: Text("Order Now")),
+                            Text("\nThis service provider is not available for now.", style: TextStyle(color: Colors.blue),)
+                          ],
+                        )
                 ],
               )),
         ),
@@ -287,47 +266,8 @@ class _ServiceDetailScreenState extends State<ServiceDetailScreen> {
     Navigator.push(
         context,
         MaterialPageRoute(
-            builder: (content) => ServiceOrderScreen(user: widget.user, service: widget.service)));
-    // showDialog(
-    //   context: context,
-    //   builder: (BuildContext context) {
-    //     return AlertDialog(
-    //       shape: const RoundedRectangleBorder(
-    //           borderRadius: BorderRadius.all(Radius.circular(10.0))),
-    //       title: const Text(
-    //         "Confirm Order",
-    //         style: TextStyle(),
-    //       ),
-    //       content: const Text("Are you sure?", style: TextStyle()),
-    //       actions: <Widget>[
-    //         TextButton(
-    //           child: const Text(
-    //             "Yes",
-    //             style: TextStyle(),
-    //           ),
-    //           onPressed: () {
-    //             Navigator.of(context).pop();
-    //             Navigator.push(
-    //                 context,
-    //                 MaterialPageRoute(
-    //                     builder: (content) =>
-    //                         ServiceOrderScreen(user: widget.user)));
-    //             //submitOrder();
-    //           },
-    //         ),
-    //         TextButton(
-    //           child: const Text(
-    //             "No",
-    //             style: TextStyle(),
-    //           ),
-    //           onPressed: () {
-    //             Navigator.of(context).pop();
-    //           },
-    //         ),
-    //       ],
-    //     );
-    //   },
-    // );
+            builder: (content) => ServiceOrderScreen(
+                user: widget.user, service: widget.service)));
   }
 
   void likeDialog() {
@@ -481,39 +421,72 @@ class _ServiceDetailScreenState extends State<ServiceDetailScreen> {
     });
   }
 
-void loadLike() {
-  http.post(Uri.parse("${Config.server}/lsm/php/load_like.php"), body: {
-    "userid": widget.user.id.toString(),
-    "serviceid": widget.service.serviceId.toString(),
-  }).then((response) {
-    print(response.body);
-    try {
-      print(response.statusCode);
-      if (response.statusCode == 200) {
-        print(response.body);
-        var jsondata = jsonDecode(response.body);
-        //print(jsondata['data']);
-        if (jsondata['status'] == 'success') {
-          var extractdata = jsondata['data'];
-          setState(() {
-            // Access the value of 'like_status' from extractdata
-            likeString = extractdata['like_status'].toString();
-            // Convert likeString to boolean
-            isLike = likeString == "true";
-            love = Icon(Icons.favorite_rounded);
-          });
-          print("loadLike " + isLike.toString());
+  void loadLike() {
+    http.post(Uri.parse("${Config.server}/lsm/php/load_like.php"), body: {
+      "userid": widget.user.id.toString(),
+      "serviceid": widget.service.serviceId.toString(),
+    }).then((response) {
+      print(response.body);
+      try {
+        print(response.statusCode);
+        if (response.statusCode == 200) {
+          print(response.body);
+          var jsondata = jsonDecode(response.body);
+          //print(jsondata['data']);
+          if (jsondata['status'] == 'success') {
+            var extractdata = jsondata['data'];
+            setState(() {
+              // Access the value of 'like_status' from extractdata
+              likeString = extractdata['like_status'].toString();
+              // Convert likeString to boolean
+              isLike = likeString == "true";
+              love = Icon(Icons.favorite_rounded);
+            });
+            print("loadLike " + isLike.toString());
+          } else {
+            print(1);
+          }
         } else {
-          print(1);
+          print(2);
         }
-      } else {
-        print(2);
+      } catch (e, _) {
+        debugPrint(e.toString());
       }
-    } catch (e, _) {
-      debugPrint(e.toString());
-    }
-  });
-}
+    });
+  }
 
+  loadVerify(int index) {
+    http.post(Uri.parse("${Config.server}/lsm/php/load_verify.php"),
+        body: {"sellerid": widget.service.sellerId}).then((response) {
+      print(response.body);
+      try {
+        print(response.statusCode);
+        if (response.statusCode == 200) {
+          print(response.body);
+          var jsondata = jsonDecode(response.body);
+          //print(jsondata['data']);
+          if (response.statusCode == 200) {
+            var jsondata = jsonDecode(response.body);
+            if (jsondata['status'] == "success") {
+              var extractdata = jsondata['data'];
+              for (var v in extractdata) {
+                sellerList.add(Seller.fromJson(v));
+              }
+              if (sellerList.isNotEmpty) {
+                print(sellerList[0].icName);
+              }
+            }
 
+            setState(() {
+              if (mounted) {
+                isAvailable = sellerList[index].availableStatus == "true";
+              }
+            });
+          }
+        }
+      } catch (e, _) {
+        debugPrint(e.toString());
+      }
+    });
+  }
 }

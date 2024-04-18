@@ -36,7 +36,7 @@ class _MainScreenState extends State<MainScreen> {
       //ProductTabScreen(user: widget.user),
       HomeTabScreen(user: widget.user),
       ServiceTabScreen(user: widget.user),
-      const NotificationTabScreen(),
+      NotificationTabScreen(user: widget.user),
       AccountTabScreen(user: widget.user),
     ];
   }

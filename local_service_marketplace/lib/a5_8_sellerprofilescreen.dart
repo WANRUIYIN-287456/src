@@ -8,13 +8,15 @@ import 'package:local_service_marketplace/a5_10_sellerotherservice.dart';
 import 'package:local_service_marketplace/a5_9_sellerratingscreen.dart';
 import 'package:local_service_marketplace/config.dart';
 import 'package:local_service_marketplace/model/rating.dart';
+import 'package:local_service_marketplace/model/seller.dart';
 import 'package:local_service_marketplace/model/user.dart';
 
 class SellerProfileScreen extends StatefulWidget {
   final User user;
   final String sellerId;
   const SellerProfileScreen(
-      {Key? key, required this.user, required this.sellerId}) : super(key: key);
+      {Key? key, required this.user, required this.sellerId})
+      : super(key: key);
 
   @override
   State<SellerProfileScreen> createState() => _SellerProfileScreenState();
@@ -26,6 +28,9 @@ class _SellerProfileScreenState extends State<SellerProfileScreen> {
   late double screenHeight, screenWidth, cardwitdh;
   List<Rating> ratingList = <Rating>[];
   double meanRating = 0.0;
+  List<Seller> sellerList = <Seller>[];
+  late bool isPro = false;
+  late bool isPreferred = false;
 
   @override
   void initState() {
@@ -33,6 +38,7 @@ class _SellerProfileScreenState extends State<SellerProfileScreen> {
     print(maintitle);
     loadProfile();
     loadRatings();
+    loadVerify(0);
     print(widget.user.id);
     print(widget.sellerId);
   }
@@ -82,7 +88,47 @@ class _SellerProfileScreenState extends State<SellerProfileScreen> {
                         Text(widget.user.phone.toString()),
                         Text(df.format(
                             DateTime.parse(widget.user.datereg.toString()))),
-                        const Text("")
+                        const Text(""),
+                        Row(
+                                                    mainAxisAlignment:
+                                                        MainAxisAlignment
+                                                            .center,
+                                                    children: [
+                                                      if (isPro)
+                                                        Container(
+                                                          decoration:
+                                                              const BoxDecoration(
+                                                            borderRadius:
+                                                                BorderRadius
+                                                                    .all(
+                                                              Radius.circular(
+                                                                  5.0),
+                                                            ),
+                                                            color: Colors
+                                                                .orangeAccent,
+                                                          ),
+                                                          child: const Text(
+                                                              "  Pro  "),
+                                                        ),
+                                                      const SizedBox(width: 20),
+                                                      if (isPreferred)
+                                                        Container(
+                                                          //margin: const EdgeInsets.all(10),
+                                                          decoration:
+                                                              const BoxDecoration(
+                                                            borderRadius:
+                                                                BorderRadius
+                                                                    .all(Radius
+                                                                        .circular(
+                                                                            5.0)),
+                                                            color: Colors
+                                                                .orangeAccent,
+                                                          ),
+                                                          child: const Text(
+                                                              "  Preferred  "),
+                                                        ),
+                                                    ],
+                                                  ),
                       ],
                     ),
                   ),
@@ -111,7 +157,6 @@ class _SellerProfileScreenState extends State<SellerProfileScreen> {
               Expanded(
                   child: ListView(
                 children: [
-
                   GestureDetector(
                     onTap: () {
                       Navigator.push(
@@ -127,7 +172,7 @@ class _SellerProfileScreenState extends State<SellerProfileScreen> {
                     child: Column(
                       children: [
                         Padding(
-                          padding: EdgeInsets.fromLTRB(25,20, 8, 15),
+                          padding: EdgeInsets.fromLTRB(25, 20, 8, 15),
                           child: RatingBar(
                             initialRating: meanRating,
                             direction: Axis.horizontal,
@@ -137,7 +182,8 @@ class _SellerProfileScreenState extends State<SellerProfileScreen> {
                             ratingWidget: RatingWidget(
                               full: Icon(Icons.star, color: Colors.amber),
                               half: Icon(Icons.star_half, color: Colors.amber),
-                              empty: Icon(Icons.star_border, color: Colors.amber),
+                              empty:
+                                  Icon(Icons.star_border, color: Colors.amber),
                             ),
                             onRatingUpdate: (rating) {
                               setState(() {
@@ -147,7 +193,10 @@ class _SellerProfileScreenState extends State<SellerProfileScreen> {
                             ignoreGestures: true,
                           ),
                         ),
-                        Text("   " + meanRating.toStringAsFixed(1), style: TextStyle(fontSize: 30),), // Display mean rating
+                        Text(
+                          "   " + meanRating.toStringAsFixed(1),
+                          style: TextStyle(fontSize: 30),
+                        ), // Display mean rating
                       ],
                     ),
                   ),
@@ -157,7 +206,8 @@ class _SellerProfileScreenState extends State<SellerProfileScreen> {
                           context,
                           MaterialPageRoute(
                               builder: (content) => SellerOrtherService(
-                                  user: widget.user, sellerId: widget.sellerId)));
+                                  user: widget.user,
+                                  sellerId: widget.sellerId)));
                     },
                     child: Padding(
                       padding: const EdgeInsets.fromLTRB(30, 50, 15, 0),
@@ -165,7 +215,10 @@ class _SellerProfileScreenState extends State<SellerProfileScreen> {
                         children: const [
                           Icon(Icons.home_repair_service_rounded),
                           SizedBox(width: 15),
-                          Text("More from this service provider", style: TextStyle(fontSize: 16),),
+                          Text(
+                            "More from this service provider",
+                            style: TextStyle(fontSize: 16),
+                          ),
                         ],
                       ),
                     ),
@@ -211,35 +264,69 @@ class _SellerProfileScreenState extends State<SellerProfileScreen> {
   }
 
   void loadRatings() {
-  http.post(Uri.parse("${Config.server}/lsm/php/load_ratingssellerprofile.php"),
-      body: {"sellerid": widget.sellerId}).then((response) {
-    ratingList.clear();
-    if (response.statusCode == 200) {
-      print(response.body);
-      var jsonData = jsonDecode(response.body);
-      if (jsonData['status'] == "success") {
-        var extractData = jsonData['data'];
+    http.post(
+        Uri.parse("${Config.server}/lsm/php/load_ratingssellerprofile.php"),
+        body: {"sellerid": widget.sellerId}).then((response) {
+      ratingList.clear();
+      if (response.statusCode == 200) {
+        print(response.body);
+        var jsonData = jsonDecode(response.body);
+        if (jsonData['status'] == "success") {
+          var extractData = jsonData['data'];
           for (var v in extractData) {
             ratingList.add(Rating.fromJson(v));
           }
-          setState(() {
-            
-          });
+          setState(() {});
           calculateMeanRating();
-        
+        }
       }
-    }
-  });
-}
-
+    });
+  }
 
   void calculateMeanRating() {
     if (ratingList.isNotEmpty) {
       double sum = 0;
       for (var rating in ratingList) {
-        sum += double.parse(rating.rating.toString()); // Assuming 'rating' attribute holds the rating value
+        sum += double.parse(rating.rating
+            .toString()); // Assuming 'rating' attribute holds the rating value
       }
       meanRating = sum / ratingList.length;
     }
+  }
+
+  loadVerify(int index) {
+    http.post(Uri.parse("${Config.server}/lsm/php/load_verify.php"),
+        body: {"sellerid": widget.user.id}).then((response) {
+      print(response.body);
+      try {
+        print(response.statusCode);
+        if (response.statusCode == 200) {
+          print(response.body);
+          var jsondata = jsonDecode(response.body);
+          //print(jsondata['data']);
+          if (response.statusCode == 200) {
+            var jsondata = jsonDecode(response.body);
+            if (jsondata['status'] == "success") {
+              var extractdata = jsondata['data'];
+              for (var v in extractdata) {
+                sellerList.add(Seller.fromJson(v));
+              }
+              if (sellerList.isNotEmpty) {
+                print(sellerList[0].icName);
+              }
+            }
+
+            setState(() {
+              if (mounted) {
+                isPro = sellerList[index].proStatus == "true";
+                isPreferred = sellerList[index].preferredStatus == "true";
+              }
+            });
+          }
+        }
+      } catch (e, _) {
+        debugPrint(e.toString());
+      }
+    });
   }
 }
