@@ -1,14 +1,11 @@
 import 'dart:convert';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
-import 'package:local_service_marketplace/a5_1_userservicedetails.dart';
-import 'package:local_service_marketplace/a5_6_userorderlistscreen.dart';
 import 'package:local_service_marketplace/a9_0_adminlogin.dart';
 import 'package:local_service_marketplace/a9_4_adminverifydetails.dart';
 import 'package:local_service_marketplace/config.dart';
 import 'package:local_service_marketplace/model/admin.dart';
 import 'package:local_service_marketplace/model/seller.dart';
-import 'package:local_service_marketplace/model/service.dart';
 import 'package:http/http.dart' as http;
 
 class AdminVerifyList extends StatefulWidget {
@@ -25,6 +22,7 @@ class _AdminVerifyListState extends State<AdminVerifyList> {
   String maintitle = "Service Provider List";
   List<Seller> sellerList = <Seller>[];
   late Admin admin;
+  int index = 0;
 
   final TextEditingController searchEditingController = TextEditingController();
   String upload = "All";
@@ -55,7 +53,7 @@ class _AdminVerifyListState extends State<AdminVerifyList> {
   void initState() {
     super.initState();
     loadpageService(1);
-    print("Service");
+    print("Service Provider");
   }
 
   @override
@@ -71,180 +69,201 @@ class _AdminVerifyListState extends State<AdminVerifyList> {
       appBar: AppBar(
         title: Text(maintitle),
         actions: [
-          IconButton(onPressed: (){
-               Navigator.pushReplacement(
-                context,
-                MaterialPageRoute(
-                    builder: (content) => const AdminLoginScreen()));
-          }, icon: const Icon(Icons.logout_sharp))
+          IconButton(
+              onPressed: () {
+                Navigator.pushReplacement(
+                    context,
+                    MaterialPageRoute(
+                        builder: (content) => const AdminLoginScreen()));
+              },
+              icon: const Icon(Icons.logout_sharp))
         ],
       ),
-      body: SingleChildScrollView(
-        child: Column(
-          children: [
-            Row(
-              children: [
-                Padding(
+      body: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Row(
+            children: [
+              Expanded(
+                child: Padding(
                   padding: const EdgeInsets.fromLTRB(8, 10, 10, 10),
-                  child: SizedBox(
-                    width: screenWidth * 0.8,
-                    child: TextField(
-                      controller: searchEditingController,
-                      decoration: InputDecoration(
-                        hintText: "Search",
-                        suffixIcon: ClipOval(
-                          child: Material(
-                            color: Colors.transparent,
-                            child: IconButton(
-                              icon: const Icon(Icons.search),
-                              onPressed: () {
-                                String search = searchEditingController.text;
-                                searchService(search, 1);
-                              },
-                            ),
+                  child: TextField(
+                    controller: searchEditingController,
+                    decoration: InputDecoration(
+                      hintText: "Search",
+                      suffixIcon: IconButton(
+                        icon: const Icon(Icons.search),
+                        onPressed: () {
+                          String search = searchEditingController.text;
+                          searchService(search, 1);
+                        },
+                      ),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(10.0),
+                      ),
+                    ),
+                    keyboardType: TextInputType.text,
+                  ),
+                ),
+              ),
+              MaterialButton(
+                onPressed: () {
+                  filterDialog();
+                },
+                child: const Icon(Icons.filter_list),
+              ),
+            ],
+          ),
+          Expanded(
+            child: sellerList.isEmpty
+                ? Center(child: Text("No Data"))
+                : Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      Container(
+                        height: 24,
+                        color: Color.fromARGB(255, 60, 213, 198),
+                        alignment: Alignment.center,
+                        child: Text(
+                          "${numberofresult.toString()} Service Provider(s) Found",
+                          style: const TextStyle(
+                            color: Colors.white,
+                            fontSize: 18,
                           ),
                         ),
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(10.0),
+                      ),
+                      Expanded(
+                        child: GridView.count(
+                          crossAxisCount: axiscount,
+                          children: List.generate(
+                            sellerList.length,
+                            (index) {
+                              return Card(
+                                child: InkWell(
+                                  onTap: () async {
+                                    Seller seller = sellerList[index];
+                                    await Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (content) =>
+                                            AdminVerifyDetails(
+                                                admin: widget.admin,
+                                                seller: seller),
+                                      ),
+                                    );
+                                    loadService(1);
+                                  },
+                                  child: Column(
+                                    children: [
+                                      Padding(
+                                        padding:
+                                            EdgeInsets.fromLTRB(15, 0, 17, 0),
+                                        child: Row(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.center,
+                                          children: [
+                                            if (sellerList[index].proStatus ==
+                                                "true") ...[
+                                              Container(
+                                                decoration: BoxDecoration(
+                                                  borderRadius:
+                                                      BorderRadius.circular(
+                                                          5.0),
+                                                  color: Colors.orangeAccent,
+                                                ),
+                                                child: const Text("  Pro  "),
+                                              ),
+                                              SizedBox(width: 8),
+                                            ],
+                                            if (sellerList[index]
+                                                    .preferredStatus ==
+                                                "true") ...[
+                                              Container(
+                                                decoration: BoxDecoration(
+                                                  borderRadius:
+                                                      BorderRadius.circular(
+                                                          5.0),
+                                                  color: Colors.orangeAccent,
+                                                ),
+                                                child:
+                                                    const Text("  Preferred  "),
+                                              ),
+                                              SizedBox(width: 8),
+                                            ],
+                                          ],
+                                        ),
+                                      ),
+                                      SizedBox(height: 5),
+                                      CachedNetworkImage(
+                                        width: screenWidth * 0.2,
+                                        fit: BoxFit.cover,
+                                        imageUrl:
+                                            "${Config.server}/lsm/assets/images/profile/${sellerList[index].sellerId}.png",
+                                        placeholder: (context, url) =>
+                                            const LinearProgressIndicator(),
+                                        errorWidget: (context, url, error) =>
+                                            const Icon(Icons.error),
+                                      ),
+                                      Text(
+                                        sellerList[index].sellerName.toString(),
+                                        style: const TextStyle(fontSize: 15),
+                                      ),
+                                      Text(
+                                        "Uploaded: " +
+                                            sellerList[index]
+                                                .uploadStatus
+                                                .toString(),
+                                        style: const TextStyle(fontSize: 14),
+                                      ),
+                                      Text(
+                                        "Verified: " +
+                                            sellerList[index]
+                                                .verifyStatus
+                                                .toString(),
+                                        style: const TextStyle(fontSize: 14),
+                                      ),
+                                      Text(
+                                        "Available: " +
+                                            sellerList[index]
+                                                .availableStatus
+                                                .toString(),
+                                        style: const TextStyle(fontSize: 14),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              );
+                            },
+                          ),
                         ),
                       ),
-                      keyboardType: TextInputType.text,
-                    ),
-                  ),
-                ),
-                Expanded(
-                  child: MaterialButton(
-                    onPressed: () {
-                      filterDialog();
-                    },
-                    child: const Icon(Icons.filter_list),
-                  ),
-                )
-              ],
-            ),
-            if (!sellerList.isEmpty)
-              Container(
-                height: 24,
-                color: Color.fromARGB(255, 60, 213, 198),
-                alignment: Alignment.center,
-                child: Text(
-                  "${numberofresult.toString()} Service Provider(s) Found",
-                  style: const TextStyle(color: Colors.white, fontSize: 18),
-                ),
-              ),
-            if (!sellerList.isEmpty)
-              GridView.count(
-                crossAxisCount: axiscount,
-                shrinkWrap: true,
-                physics: NeverScrollableScrollPhysics(),
-                children: List.generate(
-                  sellerList.length,
-                  (index) {
-                    return Card(
-                      child: InkWell(
-                        onTap: () async {
-                          Seller seller = Seller.fromJson(
-                            sellerList[index].toJson(),
-                          );
-                          await Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (content) => AdminVerifyDetails(admin: widget.admin, seller: seller),
-                            ),
-                          );
-                          loadService(1);
-                        },
-                        child: Column(
-                          children: [
-                            Padding(
-                              padding: EdgeInsets.fromLTRB(15, 0, 17, 0),
-                              child: Row(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  if (sellerList[index].proStatus.toString() == "true")
-                                    Container(
-                                      decoration: const BoxDecoration(
-                                        borderRadius: BorderRadius.all(
-                                          Radius.circular(5.0),
-                                        ),
-                                        color: Colors.orangeAccent,
-                                      ),
-                                      child: const Text("  Pro  "),
-                                    ),
-                                  const SizedBox(width: 8),
-                                  if (sellerList[index].preferredStatus.toString() == "true")
-                                    Container(
-                                      decoration: const BoxDecoration(
-                                        borderRadius: BorderRadius.all(
-                                          Radius.circular(5.0),
-                                        ),
-                                        color: Colors.orangeAccent,
-                                      ),
-                                      child: const Text("  Preferred  "),
-                                    ),
-                                ],
+                      SizedBox(
+                        height: 50,
+                        child: ListView.builder(
+                          shrinkWrap: true,
+                          itemCount: numofpage,
+                          scrollDirection: Axis.horizontal,
+                          itemBuilder: (context, index) {
+                            final color = (curpage - 1) == index
+                                ? Colors.red
+                                : Colors.black;
+                            return TextButton(
+                              onPressed: () {
+                                curpage = index + 1;
+                                loadService(index + 1);
+                              },
+                              child: Text(
+                                (index + 1).toString(),
+                                style: TextStyle(color: color, fontSize: 18),
                               ),
-                            ),
-                            SizedBox(height: 5),
-                            CachedNetworkImage(
-                              width: screenWidth * 0.2,
-                              fit: BoxFit.cover,
-                              imageUrl:
-                                  "${Config.server}/lsm/assets/images/profile/${sellerList[index].sellerId}.png",
-                              placeholder: (context, url) => const LinearProgressIndicator(),
-                              errorWidget: (context, url, error) => const Icon(Icons.error),
-                            ),
-                            Text(
-                              sellerList[index].sellerName.toString(),
-                              style: const TextStyle(fontSize: 15),
-                            ),
-                            Text(
-                              "Uploaded: " + sellerList[index].uploadStatus.toString(),
-                              style: const TextStyle(fontSize: 14),
-                            ),
-                            Text(
-                              "Verified: " + sellerList[index].verifyStatus.toString(),
-                              style: const TextStyle(fontSize: 14),
-                            ),
-                            Text(
-                              "Available: " + sellerList[index].availableStatus.toString(),
-                              style: const TextStyle(fontSize: 14),
-                            ),
-                          ],
+                            );
+                          },
                         ),
                       ),
-                    );
-                  },
-                ),
-              ),
-            if (!sellerList.isEmpty)
-              SizedBox(
-                height: 50,
-                child: ListView.builder(
-                  shrinkWrap: true,
-                  itemCount: numofpage,
-                  scrollDirection: Axis.horizontal,
-                  itemBuilder: (context, index) {
-                    if ((curpage - 1) == index) {
-                      color = Colors.red;
-                    } else {
-                      color = Colors.black;
-                    }
-                    return TextButton(
-                      onPressed: () {
-                        curpage = index + 1;
-                        loadService(index + 1);
-                      },
-                      child: Text(
-                        (index + 1).toString(),
-                        style: TextStyle(color: color, fontSize: 18),
-                      ),
-                    );
-                  },
-                ),
-              ),
-          ],
-        ),
+                    ],
+                  ),
+          ),
+        ],
       ),
     );
   }
@@ -270,8 +289,8 @@ class _AdminVerifyListState extends State<AdminVerifyList> {
             var extractdata = jsondata['data'];
 
             extractdata['seller'].forEach((v) {
-            sellerList.add(Seller.fromJson(v));
-          });
+              sellerList.add(Seller.fromJson(v));
+            });
 
             print(sellerList[0].sellerName);
           }
@@ -284,74 +303,72 @@ class _AdminVerifyListState extends State<AdminVerifyList> {
   }
 
   void loadService(int pg) {
-    curpage = pg;
-    numofpage;
-    http.post(Uri.parse("${Config.server}/lsm/php/load_barterverify.php"),
-        body: {
-          "pageno": pg.toString(),
-        }).then((response) {
-      print(response.body);
-      try {
-        sellerList.clear();
-        print(response.statusCode);
-        if (response.statusCode == 200) {
-          var jsondata = jsonDecode(response.body);
-          print(jsondata);
-          if (jsondata['status'] == "success") {
-            numofpage = int.parse(jsondata['numofpage']); //get number of pages
-            numberofresult = int.parse(jsondata['numberofresult']);
-            print(numberofresult);
-            var extractdata = jsondata['data'];
-
-           extractdata['seller'].forEach((v) {
-            sellerList.add(Seller.fromJson(v));
-          });
-
-            print(sellerList[0].sellerName);
-          }
-          setState(() {});
-        }
-      } catch (e, _) {
-        debugPrint(e.toString());
-      }
-    });
-  }
-
-  void filterService(int pg) {
-    curpage = pg;
-    numofpage;
-    http.post(Uri.parse("${Config.server}/lsm/php/load_barterverify.php"),
-        body: {
-          "pageno": pg.toString(),
-          "upload": upload,
-          "verify": verify,
-          "available": available,
-        }).then((response) {
-      print(response.body);
+  curpage = pg;
+  numofpage;
+  http.post(Uri.parse("${Config.server}/lsm/php/load_barterverify.php"),
+      body: {
+        "pageno": pg.toString(), // Convert pg to string explicitly
+      }).then((response) {
+    print(response.body);
+    try {
       sellerList.clear();
       print(response.statusCode);
       if (response.statusCode == 200) {
         var jsondata = jsonDecode(response.body);
-        print(jsondata['status']);
+        print(jsondata);
         if (jsondata['status'] == "success") {
           numofpage = int.parse(jsondata['numofpage']); //get number of pages
           numberofresult = int.parse(jsondata['numberofresult']);
           print(numberofresult);
           var extractdata = jsondata['data'];
+
           extractdata['seller'].forEach((v) {
             sellerList.add(Seller.fromJson(v));
           });
+
           print(sellerList[0].sellerName);
         }
         setState(() {});
       }
-    });
-  }
+    } catch (e, _) {
+      debugPrint(e.toString());
+    }
+  });
+}
+
+void filterService(int pg) {
+  curpage = pg;
+  numofpage;
+  http.post(Uri.parse("${Config.server}/lsm/php/load_barterverify.php"),
+      body: {
+        "pageno": pg.toString(), // Convert pg to string explicitly
+        "upload": upload,
+        "verify": verify,
+        "available": available,
+      }).then((response) {
+    print(response.body);
+    sellerList.clear();
+    print(response.statusCode);
+    if (response.statusCode == 200) {
+      var jsondata = jsonDecode(response.body);
+      print(jsondata['status']);
+      if (jsondata['status'] == "success") {
+        numofpage = int.parse(jsondata['numofpage']); //get number of pages
+        numberofresult = int.parse(jsondata['numberofresult']);
+        print(numberofresult);
+        var extractdata = jsondata['data'];
+        extractdata['seller'].forEach((v) {
+          sellerList.add(Seller.fromJson(v));
+        });
+        print(sellerList[0].sellerName);
+      }
+      setState(() {});
+    }
+  });
+}
 
   void searchService(String search, int pg) {
-    curpage = pg;
-    numofpage;
-    http.post(Uri.parse("${Config.server}/lsm/php/load_barterService.php"),
+    http.post(Uri.parse("${Config.server}/lsm/php/load_barterverify.php"),
         body: {
           "pageno": pg.toString(),
           "search": search,

@@ -9,7 +9,6 @@ import 'package:local_service_marketplace/model/seller.dart';
 import 'package:local_service_marketplace/model/user.dart';
 import 'config.dart';
 import 'package:http/http.dart' as http;
-import 'package:file_picker/file_picker.dart';
 import 'package:path_provider/path_provider.dart';
 
 class AdminVerifyDetails extends StatefulWidget {
@@ -27,14 +26,12 @@ class _AdminVerifyDetailsState extends State<AdminVerifyDetails> {
   String status = "";
   final df = DateFormat('dd-MM-yyyy hh:mm a');
   late double screenHeight, screenWidth, cardwitdh;
-  final TextEditingController _icEditingController = TextEditingController();
-  final TextEditingController _certEditingController = TextEditingController();
   late String icfileName = "Select Identity Card";
   late String certfileName = "Select Certificate";
-  late bool isVerify = false;
-  late String pro;
-  late String preferred;
-  late String available;
+  late String pro = "";
+  late String preferred = "";
+  late String available = "";
+  late String verify = "";
   late List<Seller> sellerList = <Seller>[];
   late User user = User(
       id: "na",
@@ -109,7 +106,7 @@ class _AdminVerifyDetailsState extends State<AdminVerifyDetails> {
                       ],
                     ),
                     const SizedBox(
-                      height: 20,
+                      height: 10,
                     ),
                     Row(
                       children: [
@@ -129,12 +126,18 @@ class _AdminVerifyDetailsState extends State<AdminVerifyDetails> {
                         )
                       ],
                     ),
+                             const SizedBox(
+                      height: 10,
+                    ),
                     Text("Token: ${widget.seller.token}"),
                     Text("Available Status: ${widget.seller.availableStatus}"),
+                             const SizedBox(
+                      height: 10,
+                    ),
                     Row(
                       children: [
-                        const SizedBox(width: 30),
-                        const Text("Pro Status:"),
+                        const SizedBox(width: 20),
+                        const Text("Pro Status:          "),
                         Radio(
                           value: "true",
                           groupValue: pro,
@@ -161,8 +164,8 @@ class _AdminVerifyDetailsState extends State<AdminVerifyDetails> {
                     ),
                     Row(
                       children: [
-                        const SizedBox(width: 30),
-                        const Text("Preferred Status:"),
+                        const SizedBox(width: 20),
+                        const Text("Preferred Status: "),
                         Radio(
                           value: "true",
                           groupValue: preferred,
@@ -187,8 +190,8 @@ class _AdminVerifyDetailsState extends State<AdminVerifyDetails> {
                     ),
                     Row(
                       children: [
-                        const SizedBox(width: 30),
-                        const Text("Available Status:"),
+                        const SizedBox(width: 20),
+                        const Text("Available Status: "),
                         Radio(
                           value: "true",
                           groupValue: available,
@@ -212,11 +215,11 @@ class _AdminVerifyDetailsState extends State<AdminVerifyDetails> {
                       ],
                     ),
                     const SizedBox(
-                      height: 35,
+                      height: 10,
                     ),
                     SizedBox(
                       width: screenWidth / 1.2,
-                      height: 50,
+                      height: 40,
                       child: ElevatedButton(
                         onPressed: () {
                           insertDialog();
@@ -314,14 +317,9 @@ class _AdminVerifyDetailsState extends State<AdminVerifyDetails> {
               ),
               onPressed: () {
                 Navigator.of(context).pop();
-                updateservice();
+                updateservice(verify, available);
                 loadVerify(0);
-                if (isVerify = false) {
-                  addnotification();
-                }
-                if (available == "false") {
-                  notavailablenotification();
-                }
+              
               },
             ),
             TextButton(
@@ -339,7 +337,10 @@ class _AdminVerifyDetailsState extends State<AdminVerifyDetails> {
     );
   }
 
-  void updateservice() async {
+  void updateservice(String verify, String available) async {
+
+     
+
     var request = http.MultipartRequest(
       'POST',
       Uri.parse("${Config.server}/lsm/php/verify_identityadmin.php"),
@@ -358,6 +359,12 @@ class _AdminVerifyDetailsState extends State<AdminVerifyDetails> {
       var responseData = await response.stream.bytesToString();
       var jsonData = jsonDecode(responseData);
       if (jsonData['status'] == 'success') {
+         if (verify == "false") {
+                  addnotification();
+                }
+                if (available == "false") {
+                  notavailablenotification();
+                }
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text("Update Success")),
         );
@@ -414,9 +421,12 @@ class _AdminVerifyDetailsState extends State<AdminVerifyDetails> {
 
             setState(() {
               if (mounted) {
-                isVerify = sellerList[index].verifyStatus == "true";
+                verify = sellerList[index].verifyStatus.toString();
                 icfileName = sellerList[index].icName.toString();
                 certfileName = sellerList[index].certName.toString();
+                pro = sellerList[index].proStatus.toString();
+                preferred = sellerList[index].preferredStatus.toString();
+                available = sellerList[index].availableStatus.toString();
               }
             });
           }
@@ -427,19 +437,38 @@ class _AdminVerifyDetailsState extends State<AdminVerifyDetails> {
     });
   }
 
-  Future<void> downloadDocument(String fileName) async {
-    final url =
-        '${Config.server}/download.php?filename=${widget.seller.sellerId}_$fileName';
-    final request = await HttpClient().getUrl(Uri.parse(url));
-    final response = await request.close();
-    final bytes = await consolidateHttpClientResponseBytes(response);
-    final appDir = await getApplicationDocumentsDirectory();
-    final file = File('${appDir.path}/$fileName');
-    await file.writeAsBytes(bytes);
+ Future<void> downloadDocument(String fileName) async {
+  final url = '${Config.server}/lsm/php/download.php?filename=${widget.seller.sellerId}_$fileName';
 
-    // Call a callback function to handle UI update after download
-    showDownloadSnackBar();
+  try {
+    final response = await http.get(Uri.parse(url));
+
+    if (response.statusCode == 200) {
+      final bytes = response.bodyBytes;
+      final appDir = await getApplicationDocumentsDirectory();
+      final file = File('${appDir.path}/$fileName');
+      await file.writeAsBytes(bytes);
+
+      // Show a notification or feedback to the user
+      showDownloadSnackBar();
+    } else {
+      // Handle error - show an error message to the user
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Failed to download file'),
+        ),
+      );
+    }
+  } catch (e) {
+    // Handle error - show an error message to the user
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(
+        content: Text('Error downloading file'),
+      ),
+    );
   }
+}
+
 
   void showDownloadSnackBar() {
     ScaffoldMessenger.of(context).showSnackBar(

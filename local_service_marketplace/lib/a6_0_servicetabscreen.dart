@@ -38,11 +38,6 @@ class ServiceTabScreenState extends State<ServiceTabScreen> {
     print("Service");
   }
 
-  @override
-  void dispose() {
-    super.dispose();
-    print("dispose");
-  }
 
   @override
   Widget build(BuildContext context) {

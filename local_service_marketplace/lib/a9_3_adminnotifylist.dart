@@ -34,11 +34,6 @@ class _AdminNotifyListState extends State<AdminNotifyList> {
   Widget build(BuildContext context) {
     screenHeight = MediaQuery.of(context).size.height;
     screenWidth = MediaQuery.of(context).size.width;
-    if (screenWidth > 600) {
-      axiscount = 3;
-    } else {
-      axiscount = 2;
-    }
     return Scaffold(
       appBar: AppBar(
         title: Text(maintitle),
@@ -52,11 +47,10 @@ class _AdminNotifyListState extends State<AdminNotifyList> {
             ))
           : Column(children: [
               Expanded(
-                  child: GridView.count(
-                      crossAxisCount: axiscount,
-                      children: List.generate(
-                        newsList.length,
-                        (index) {
+                  child: ListView.builder(
+                    shrinkWrap: true,
+                    itemCount: newsList.length,
+                    itemBuilder: (context, index) {
                           return Card(
                             child: InkWell(
                               onLongPress: () {
@@ -101,7 +95,8 @@ class _AdminNotifyListState extends State<AdminNotifyList> {
                             ),
                           );
                         },
-                      )))
+                  
+                      ))
             ]),
       floatingActionButton: FloatingActionButton(
           onPressed: () async {
