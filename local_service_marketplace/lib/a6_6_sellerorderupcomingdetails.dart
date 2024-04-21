@@ -5,7 +5,8 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
-import 'package:local_service_marketplace/a8_9_messagescreen.dart';
+import 'package:local_service_marketplace/a8_11_sellerchatscreen.dart';
+import 'package:local_service_marketplace/a8_9_userchatscreen.dart';
 import 'package:local_service_marketplace/config.dart';
 import 'package:local_service_marketplace/model/order.dart';
 import 'package:local_service_marketplace/model/user.dart';
@@ -43,11 +44,20 @@ class _SellerOrderUpcomingDetailsState
       datereg: "na",
       password: "na",
       otp: "na");
+  late User user2 = User(
+      id: "na",
+      name: "na",
+      email: "na",
+      phone: "na",
+      datereg: "na",
+      password: "na",
+      otp: "na");
 
   @override
   void initState() {
     super.initState();
     loadbarteruser();
+    loadseller();
     loaduserorders();
     paymentstatus = widget.order.paymentStatus.toString();
     submitstatus = widget.order.orderUserstatus.toString();
@@ -55,7 +65,9 @@ class _SellerOrderUpcomingDetailsState
     servicedate = DateTime.parse(widget.order.orderServicedate.toString());
     orderdate = DateTime.parse(widget.order.orderDate.toString());
 
-    if (paymentstatus == "Paid" && submitstatus == "New" && sellerstatus == "New") {
+    if (paymentstatus == "Paid" &&
+        submitstatus == "New" &&
+        sellerstatus == "New") {
       isConfirmedEnabled = true;
     }
     if (sellerstatus == "Confirmed" && submitstatus == "New") {
@@ -76,7 +88,7 @@ class _SellerOrderUpcomingDetailsState
       orderstatus = "Cancelled";
       reason = "Service Provider did not confirm the order within 7 days.";
       cancelService(reason);
-      token = token -1;
+      token = token - 1;
       print(token);
     }
   }
@@ -94,7 +106,8 @@ class _SellerOrderUpcomingDetailsState
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                        builder: (context) => const MessageScreen()),
+                        builder: (context) =>
+                            SellerChatScreen(user: user, order: widget.order)),
                   );
                 },
                 icon: const Icon(Icons.message))
@@ -176,7 +189,7 @@ class _SellerOrderUpcomingDetailsState
                               sellerstatus = "Confirmed";
                               submitStatus();
                               isArrivedEnabled = true;
-                              isConfirmedEnabled = false;  
+                              isConfirmedEnabled = false;
                             });
                           },
                     child: const Text("Order Confirmed"),
@@ -191,7 +204,7 @@ class _SellerOrderUpcomingDetailsState
                                   setState(() {
                                     sellerstatus = "Arrived";
                                     submitStatus();
-                                    isConfirmedEnabled = false;  
+                                    isConfirmedEnabled = false;
                                     isArrivedEnabled = false;
                                   });
                                 },
@@ -338,6 +351,21 @@ class _SellerOrderUpcomingDetailsState
     });
   }
 
+  void loadseller() {
+    http.post(Uri.parse("${Config.server}/lsm/php/load_user.php"), body: {
+      "userid": widget.order.sellerId,
+    }).then((response) {
+      log(response.body);
+      if (response.statusCode == 200) {
+        var jsondata = jsonDecode(response.body);
+        if (jsondata['status'] == 'success') {
+          user2 = User.fromJson(jsondata['data']);
+        }
+      }
+      setState(() {});
+    });
+  }
+
   void submitStatus() {
     http.post(Uri.parse("${Config.server}/lsm/php/set_ordersellerstatus.php"),
         body: {
@@ -351,8 +379,7 @@ class _SellerOrderUpcomingDetailsState
         if (jsondata['status'] == "success") {
         } else {}
         //selectStatus = st;
-        setState(() {
-        });
+        setState(() {});
         ScaffoldMessenger.of(context)
             .showSnackBar(const SnackBar(content: Text("Success")));
       }

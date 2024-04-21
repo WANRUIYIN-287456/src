@@ -126,12 +126,12 @@ class _AdminVerifyDetailsState extends State<AdminVerifyDetails> {
                         )
                       ],
                     ),
-                             const SizedBox(
+                    const SizedBox(
                       height: 10,
                     ),
                     Text("Token: ${widget.seller.token}"),
                     Text("Available Status: ${widget.seller.availableStatus}"),
-                             const SizedBox(
+                    const SizedBox(
                       height: 10,
                     ),
                     Row(
@@ -242,12 +242,13 @@ class _AdminVerifyDetailsState extends State<AdminVerifyDetails> {
     String notbody =
         "Dear ${user.name}, thank you for choosing lsm. Your identity and certifications have been verified. \nPro Status: $pro \nPreferred Status: $preferred \nPlease contact customer service if there is any enquires. +1300-00-1234";
 
-    http.post(Uri.parse("${Config.server}/lsm/php/insert_notifications.php"), body: {
-      "userid": widget.seller.sellerId.toString(),
-      "adminid": widget.admin.id.toString(),
-      "title": nottitle,
-      "body": notbody,
-    }).then((response) {
+    http.post(Uri.parse("${Config.server}/lsm/php/insert_notifications.php"),
+        body: {
+          "userid": widget.seller.sellerId.toString(),
+          "adminid": widget.admin.id.toString(),
+          "title": nottitle,
+          "body": notbody,
+        }).then((response) {
       print(response.body);
       if (response.statusCode == 200) {
         var jsondata = jsonDecode(response.body);
@@ -272,12 +273,13 @@ class _AdminVerifyDetailsState extends State<AdminVerifyDetails> {
     String notbody =
         "Dear ${user.name}, your available status updated. \nAvailable Status: $available \nPlease contact customer service if there is any enquires. +1300-00-1234";
 
-    http.post(Uri.parse("${Config.server}/lsm/php/insert_notifications.php"), body: {
-      "userid": widget.seller.sellerId.toString(),
-      "adminid": widget.admin.id.toString(),
-      "title": nottitle,
-      "body": notbody,
-    }).then((response) {
+    http.post(Uri.parse("${Config.server}/lsm/php/insert_notifications.php"),
+        body: {
+          "userid": widget.seller.sellerId.toString(),
+          "adminid": widget.admin.id.toString(),
+          "title": nottitle,
+          "body": notbody,
+        }).then((response) {
       print(response.body);
       if (response.statusCode == 200) {
         var jsondata = jsonDecode(response.body);
@@ -319,7 +321,6 @@ class _AdminVerifyDetailsState extends State<AdminVerifyDetails> {
                 Navigator.of(context).pop();
                 updateservice(verify, available);
                 loadVerify(0);
-              
               },
             ),
             TextButton(
@@ -338,9 +339,6 @@ class _AdminVerifyDetailsState extends State<AdminVerifyDetails> {
   }
 
   void updateservice(String verify, String available) async {
-
-     
-
     var request = http.MultipartRequest(
       'POST',
       Uri.parse("${Config.server}/lsm/php/verify_identityadmin.php"),
@@ -359,12 +357,12 @@ class _AdminVerifyDetailsState extends State<AdminVerifyDetails> {
       var responseData = await response.stream.bytesToString();
       var jsonData = jsonDecode(responseData);
       if (jsonData['status'] == 'success') {
-         if (verify == "false") {
-                  addnotification();
-                }
-                if (available == "false") {
-                  notavailablenotification();
-                }
+        if (verify == "false") {
+          addnotification();
+        }
+        if (available == "false") {
+          notavailablenotification();
+        }
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text("Update Success")),
         );
@@ -437,44 +435,37 @@ class _AdminVerifyDetailsState extends State<AdminVerifyDetails> {
     });
   }
 
- Future<void> downloadDocument(String fileName) async {
+Future<void> downloadDocument(String fileName) async {
   final url = '${Config.server}/lsm/php/download.php?filename=${widget.seller.sellerId}_$fileName';
 
   try {
     final response = await http.get(Uri.parse(url));
-
+    print(response.statusCode);
+    print(response.body);
     if (response.statusCode == 200) {
       final bytes = response.bodyBytes;
       final appDir = await getApplicationDocumentsDirectory();
-      final file = File('${appDir.path}/$fileName');
+      final file = File('${appDir.path}/${widget.seller.sellerId}_$fileName');
       await file.writeAsBytes(bytes);
-
       // Show a notification or feedback to the user
-      showDownloadSnackBar();
+      print('File saved to: ${file.path}');
+      showDownloadSnackBar('Downloaded Successfully');
     } else {
       // Handle error - show an error message to the user
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Failed to download file'),
-        ),
-      );
+      throw Exception('Failed to download file');
     }
   } catch (e) {
     // Handle error - show an error message to the user
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: Text('Error downloading file'),
-      ),
-    );
+    showDownloadSnackBar('Error downloading file');
   }
 }
 
+void showDownloadSnackBar(String message) {
+  ScaffoldMessenger.of(context).showSnackBar(
+    SnackBar(
+      content: Text(message),
+    ),
+  );
+}
 
-  void showDownloadSnackBar() {
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: Text('Downloaded Successfully'),
-      ),
-    );
-  }
 }

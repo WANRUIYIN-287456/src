@@ -6,7 +6,7 @@ import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
 import 'package:local_service_marketplace/a5_3_orderpaymentscreen.dart';
 import 'package:local_service_marketplace/a5_6_userorderlistscreen.dart';
-import 'package:local_service_marketplace/a8_9_messagescreen.dart';
+import 'package:local_service_marketplace/a8_9_userchatscreen.dart';
 import 'package:local_service_marketplace/config.dart';
 import 'package:local_service_marketplace/model/order.dart';
 import 'package:local_service_marketplace/model/user.dart';
@@ -106,7 +106,7 @@ class _UserOrderDetailsScreenState extends State<UserOrderDetailsScreen> {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                        builder: (context) => const MessageScreen()),
+                        builder: (context) => UserChatScreen(user: user, order: widget.order)),
                   );
                 },
                 icon: const Icon(Icons.message))

@@ -5,7 +5,8 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
 import 'package:local_service_marketplace/a5_8_sellerprofilescreen.dart';
-import 'package:local_service_marketplace/a8_9_messagescreen.dart';
+import 'package:local_service_marketplace/a8_11_sellerchatscreen.dart';
+import 'package:local_service_marketplace/a8_9_userchatscreen.dart';
 import 'package:local_service_marketplace/config.dart';
 import 'package:local_service_marketplace/model/order.dart';
 import 'package:local_service_marketplace/model/user.dart';
@@ -25,6 +26,14 @@ class _SellerOrderCompleteDetailsState extends State<SellerOrderCompleteDetails>
   late Order order;
   bool isRatingEnabled = true;
   late User user = User(
+      id: "na",
+      name: "na",
+      email: "na",
+      phone: "na",
+      datereg: "na",
+      password: "na",
+      otp: "na");
+       late User user2 = User(
       id: "na",
       name: "na",
       email: "na",
@@ -52,6 +61,7 @@ class _SellerOrderCompleteDetailsState extends State<SellerOrderCompleteDetails>
   void initState() {
     super.initState();
     loadbarteruser();
+    loadseller();
     loaduserorders();
   }
 
@@ -68,7 +78,7 @@ class _SellerOrderCompleteDetailsState extends State<SellerOrderCompleteDetails>
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                        builder: (context) => const MessageScreen()),
+                        builder: (context) => SellerChatScreen(user: user, order: widget.order)),
                   );
                 },
                 icon: const Icon(Icons.message))
@@ -273,6 +283,21 @@ class _SellerOrderCompleteDetailsState extends State<SellerOrderCompleteDetails>
         var jsondata = jsonDecode(response.body);
         if (jsondata['status'] == 'success') {
           user = User.fromJson(jsondata['data']);
+        }
+      }
+      setState(() {});
+    });
+  }
+
+void loadseller() {
+    http.post(Uri.parse("${Config.server}/lsm/php/load_user.php"), body: {
+      "userid": widget.order.sellerId,
+    }).then((response) {
+      log(response.body);
+      if (response.statusCode == 200) {
+        var jsondata = jsonDecode(response.body);
+        if (jsondata['status'] == 'success') {
+          user2 = User.fromJson(jsondata['data']);
         }
       }
       setState(() {});

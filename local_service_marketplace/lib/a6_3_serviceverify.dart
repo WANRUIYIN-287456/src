@@ -484,7 +484,7 @@ class _SellerVerificationScreenState extends State<SellerVerificationScreen> {
   showStatus() {
     return AlertDialog(
       title: const Text(
-        "Identity Verification Details",
+        "Service Providers Status Details",
         style: TextStyle(),
       ),
       content: SizedBox(

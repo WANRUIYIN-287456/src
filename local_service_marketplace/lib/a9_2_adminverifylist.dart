@@ -336,61 +336,54 @@ class _AdminVerifyListState extends State<AdminVerifyList> {
   });
 }
 
-void filterService(int pg) {
-  curpage = pg;
-  numofpage;
-  http.post(Uri.parse("${Config.server}/lsm/php/load_barterverify.php"),
-      body: {
-        "pageno": pg.toString(), // Convert pg to string explicitly
-        "upload": upload,
-        "verify": verify,
-        "available": available,
-      }).then((response) {
-    print(response.body);
-    sellerList.clear();
-    print(response.statusCode);
-    if (response.statusCode == 200) {
-      var jsondata = jsonDecode(response.body);
-      print(jsondata['status']);
-      if (jsondata['status'] == "success") {
-        numofpage = int.parse(jsondata['numofpage']); //get number of pages
-        numberofresult = int.parse(jsondata['numberofresult']);
-        print(numberofresult);
-        var extractdata = jsondata['data'];
-        extractdata['seller'].forEach((v) {
-          sellerList.add(Seller.fromJson(v));
-        });
-        print(sellerList[0].sellerName);
-      }
-      setState(() {});
-    }
-  });
-}
-
-  void searchService(String search, int pg) {
-    http.post(Uri.parse("${Config.server}/lsm/php/load_barterverify.php"),
-        body: {
-          "pageno": pg.toString(),
-          "search": search,
-        }).then((response) {
-      //print(response.body);
+void searchService(String search, int pg) {
+  http.post(Uri.parse("${Config.server}/lsm/php/load_barterverify.php"), body: {
+    "pageno": pg.toString(),
+    "search": search,
+  }).then((response) {
+    if (mounted) {
       sellerList.clear();
       if (response.statusCode == 200) {
         var jsondata = jsonDecode(response.body);
         if (jsondata['status'] == "success") {
-          numofpage = int.parse(jsondata['numofpage']); //get number of pages
+          numofpage = int.parse(jsondata['numofpage']);
           numberofresult = int.parse(jsondata['numberofresult']);
-          print(numberofresult);
           var extractdata = jsondata['data'];
           extractdata['seller'].forEach((v) {
             sellerList.add(Seller.fromJson(v));
           });
-          print(sellerList[0].sellerName);
         }
         setState(() {});
       }
-    });
-  }
+    }
+  });
+}
+
+void filterService(int pg) {
+  http.post(Uri.parse("${Config.server}/lsm/php/load_barterverify.php"), body: {
+    "pageno": pg.toString(),
+    "upload": upload.toString(),
+    "verify": verify.toString(),
+    "available": available.toString(),
+  }).then((response) {
+    if (mounted) {
+      sellerList.clear();
+      if (response.statusCode == 200) {
+        var jsondata = jsonDecode(response.body);
+        if (jsondata['status'] == "success") {
+          numofpage = int.parse(jsondata['numofpage']);
+          numberofresult = int.parse(jsondata['numberofresult']);
+          var extractdata = jsondata['data'];
+          extractdata['seller'].forEach((v) {
+            sellerList.add(Seller.fromJson(v));
+          });
+        }
+        setState(() {});
+      }
+    }
+  });
+}
+
 
   void filterDialog() {
     showDialog(
@@ -467,9 +460,9 @@ void filterService(int pg) {
                         child: DropdownButton(
                           isExpanded: true,
                           value: verify,
-                          onChanged: (newValue2) {
+                          onChanged: (newValue) {
                             setState(() {
-                              verify = newValue2!;
+                              verify = newValue!;
                               print(verify);
                             });
                           },
@@ -506,9 +499,9 @@ void filterService(int pg) {
                         child: DropdownButton(
                           isExpanded: true,
                           value: available,
-                          onChanged: (newValue3) {
+                          onChanged: (newValue) {
                             setState(() {
-                              available = newValue3!;
+                              available = newValue!;
                               print(available);
                             });
                           },

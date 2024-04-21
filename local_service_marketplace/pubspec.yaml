@@ -52,6 +52,7 @@ dependencies:
   path: ^1.8.2
   webview_flutter: ^3.0.4
   flutter_rating_bar: ^4.0.0
+  grouped_list: ^5.1.2
 
 
 dev_dependencies:

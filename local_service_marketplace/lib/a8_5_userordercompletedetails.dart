@@ -7,7 +7,7 @@ import 'package:intl/intl.dart';
 import 'package:local_service_marketplace/a5_4_userbillscreen.dart';
 import 'package:local_service_marketplace/a5_2_userinsertorderscreen.dart';
 import 'package:local_service_marketplace/a8_6_userinsertrating.dart';
-import 'package:local_service_marketplace/a8_9_messagescreen.dart';
+import 'package:local_service_marketplace/a8_9_userchatscreen.dart';
 import 'package:local_service_marketplace/config.dart';
 import 'package:local_service_marketplace/model/order.dart';
 import 'package:local_service_marketplace/model/user.dart';
@@ -83,7 +83,7 @@ class _UserOrderCompleteDetailsState extends State<UserOrderCompleteDetails> {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                        builder: (context) => const MessageScreen()),
+                        builder: (context) => UserChatScreen(user: user, order: widget.order)),
                   );
                 },
                 icon: const Icon(Icons.message))

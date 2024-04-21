@@ -5,13 +5,15 @@ import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:local_service_marketplace/a3_login.dart';
+import 'package:local_service_marketplace/a8_11_sellerchatscreen.dart';
 import 'package:local_service_marketplace/a8_1_editprofilescreen.dart';
 import 'package:local_service_marketplace/a8_2_favouritescreen.dart';
 import 'package:local_service_marketplace/a8_3_historyscreen.dart';
 import 'package:local_service_marketplace/a8_10_settingscreen.dart';
-import 'package:local_service_marketplace/a8_9_messagescreen.dart';
 import 'package:local_service_marketplace/config.dart';
 import 'package:local_service_marketplace/model/user.dart';
+
+import 'a8_12_aboutusscreen.dart';
 
 class AccountTabScreen extends StatefulWidget {
   final User user;
@@ -41,13 +43,12 @@ class _AccountTabScreenState extends State<AccountTabScreen> {
     print(maintitle);
     loadProfile();
     print(widget.user.id);
-      if (widget.user.name.toString() != "na") {
+    if (widget.user.name.toString() != "na") {
       isDisable = false;
     } else if (widget.user.name.toString() == "na") {
       isDisable = true;
     }
   }
-
 
   @override
   Widget build(BuildContext context) {
@@ -57,38 +58,47 @@ class _AccountTabScreenState extends State<AccountTabScreen> {
       appBar: AppBar(
         title: Text(maintitle),
         actions: [
-          Row(
-            children: [    
-             SizedBox(width: 58,
-              child: MaterialButton(
-                onPressed: () {
-                  Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                          builder: (content) => const SettingScreen()));
-                },
-                child: Row(
-                    children: const [
-                      Icon(Icons.settings, color: Colors.white54),
-                      SizedBox(width: 2),
-                    ]),
-              ),),
-              SizedBox(width: 58,
-              child: MaterialButton(
-                onPressed: () {
-                  Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                          builder: (content) => const MessageScreen()));
-                },
-                child: Row(
-                    children: const [
-                      Icon(Icons.message, color: Colors.white54),
-                      SizedBox(width: 2),
-                    ]),
-              ),),
-            ],
+          IconButton(
+            onPressed: () {
+              Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (content) => const AboutUsScreen()));
+            },
+            icon: const Icon(Icons.info),
           )
+          // Row(
+          //   children: [
+          //    SizedBox(width: 58,
+          //     child: MaterialButton(
+          //       onPressed: () {
+          //         Navigator.push(
+          //             context,
+          //             MaterialPageRoute(
+          //                 builder: (content) => const SettingScreen()));
+          //       },
+          //       child: Row(
+          //           children: const [
+          //             Icon(Icons.settings, color: Colors.white54),
+          //             SizedBox(width: 2),
+          //           ]),
+          //     ),),
+          //     SizedBox(width: 58,
+          //     child: MaterialButton(
+          //       onPressed: () {
+          //         Navigator.push(
+          //             context,
+          //             MaterialPageRoute(
+          //                 builder: (content) => const CustomerService()));
+          //       },
+          //       child: Row(
+          //           children: const [
+          //             Icon(Icons.message, color: Colors.white54),
+          //             SizedBox(width: 2),
+          //           ]),
+          //     ),),
+          //   ],
+          // )
         ],
       ),
       body: Center(
