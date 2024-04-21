@@ -586,7 +586,7 @@ class _SellerVerificationScreenState extends State<SellerVerificationScreen> {
       "icN": icfileName,
       "certN": certfileName,
       "verify": verify,
-      "token": 0.toString(),
+      "token": "0",
     });
 
     if (ic.isNotEmpty) {

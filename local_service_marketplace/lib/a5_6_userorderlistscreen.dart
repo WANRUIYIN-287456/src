@@ -37,12 +37,18 @@ class _UserOrderScreenState extends State<UserOrderScreen> {
     return Scaffold(
       appBar: AppBar(
         title: const Text("Your Order"),
-        // leading: IconButton(
-        //   icon: const Icon(Icons.arrow_back),
-        //   onPressed: () {
-        //     Navigator.popUntil(context, (route) => route.isFirst);
-        //   },
-        // ),
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back),
+          onPressed: () {
+            //Navigator.popUntil(context, (route) => route.isFirst);
+            Navigator.pushAndRemoveUntil(
+              context,
+              MaterialPageRoute(
+                  builder: (context) => MainScreen(user: widget.user)),
+              (route) => false, // Remove all routes
+            );
+          },
+        ),
       ),
       body: Container(
         child: orderList.isEmpty
@@ -61,7 +67,7 @@ class _UserOrderScreenState extends State<UserOrderScreen> {
                                 children: [
                                   Container(
                                     margin: const EdgeInsets.all(10),
-                                    width: screenWidth * 0.3,
+                                    width: screenWidth * 0.28,
                                     child: CachedNetworkImage(
                                         imageUrl:
                                             "${Config.server}/lsm/assets/images/profile/${widget.user.id}.png",
@@ -101,7 +107,7 @@ class _UserOrderScreenState extends State<UserOrderScreen> {
                           )),
                     ),
                   ),
-                  const SizedBox(height: 30),
+                  const SizedBox(height: 10),
                   Expanded(
                     child: ListView.builder(
                       itemCount: orderList.length,
@@ -110,12 +116,11 @@ class _UserOrderScreenState extends State<UserOrderScreen> {
                           onTap: () async {
                             Order order =
                                 Order.fromJson(orderList[index].toJson());
-                            await Navigator.push(
+                            await Navigator.pushReplacement(
                               context,
                               MaterialPageRoute(
-                                builder: (context) => UserOrderDetailsScreen(
-                                  order: order
-                                ),
+                                builder: (context) =>
+                                    UserOrderDetailsScreen(order: order),
                               ),
                             );
                             loaduserorders();
@@ -123,36 +128,44 @@ class _UserOrderScreenState extends State<UserOrderScreen> {
                           subtitle: Column(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
-                              Row(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  CachedNetworkImage(
-                                    width: screenWidth / 3,
-                                    fit: BoxFit.cover,
-                                    imageUrl:
-                                        "${Config.server}/lsm/assets/images/${orderList[index].serviceId}.png",
-                                    placeholder: (context, url) =>
-                                        const LinearProgressIndicator(),
-                                    errorWidget: (context, url, error) =>
-                                        const Icon(Icons.error),
-                                  ),
-                                  const SizedBox(width: 25),
-                                  Column(
+                              Card(
+                                child: Row(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                   Column(
                                     children: [
-                                      const SizedBox(height: 15),
-                                      Text("${orderList[index].serviceName}",
-                                          style: const TextStyle(
-                                            fontSize: 15,
-                                            fontWeight: FontWeight.bold,
-                                          )),
-                                      Text(
-                                          "Order Status: ${orderList[index].orderStatus}"),
-
+                                      SizedBox(height: 20,),
+                                       CachedNetworkImage(
+                                      width: screenWidth * 0.18,
+                                      height: screenHeight * 0.08,
+                                      fit: BoxFit.cover,
+                                      imageUrl:
+                                          "${Config.server}/lsm/assets/images/${orderList[index].serviceId}.png",
+                                      placeholder: (context, url) =>
+                                          const LinearProgressIndicator(),
+                                      errorWidget: (context, url, error) =>
+                                          const Icon(Icons.error),
+                                    ),
+                                    ],
+                                   ),
+                                    const SizedBox(width: 25),
+                                    Column(
+                                      children: [
+                                        const SizedBox(height: 15),
+                                        Text("${orderList[index].serviceName}",
+                                            style: const TextStyle(
+                                              fontSize: 15,
+                                              fontWeight: FontWeight.bold,
+                                            )),
+                                        Text(
+                                            "Order Status: ${orderList[index].orderStatus}"),
                                         Text(
                                             "Payment Status: ${orderList[index].paymentStatus}"),
-                                    ],
-                                  )
-                                ],
+                                        Text(""),
+                                      ],
+                                    )
+                                  ],
+                                ),
                               ),
                             ],
                           ),
@@ -183,7 +196,6 @@ class _UserOrderScreenState extends State<UserOrderScreen> {
           extractdata['order'].forEach((v) {
             Order order = Order.fromJson(v);
             orderList.add(order);
-            
           });
         } else {
           status = "Please register an account first";

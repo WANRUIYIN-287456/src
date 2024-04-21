@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:local_service_marketplace/a5_7_userorderdetailsscreen.dart';
 import 'package:local_service_marketplace/config.dart';
 import 'package:local_service_marketplace/model/order.dart';
 import 'package:local_service_marketplace/model/user.dart';
@@ -89,8 +90,39 @@ class _PaymentScreenState extends State<PaymentScreen> {
       if (response.statusCode == 200) {
         var jsondata = jsonDecode(response.body);
         if (jsondata['status'] == "success") {
-          order = Order.fromJson(jsondata['data']);
-          setState(() {});
+          var orderData = jsondata['data']['order'];
+          if (orderData != null && orderData.isNotEmpty) {
+            var orderItem = orderData[0];
+            // Create an Order object from the JSON data
+            Order order = Order(
+              orderId: orderItem['order_id'],
+              serviceId: orderItem['service_id'],
+              userId: orderItem['user_id'],
+              sellerId: orderItem['seller_id'],
+              serviceName: orderItem['service_name'],
+              servicePrice: orderItem['service_price'],
+              serviceUnit: orderItem['service_unit'],
+              orderQuantity: orderItem['order_quantity'],
+              orderTotalprice: orderItem['order_totalprice'],
+              orderServicedate: orderItem['order_servicedate'],
+              orderServicetime: orderItem['order_servicetime'],
+              orderServiceaddress: orderItem['order_serviceaddress'],
+              orderMessage: orderItem['order_message'],
+              orderDate: orderItem['order_date'],
+              orderUserstatus: orderItem['order_userstatus'],
+              orderSellerstatus: orderItem['order_sellerstatus'],
+              orderStatus: orderItem['order_status'],
+              paymentStatus: orderItem['payment_status'],
+              receiptId: orderItem['receipt_id'],
+            );
+
+            Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(
+                builder: (context) => UserOrderDetailsScreen(order: order),
+              ),
+            );
+          }
         } else {
           setState(() {});
           Navigator.of(context).pop();
@@ -111,18 +143,30 @@ class _PaymentScreenState extends State<PaymentScreen> {
     return Scaffold(
       appBar: AppBar(
         title: const Text("Payment"),
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back),
-          onPressed: () {
-            Navigator.pop(context);
-            Navigator.pop(context);
-          },
-        ),
+        // leading: IconButton(
+        //   icon: const Icon(Icons.arrow_back),
+        //   onPressed: () {
+        //     Navigator.pop(context);
+        //     Navigator.pop(context);
+        //    // Navigator.pop(context);
+        //   },
+        // ),
         actions: [
-          TextButton(onPressed: (){
-            Navigator.popUntil(context, (route) => route.isFirst);
-          }, child: const Text("Done", style: TextStyle( color: Colors.white,
-                            decoration: TextDecoration.underline,),))
+          TextButton(
+              onPressed: () {
+                loaduserorders();
+                // Navigator.popUntil(context, (route) => route.isFirst);
+                // Navigator.pop(context);
+                // Navigator.pop(context);
+                // Navigator.pop(context);
+              },
+              child: const Text(
+                "Done",
+                style: TextStyle(
+                  color: Colors.white,
+                  decoration: TextDecoration.underline,
+                ),
+              ))
         ],
       ),
       body: Stack(

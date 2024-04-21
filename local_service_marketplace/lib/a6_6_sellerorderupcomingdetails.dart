@@ -35,7 +35,7 @@ class _SellerOrderUpcomingDetailsState
   late String reason;
   late DateTime servicedate;
   late DateTime orderdate;
-  late int token;
+  late int token = 0;
   late User user = User(
       id: "na",
       name: "na",

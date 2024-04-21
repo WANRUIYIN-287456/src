@@ -44,21 +44,7 @@ class _UserOrderCompleteDetailsState extends State<UserOrderCompleteDetails> {
       datereg: "na",
       password: "na",
       otp: "na");
-  late Service service = Service(
-    serviceId: "na",
-    sellerId: "na",
-    serviceName: "na",
-    serviceCategory: "na",
-    serviceType: "na",
-    serviceDesc: "na",
-    servicePrice: "na",
-    serviceUnit: "na",
-    serviceLong: "na",
-    serviceLat: "na",
-    serviceState: "na",
-    serviceLocality: "na",
-    serviceDate: "na",
-  );
+  late Service service;
 
   @override
   void initState() {
@@ -270,11 +256,7 @@ class _UserOrderCompleteDetailsState extends State<UserOrderCompleteDetails> {
                   TableCell(
                       child: ElevatedButton(
                     onPressed: () {
-                      Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (content) => ServiceOrderScreen(
-                                  user: user2, service: service)));
+                     loadservice();
                     },
                     child: const Text("Booking Again"),
                   )),
@@ -367,7 +349,32 @@ class _UserOrderCompleteDetailsState extends State<UserOrderCompleteDetails> {
       if (response.statusCode == 200) {
         var jsondata = jsonDecode(response.body);
         if (jsondata['status'] == 'success') {
-          service = Service.fromJson(jsondata['data']);
+           var serviceData = jsondata['data']['service'];
+            var serviceItem = serviceData[0];
+          // Create an Order object from the JSON data
+          Service service = Service(
+            serviceId: serviceItem['service_id'],
+            sellerId: serviceItem['seller_id'],
+            serviceName: serviceItem['service_name'],
+            serviceCategory: serviceItem['service_category'],
+            serviceType: serviceItem['service_type'],
+            serviceDesc: serviceItem['service_desc'],
+            servicePrice: serviceItem['service_price'],
+            serviceUnit: serviceItem['service_unit'],
+            serviceLong: serviceItem['service_long'],
+            serviceLat: serviceItem['service_lat'],
+            serviceState: serviceItem['service_state'],
+            serviceLocality: serviceItem['service_locality'],
+            serviceDate: serviceItem['service_date'],
+            proStatus: serviceItem['pro_status'],
+            preferredStatus: serviceItem['preferred_status'],
+
+          );
+           Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (content) => ServiceOrderScreen(
+                                  user: user2, service: service)));
         }
       }
       setState(() {});

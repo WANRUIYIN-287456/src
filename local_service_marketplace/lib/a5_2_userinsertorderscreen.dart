@@ -28,7 +28,6 @@ class _ServiceOrderScreenState extends State<ServiceOrderScreen> {
   late double screenHeight, screenWidth, cardwitdh;
   double qty = 0;
   double totalprice = 0.0;
-  double singleprice = 0.0;
   late int orderid;
   late Service service;
   final _quantityFormKey = GlobalKey<FormState>();
@@ -45,13 +44,6 @@ class _ServiceOrderScreenState extends State<ServiceOrderScreen> {
   @override
   void initState() {
     super.initState();
-    try {
-      singleprice = double.parse(widget.service.servicePrice.toString());
-    } catch (e) {
-      // Handle the case where parsing fails
-      print("Error parsing service price: $e");
-      singleprice = 0.0; // Or any default value you prefer
-    }
     servicedate = DateTime.now();
     servicetime = TimeOfDay.now();
   }
@@ -309,14 +301,22 @@ class _ServiceOrderScreenState extends State<ServiceOrderScreen> {
                     Order? result = await orderService();
                     if (result != null) {
                       // Navigate to UserOrderDetailsScreen
-                      Navigator.push(
+                      Navigator.pushAndRemoveUntil(
                         context,
                         MaterialPageRoute(
-                          builder: (context) => UserOrderDetailsScreen(
-                            order: result
-                          ),
+                          builder: (context) =>
+                              UserOrderDetailsScreen(order: result),
                         ),
+                        (route) => false, // Remove all routes
                       );
+
+                      // Navigator.push(
+                      //   context,
+                      //   MaterialPageRoute(
+                      //     builder: (context) =>
+                      //         UserOrderDetailsScreen(order: result),
+                      //   ),
+                      // );
                     } else {
                       ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
                           content: Text("Order failed or canceled.")));

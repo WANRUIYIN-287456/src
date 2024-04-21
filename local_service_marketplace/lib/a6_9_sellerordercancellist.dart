@@ -39,7 +39,7 @@ class _SellerOrderCancelListState extends State<SellerOrderCancelList> {
             ? Container()
             : Column(
                 children: [
-                    const SizedBox(height: 30),
+                  const SizedBox(height: 30),
                   Container(
                     width: screenWidth,
                     alignment: Alignment.center,
@@ -53,7 +53,7 @@ class _SellerOrderCancelListState extends State<SellerOrderCancelList> {
                           )),
                     ),
                   ),
-                  const SizedBox(height: 30),
+                  const SizedBox(height: 10),
                   Expanded(
                     child: ListView.builder(
                       itemCount: orderList.length,
@@ -74,36 +74,42 @@ class _SellerOrderCancelListState extends State<SellerOrderCancelList> {
                           subtitle: Column(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
-                              Row(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  CachedNetworkImage(
-                                    width: screenWidth * 0.3,
-                                    fit: BoxFit.cover,
-                                    imageUrl:
-                                        "${Config.server}/lsm/assets/images/${orderList[index].serviceId}.png",
-                                    placeholder: (context, url) =>
-                                        const LinearProgressIndicator(),
-                                    errorWidget: (context, url, error) =>
-                                        const Icon(Icons.error),
-                                  ),
-                                  const SizedBox(width: 15),
-                                  Column(
+                              Padding(
+                                padding: const EdgeInsets.fromLTRB(0, 0, 0, 3),
+                                child: Card(
+                                  child: Row(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
                                     children: [
-                                      const SizedBox(height: 15),
-                                      Text("${orderList[index].serviceName}",
-                                          style: const TextStyle(
-                                            fontSize: 15,
-                                            fontWeight: FontWeight.bold,
-                                          )),
-                                      Text(
-                                          "Order Status: ${orderList[index].orderStatus}"),
-                                      if (!isPaid)
-                                        Text(
-                                            "Payment Status: ${orderList[index].paymentStatus}"),
+                                      CachedNetworkImage(
+                                        width: screenWidth * 0.16,
+                                        height: screenHeight * 0.10,
+                                        fit: BoxFit.cover,
+                                        imageUrl:
+                                            "${Config.server}/lsm/assets/images/${orderList[index].serviceId}.png",
+                                        placeholder: (context, url) =>
+                                            const LinearProgressIndicator(),
+                                        errorWidget: (context, url, error) =>
+                                            const Icon(Icons.error),
+                                      ),
+                                      const SizedBox(width: 15),
+                                      Column(
+                                        children: [
+                                          const SizedBox(height: 15),
+                                          Text(
+                                              "${orderList[index].serviceName}",
+                                              style: const TextStyle(
+                                                fontSize: 15,
+                                                fontWeight: FontWeight.bold,
+                                              )),
+                                          Text(
+                                              "Order Status: ${orderList[index].orderStatus}"),
+                                          Text(""),
+                                        ],
+                                      )
                                     ],
-                                  )
-                                ],
+                                  ),
+                                ),
                               ),
                             ],
                           ),

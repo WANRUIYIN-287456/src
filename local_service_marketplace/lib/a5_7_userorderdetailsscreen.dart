@@ -19,7 +19,6 @@ class UserOrderDetailsScreen extends StatefulWidget {
   State<UserOrderDetailsScreen> createState() => _UserOrderDetailsScreenState();
 }
 
-
 class _UserOrderDetailsScreenState extends State<UserOrderDetailsScreen> {
   final df = DateFormat('dd-MM-yyyy hh:mm a');
   late double screenHeight, screenWidth;
@@ -40,7 +39,7 @@ class _UserOrderDetailsScreenState extends State<UserOrderDetailsScreen> {
       datereg: "na",
       password: "na",
       otp: "na");
-       late User user2 = User(
+  late User user2 = User(
       id: "na",
       name: "na",
       email: "na",
@@ -58,10 +57,10 @@ class _UserOrderDetailsScreenState extends State<UserOrderDetailsScreen> {
     paymentstatus = widget.order.paymentStatus.toString();
     submitstatus = widget.order.orderUserstatus.toString();
     sellerstatus = widget.order.orderSellerstatus.toString();
-     if (widget.order.orderServicedate != null) {
-    // Parse the date string only if it's not null
-    servicedate = DateTime.parse(widget.order.orderServicedate.toString());
-  }
+    if (widget.order.orderServicedate != null) {
+      // Parse the date string only if it's not null
+      servicedate = DateTime.parse(widget.order.orderServicedate.toString());
+    }
     if (widget.order.orderSellerstatus.toString() == "Arrived") {
       isCompletedEnabled = true;
     }
@@ -85,19 +84,19 @@ class _UserOrderDetailsScreenState extends State<UserOrderDetailsScreen> {
     return Scaffold(
         appBar: AppBar(
           title: const Text("Order Details"),
-    //       leading: IconButton(
-    //   icon: const Icon(Icons.arrow_back),
-    //   onPressed: () {
-    //      Navigator.pushReplacement(
-    //                     context,
-    //                     MaterialPageRoute(
-    //                       builder: (context) => UserOrderScreen(
-    //                         user: user2,
-    //                       ),
-    //                     ),
-    //                   );
-    //   },
-    // ),
+                leading: IconButton(
+            icon: const Icon(Icons.arrow_back),
+            onPressed: () {
+               Navigator.pushReplacement(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => UserOrderScreen(
+                                  user: user2,
+                                ),
+                              ),
+                            );
+            },
+          ),
           actions: [
             IconButton(
                 onPressed: () {}, icon: const Icon(Icons.location_on_outlined)),
@@ -106,7 +105,8 @@ class _UserOrderDetailsScreenState extends State<UserOrderDetailsScreen> {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                        builder: (context) => UserChatScreen(user: user, order: widget.order)),
+                        builder: (context) =>
+                            UserChatScreen(user: user, order: widget.order)),
                   );
                 },
                 icon: const Icon(Icons.message))
@@ -273,8 +273,7 @@ class _UserOrderDetailsScreenState extends State<UserOrderDetailsScreen> {
             ),
             Padding(
               padding: const EdgeInsets.fromLTRB(20.0, 8, 20, 20),
-              child:
-                  Table(
+              child: Table(
                 columnWidths: const {
                   0: FlexColumnWidth(4),
                   1: FlexColumnWidth(6),
@@ -340,35 +339,31 @@ class _UserOrderDetailsScreenState extends State<UserOrderDetailsScreen> {
                       ),
                     ),
                     TableCell(
-                      child: Row(
-                        children: [
-                          if (paymentstatus == "Paid")
-                            const Text("\nPaid")
-                          else
-                            Expanded(
-                              child: ElevatedButton(
-                                onPressed: ()  {
-                                   Navigator.pushReplacement(
-                                    context,
-                                    MaterialPageRoute(
-                                      builder: (content) => PaymentScreen(
-                                        user: user,
-                                        order: widget.order,
-                                        
-                                      ),
-                                    ),
-                                  );
-                                   setState(() {
-                                      loaduserorders();
-                                    
-                                   });
-                                 
-                                },
-                                child: const Text("Pay now"),
-                              ),
-                            ),
-                        ],
-                      ),
+                      child: paymentstatus == "Paid"
+                          ?  Text("\n"+widget.order.paymentStatus.toString())
+                          :Row(children: [
+                       Text(widget.order.paymentStatus.toString() + "   "),
+                        Expanded(
+                         child: ElevatedButton(
+                           onPressed: () {
+                             Navigator.pushReplacement(
+                               context,
+                               MaterialPageRoute(
+                                 builder: (content) => PaymentScreen(
+                                   user: user2,
+                                   order: widget.order,
+                                 ),
+                               ),
+                             );
+                             loaduserorders();
+                             setState(() {
+                               paymentstatus = widget.order.paymentStatus.toString();
+                             });
+                           },
+                           child: const Text("Pay now"),
+                         ),
+                       ),
+                          ],),
                     ),
                   ]),
                 ],
@@ -390,9 +385,7 @@ class _UserOrderDetailsScreenState extends State<UserOrderDetailsScreen> {
         if (jsondata['status'] == "success") {
           order = Order.fromJson(jsondata['data']);
           setState(() {
-            
             paymentstatus = widget.order.paymentStatus.toString();
-             
           });
         } else {
           setState(() {});
@@ -424,7 +417,7 @@ class _UserOrderDetailsScreenState extends State<UserOrderDetailsScreen> {
     });
   }
 
-    void loadownuser() {
+  void loadownuser() {
     http.post(Uri.parse("${Config.server}/lsm/php/load_user.php"), body: {
       "userid": widget.order.userId,
     }).then((response) {
@@ -451,6 +444,7 @@ class _UserOrderDetailsScreenState extends State<UserOrderDetailsScreen> {
       if (response.statusCode == 200) {
         var jsondata = jsonDecode(response.body);
         if (jsondata['status'] == "success") {
+          loaduserorders();
         } else {}
         //selectStatus = st;
         setState(() {});
@@ -570,11 +564,9 @@ class _UserOrderDetailsScreenState extends State<UserOrderDetailsScreen> {
                 style: TextStyle(),
               ),
               onPressed: () {
+                Navigator.pop(context);
                 cancelService(
-                    reason); // Passing the reason to the cancelService function
-                    loaduserorders();
-                Navigator.of(context).pop();
-                Navigator.of(context).pop();
+                    reason); // Passing the reason to the cancelService function                
               },
             ),
           ],
@@ -584,23 +576,35 @@ class _UserOrderDetailsScreenState extends State<UserOrderDetailsScreen> {
   }
 
   void cancelService(String? reason) {
-    http.post(Uri.parse("${Config.server}/lsm/php/cancel_userorder.php"), body: {
-      "orderid": widget.order.orderId,
-      "userid": widget.order.userId,
-      "sellerid": widget.order.sellerId,
-      "reason": reason,
-      "orderstatus": "Cancelled"
-    }).then((response) {
+    http.post(Uri.parse("${Config.server}/lsm/php/cancel_userorder.php"),
+        body: {
+          "orderid": widget.order.orderId,
+          "userid": widget.order.userId,
+          "sellerid": widget.order.sellerId,
+          "reason": reason,
+          "orderstatus": "Cancelled"
+        }).then((response) {
       log(response.body);
       //orderList.clear();
       if (response.statusCode == 200) {
         var jsondata = jsonDecode(response.body);
         if (jsondata['status'] == "success") {
-        } else {}
-        //selectStatus = st;
-        setState(() {});
-        ScaffoldMessenger.of(context)
+          loaduserorders();
+            Navigator.pushAndRemoveUntil(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) =>
+                              UserOrderScreen(user: user2)
+                        ),
+                        (route) => false, // Remove all routes
+                      );
+          ScaffoldMessenger.of(context)
             .showSnackBar(const SnackBar(content: Text("Cancel Success")));
+            
+        } else {}
+// ScaffoldMessenger.of(context)
+//             .showSnackBar(const SnackBar(content: Text("Cancel Failed")));
+        
       }
     });
   }

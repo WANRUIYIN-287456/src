@@ -159,7 +159,7 @@ class _HomeTabScreenState extends State<HomeTabScreen> {
                   ));
                   return;
                 }
-                await Navigator.push(
+                await Navigator.pushReplacement(
                   context,
                   MaterialPageRoute(
                     builder: (content) => UserOrderScreen(user: widget.user),
@@ -170,181 +170,184 @@ class _HomeTabScreenState extends State<HomeTabScreen> {
           ),
         ],
       ),
-      body: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          Row(
-            children: [
-              Expanded(
-                child: Padding(
-                  padding: const EdgeInsets.fromLTRB(8, 10, 10, 10),
-                  child: TextField(
-                    controller: searchEditingController,
-                    decoration: InputDecoration(
-                      hintText: "Search",
-                      suffixIcon: IconButton(
-                        icon: const Icon(Icons.search),
-                        onPressed: () {
-                          String search = searchEditingController.text;
-                          searchService(search, 1);
-                        },
-                      ),
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(10.0),
-                      ),
-                    ),
-                    keyboardType: TextInputType.text,
-                  ),
-                ),
-              ),
-              MaterialButton(
-                onPressed: () {
-                  filterDialog();
-                },
-                child: const Icon(Icons.filter_list),
-              ),
-            ],
-          ),
-          Expanded(
-            child: serviceList.isEmpty
-                ? Center(child: Text("No Data"))
-                : Column(
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: [
-                      Container(
-                        height: 24,
-                        color: Color.fromARGB(255, 60, 213, 198),
-                        alignment: Alignment.center,
-                        child: Text(
-                          "${numberofresult.toString()} Service(s) Found",
-                          style: const TextStyle(
-                            color: Colors.white,
-                            fontSize: 18,
-                          ),
+      body: Center(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Row(
+              children: [
+                Expanded(
+                  child: Padding(
+                    padding: const EdgeInsets.fromLTRB(8, 10, 10, 10),
+                    child: TextField(
+                      controller: searchEditingController,
+                      decoration: InputDecoration(
+                        hintText: "Search",
+                        suffixIcon: IconButton(
+                          icon: const Icon(Icons.search),
+                          onPressed: () {
+                            String search = searchEditingController.text;
+                            searchService(search, 1);
+                          },
+                        ),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(10.0),
                         ),
                       ),
-                      Expanded(
-                        child: GridView.count(
-                          crossAxisCount: axiscount,
-                          children: List.generate(
-                            serviceList.length,
-                            (index) {
-                              return Card(
-                                child: InkWell(
-                                  onTap: () async {
-                                    Service service = serviceList[index];
-                                    await Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                        builder: (content) =>
-                                            ServiceDetailScreen(
-                                          user: widget.user,
-                                          service: service,
+                      keyboardType: TextInputType.text,
+                    ),
+                  ),
+                ),
+                MaterialButton(
+                  onPressed: () {
+                    filterDialog();
+                  },
+                  child: const Icon(Icons.filter_list),
+                ),
+              ],
+            ),
+            Expanded(
+              child: serviceList.isEmpty
+                  ? Center(child: Text("No Data"))
+                  : Column(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [
+                        Container(
+                          height: 24,
+                          color: Color.fromARGB(255, 60, 213, 198),
+                          alignment: Alignment.center,
+                          child: Text(
+                            "${numberofresult.toString()} Service(s) Found",
+                            style: const TextStyle(
+                              color: Colors.white,
+                              fontSize: 18,
+                            ),
+                          ),
+                        ),
+                        Expanded(
+                          child: GridView.count(
+                            crossAxisCount: axiscount,
+                            children: List.generate(
+                              serviceList.length,
+                              (index) {
+                                return Card(
+                                  child: InkWell(
+                                    onTap: () async {
+                                      Service service = serviceList[index];
+                                      await Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                          builder: (content) =>
+                                              ServiceDetailScreen(
+                                            user: widget.user,
+                                            service: service,
+                                          ),
                                         ),
-                                      ),
-                                    );
-                                    loadService(1);
-                                  },
-                                  child: Column(
-                                    children: [
-                                      Padding(
-                                        padding:
-                                            EdgeInsets.fromLTRB(15, 0, 17, 0),
-                                        child: Row(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.center,
-                                          children: [
-                                            if (serviceList[index].proStatus ==
-                                                "true") ...[
-                                              Container(
-                                                decoration: BoxDecoration(
-                                                  borderRadius:
-                                                      BorderRadius.circular(
-                                                          5.0),
-                                                  color: Colors.orangeAccent,
+                                      );
+                                      loadService(1);
+                                    },
+                                    child: Column(
+                                      children: [
+                                        Padding(
+                                          padding:
+                                              EdgeInsets.fromLTRB(15, 0, 17, 0),
+                                          child: Row(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.center,
+                                            children: [
+                                              if (serviceList[index].proStatus ==
+                                                  "true") ...[
+                                                Container(
+                                                  decoration: BoxDecoration(
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                            5.0),
+                                                    color: Colors.orangeAccent,
+                                                  ),
+                                                  child: const Text("  Pro  "),
                                                 ),
-                                                child: const Text("  Pro  "),
-                                              ),
-                                              SizedBox(width: 8),
-                                            ],
-                                            if (serviceList[index]
-                                                    .preferredStatus ==
-                                                "true") ...[
-                                              Container(
-                                                decoration: BoxDecoration(
-                                                  borderRadius:
-                                                      BorderRadius.circular(
-                                                          5.0),
-                                                  color: Colors.orangeAccent,
+                                                SizedBox(width: 8),
+                                              ],
+                                              if (serviceList[index]
+                                                      .preferredStatus ==
+                                                  "true") ...[
+                                                Container(
+                                                  decoration: BoxDecoration(
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                            5.0),
+                                                    color: Colors.orangeAccent,
+                                                  ),
+                                                  child:
+                                                      const Text("  Preferred  "),
                                                 ),
-                                                child:
-                                                    const Text("  Preferred  "),
-                                              ),
-                                              SizedBox(width: 8),
+                                                SizedBox(width: 8),
+                                              ],
                                             ],
-                                          ],
+                                          ),
                                         ),
-                                      ),
-                                      SizedBox(height: 5),
-                                      CachedNetworkImage(
-                                        width: screenWidth * 0.35,
-                                        fit: BoxFit.cover,
-                                        imageUrl:
-                                            "${Config.server}/lsm/assets/images/${serviceList[index].serviceId}.png",
-                                        placeholder: (context, url) =>
-                                            const LinearProgressIndicator(),
-                                        errorWidget: (context, url, error) =>
-                                            const Icon(Icons.error),
-                                      ),
-                                      Text(
-                                        serviceList[index]
-                                            .serviceName
-                                            .toString(),
-                                        style: const TextStyle(fontSize: 15),
-                                      ),
-                                      Text(
-                                        "RM ${double.parse(serviceList[index].servicePrice.toString()).toStringAsFixed(2)}",
-                                        style: const TextStyle(fontSize: 14),
-                                      ),
-                                      Text(
-                                        "per ${serviceList[index].serviceUnit}",
-                                        style: const TextStyle(fontSize: 14),
-                                      ),
-                                    ],
+                                        SizedBox(height: 5),
+                                        CachedNetworkImage(
+                                          width: screenWidth * 0.35,
+                                          fit: BoxFit.cover,
+                                          imageUrl:
+                                              "${Config.server}/lsm/assets/images/${serviceList[index].serviceId}.png",
+                                          placeholder: (context, url) =>
+                                              const LinearProgressIndicator(),
+                                          errorWidget: (context, url, error) =>
+                                              const Icon(Icons.error),
+                                        ),
+                                        Text(
+                                          serviceList[index]
+                                              .serviceName
+                                              .toString(),
+                                          style: const TextStyle(fontSize: 15),
+                                          textAlign: TextAlign.center,
+                                        ),
+                                        Text(
+                                          "RM ${double.parse(serviceList[index].servicePrice.toString()).toStringAsFixed(2)}",
+                                          style: const TextStyle(fontSize: 14),
+                                        ),
+                                        Text(
+                                          "per ${serviceList[index].serviceUnit}",
+                                          style: const TextStyle(fontSize: 14),
+                                        ),
+                                      ],
+                                    ),
                                   ),
+                                );
+                              },
+                            ),
+                          ),
+                        ),
+                        SizedBox(
+                          height: 50,
+                          child: ListView.builder(
+                            shrinkWrap: true,
+                            itemCount: numofpage,
+                            scrollDirection: Axis.horizontal,
+                            itemBuilder: (context, index) {
+                              final color = (curpage - 1) == index
+                                  ? Colors.red
+                                  : Colors.black;
+                              return TextButton(
+                                onPressed: () {
+                                  curpage = index + 1;
+                                  loadService(index + 1);
+                                },
+                                child: Text(
+                                  (index + 1).toString(),
+                                  style: TextStyle(color: color, fontSize: 18),
                                 ),
                               );
                             },
                           ),
                         ),
-                      ),
-                      SizedBox(
-                        height: 50,
-                        child: ListView.builder(
-                          shrinkWrap: true,
-                          itemCount: numofpage,
-                          scrollDirection: Axis.horizontal,
-                          itemBuilder: (context, index) {
-                            final color = (curpage - 1) == index
-                                ? Colors.red
-                                : Colors.black;
-                            return TextButton(
-                              onPressed: () {
-                                curpage = index + 1;
-                                loadService(index + 1);
-                              },
-                              child: Text(
-                                (index + 1).toString(),
-                                style: TextStyle(color: color, fontSize: 18),
-                              ),
-                            );
-                          },
-                        ),
-                      ),
-                    ],
-                  ),
-          ),
-        ],
+                      ],
+                    ),
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -664,6 +667,8 @@ void filterDialog() {
               String valuea = valueaEditingController.text.toString();
               String valueb = valuebEditingController.text.toString();
               filterService(valuea, valueb, 1);
+              valueaEditingController.clear();
+              valuebEditingController.clear();
               setState(() {});
               Navigator.of(context).pop();
             },

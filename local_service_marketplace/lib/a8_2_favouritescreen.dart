@@ -80,7 +80,7 @@ class _FavouriteScreenState extends State<FavouriteScreen> {
                               },
                               child: Column(children: [
                                 CachedNetworkImage(
-                                  width: screenWidth * 0.4,
+                                  width: screenWidth * 0.28,
                                   fit: BoxFit.cover,
                                   imageUrl:
                                       "${Config.server}/lsm/assets/images/${serviceList[index].serviceId}.png",
