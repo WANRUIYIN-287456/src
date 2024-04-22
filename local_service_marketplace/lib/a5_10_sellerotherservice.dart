@@ -168,10 +168,12 @@ class _SellerOrtherServiceState extends State<SellerOrtherService> {
     if (response.statusCode == 200) {
       var jsonData = jsonDecode(response.body);
       if (jsonData['status'] == "success") {
-        var extractData = jsonData['data'];
-        // Update serviceList with new services
+      var extractdata = jsonData['data'];
+          extractdata['service'].forEach((v) {
+            serviceList.add(Service.fromJson(v));
+          });
         setState(() {
-          serviceList = List<Service>.from(extractData.map((model) => Service.fromJson(model)));
+          // serviceList = List<Service>.from(extractData.map((model) => Service.fromJson(model)));
         });
       }
     }

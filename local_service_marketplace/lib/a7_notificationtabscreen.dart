@@ -63,7 +63,7 @@ Widget build(BuildContext context) {
                   child: Column(
                     children: [
                       Container(
-                        height: 350,
+                        height: 100,
                         alignment: Alignment.center,
                         child: const Text("No Data"),
                       )
@@ -108,7 +108,7 @@ Widget build(BuildContext context) {
                   child: Column(
                     children: [
                       Container(
-                        height: 350,
+                        height: 100,
                         alignment: Alignment.center,
                         child: const Text("No Data"),
                       )

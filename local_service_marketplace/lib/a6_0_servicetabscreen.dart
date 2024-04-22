@@ -38,7 +38,6 @@ class ServiceTabScreenState extends State<ServiceTabScreen> {
     print("Service");
   }
 
-
   @override
   Widget build(BuildContext context) {
     screenHeight = MediaQuery.of(context).size.height;
@@ -85,11 +84,11 @@ class ServiceTabScreenState extends State<ServiceTabScreen> {
                     content: Text("Please login/register an account")));
                 return;
               }
-               Navigator.push(
-                context,
-                MaterialPageRoute(
-                    builder: (content) => SellerVerificationScreen(
-                        user: widget.user)));
+              Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (content) =>
+                          SellerVerificationScreen(user: widget.user)));
             } else if (value == 2) {
               print("Logout menu is selected.");
             }
@@ -115,10 +114,11 @@ class ServiceTabScreenState extends State<ServiceTabScreen> {
                       child: GestureDetector(
                         onTap: () {
                           Navigator.push(
-                context,
-                MaterialPageRoute(
-                    builder: (content) => SellerVerificationScreen(
-                        user: widget.user)));
+                              context,
+                              MaterialPageRoute(
+                                  builder: (content) =>
+                                      SellerVerificationScreen(
+                                          user: widget.user)));
                         },
                         child: const Text(
                           "\nPlease upload verify your identity and certifications to get PRO/PREFERRED status here or Verify later at the \"More\" button.",
@@ -144,8 +144,7 @@ class ServiceTabScreenState extends State<ServiceTabScreen> {
                 alignment: Alignment.center,
                 child: Text(
                   "${serviceList.length} Service(s) Found",
-                  style: const TextStyle(
-                      color: Colors.white, fontSize: 18),
+                  style: const TextStyle(color: Colors.white, fontSize: 18),
                 ),
               ),
               Expanded(
@@ -172,7 +171,7 @@ class ServiceTabScreenState extends State<ServiceTabScreen> {
                                 loadService();
                               },
                               child: Column(children: [
-           Padding(
+                                Padding(
                                   padding: EdgeInsets.fromLTRB(15, 0, 17, 0),
                                   child: Row(
                                     mainAxisAlignment: MainAxisAlignment.center,
@@ -286,9 +285,9 @@ class ServiceTabScreenState extends State<ServiceTabScreen> {
         var jsondata = jsonDecode(response.body);
         if (jsondata['status'] == "success") {
           var extractdata = jsondata['data'];
-          for (var v in extractdata) {
+          extractdata['service'].forEach((v) {
             serviceList.add(Service.fromJson(v));
-          }
+          });
           if (serviceList.isNotEmpty) {
             print(serviceList[0].serviceName);
           }

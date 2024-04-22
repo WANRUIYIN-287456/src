@@ -74,23 +74,25 @@ class _SellerOrderUpcomingDetailsState
       isArrivedEnabled = true;
     }
     // Check if sellerstatus is 'New' and servicedate is today or later
-    if (sellerstatus == "New" && servicedate.isAfter(DateTime.now())) {
+    if (sellerstatus == "New" && DateTime.now().isAfter(servicedate)) {
       sellerstatus = "Cancelled";
       orderstatus = "Cancelled";
       reason =
           "Service Provider did not confirm the order before service date.";
       cancelService(reason);
-    }
-    // Check if sellerstatus is 'New' and today is 7 days or more than orderdate
-    else if (sellerstatus == "New" &&
-        DateTime.now().difference(orderdate).inDays >= 7) {
-      sellerstatus = "Cancelled";
-      orderstatus = "Cancelled";
-      reason = "Service Provider did not confirm the order within 7 days.";
-      cancelService(reason);
       token = token - 1;
       print(token);
     }
+    // Check if sellerstatus is 'New' and today is 7 days or more than orderdate
+    // else if (sellerstatus == "New" &&
+    //     DateTime.now().difference(orderdate).inDays >= 7) {
+    //   sellerstatus = "Cancelled";
+    //   orderstatus = "Cancelled";
+    //   reason = "Service Provider did not confirm the order within 7 days.";
+    //   cancelService(reason);
+    //   token = token - 1;
+    //   print(token);
+    // }
   }
 
   @override

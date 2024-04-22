@@ -70,7 +70,7 @@ class _AboutUsScreenState extends State<AboutUsScreen> {
                       ),
                       SizedBox(height: 10),
                       Text(
-                        "Please note that this app is a final year project developed by a student at Northern University of Malaysia, pursuing a Bachelor of Science with Honours in Information Technology. The student's matriculation number is 287456. This app has not been commercialized for common use yet. The details used in the app, such as user details, order details, etc., are for testing purposes and do not represent real data. Please stay tuned for updates. For any copyright issues, please contact the author.",
+                        "Please note that this app is a final year project developed by a student at Northern University of Malaysia, pursuing a Bachelor of Science with Honours in Information Technology. The student's matriculation number is 287456. This app has not been commercialized for common use yet. The details used in the app, such as user details, order details, etc., are for testing purposes and do not represent real data. Please stay tuned for updates. For any copyright issues, please contact the author via email localservicemarketplace@gmail.com.",
                         textAlign: TextAlign.justify,
                       ),
                       SizedBox(height: 10),

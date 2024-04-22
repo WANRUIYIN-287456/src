@@ -320,7 +320,6 @@ class _AdminVerifyDetailsState extends State<AdminVerifyDetails> {
               onPressed: () {
                 Navigator.of(context).pop();
                 updateservice(verify, available);
-                loadVerify(0);
               },
             ),
             TextButton(

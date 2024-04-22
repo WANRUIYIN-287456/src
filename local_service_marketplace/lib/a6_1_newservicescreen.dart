@@ -533,12 +533,14 @@ class _NewServiceScreenState extends State<NewServiceScreen> {
     String state = _prstateEditingController.text;
     String locality = _prlocalEditingController.text;
     String base64Image = base64Encode(_image!.readAsBytesSync());
+    
     List<String>? types = categoryToTypes[selectedCategory];
-    String selectedType = types != null && types.isNotEmpty ? types[0] : "";
-    if (types == null || types.isEmpty) {
-      print("Error: No types found for the selected category.");
-      return;
-    }
+    String selectedtype = selectedType;
+     if (selectedtype.isEmpty || !typeList.contains(selectedtype)) {
+    print("Error: Invalid selected type.");
+    return;
+  }
+
 
     http.post(Uri.parse("${Config.server}/lsm/php/insert_products.php"), body: {
       "sellerid": widget.user.id.toString(),
@@ -553,7 +555,7 @@ class _NewServiceScreenState extends State<NewServiceScreen> {
       "token": "0",
       "userid": widget.user.id.toString(),
       "category": selectedCategory,
-      "type": selectedType,
+      "type": selectedtype,
       "prname": prname,
       "prdesc": prdesc,
       "prprice": prprice,

@@ -132,22 +132,24 @@ class _UserOrderScreenState extends State<UserOrderScreen> {
                                 child: Row(
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
-                                   Column(
-                                    children: [
-                                      SizedBox(height: 20,),
-                                       CachedNetworkImage(
-                                      width: screenWidth * 0.18,
-                                      height: screenHeight * 0.08,
-                                      fit: BoxFit.cover,
-                                      imageUrl:
-                                          "${Config.server}/lsm/assets/images/${orderList[index].serviceId}.png",
-                                      placeholder: (context, url) =>
-                                          const LinearProgressIndicator(),
-                                      errorWidget: (context, url, error) =>
-                                          const Icon(Icons.error),
+                                    Column(
+                                      children: [
+                                        SizedBox(
+                                          height: 20,
+                                        ),
+                                        CachedNetworkImage(
+                                          width: screenWidth * 0.18,
+                                          height: screenHeight * 0.08,
+                                          fit: BoxFit.cover,
+                                          imageUrl:
+                                              "${Config.server}/lsm/assets/images/${orderList[index].serviceId}.png",
+                                          placeholder: (context, url) =>
+                                              const LinearProgressIndicator(),
+                                          errorWidget: (context, url, error) =>
+                                              const Icon(Icons.error),
+                                        ),
+                                      ],
                                     ),
-                                    ],
-                                   ),
                                     const SizedBox(width: 25),
                                     Column(
                                       children: [
@@ -200,13 +202,12 @@ class _UserOrderScreenState extends State<UserOrderScreen> {
         } else {
           status = "Please register an account first";
           setState(() {});
-          Navigator.of(context).pop();
+
           ScaffoldMessenger.of(context).showSnackBar(
               const SnackBar(content: Text("No Order Available.")));
         }
         setState(() {});
       } else {
-        Navigator.of(context).pop();
         ScaffoldMessenger.of(context)
             .showSnackBar(const SnackBar(content: Text("No Order Available.")));
       }
