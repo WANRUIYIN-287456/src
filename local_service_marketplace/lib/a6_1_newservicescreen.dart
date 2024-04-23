@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'dart:io';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:geocoding/geocoding.dart';
 import 'package:geolocator/geolocator.dart';
@@ -518,7 +519,7 @@ class _NewServiceScreenState extends State<NewServiceScreen> {
     );
   }
 
-  void insertproduct() {
+  Future<void> insertproduct() async {
     String ic = "Select Identity Card";
     String cert = "Select Certificate";
     String pro = "false";
@@ -533,6 +534,7 @@ class _NewServiceScreenState extends State<NewServiceScreen> {
     String state = _prstateEditingController.text;
     String locality = _prlocalEditingController.text;
     String base64Image = base64Encode(_image!.readAsBytesSync());
+    String? token = await FirebaseMessaging.instance.getToken();
     
     List<String>? types = categoryToTypes[selectedCategory];
     String selectedtype = selectedType;
@@ -553,6 +555,7 @@ class _NewServiceScreenState extends State<NewServiceScreen> {
       "upload": "false",
       "verify": verify,
       "token": "0",
+      "fcmtoken": token.toString(),
       "userid": widget.user.id.toString(),
       "category": selectedCategory,
       "type": selectedtype,

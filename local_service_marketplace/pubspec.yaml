@@ -53,6 +53,9 @@ dependencies:
   webview_flutter: ^3.0.4
   flutter_rating_bar: ^4.0.0
   grouped_list: ^5.1.2
+  flutter_local_notifications: ^8.2.0
+  firebase_messaging: ^14.7.10
+  firebase_core: ^2.24.2
 
 
 dev_dependencies:

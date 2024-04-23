@@ -406,6 +406,7 @@ class _ServiceOrderScreenState extends State<ServiceOrderScreen> {
         Order? completeOrder = await fetchCompleteOrder(orderId);
 
         if (completeOrder != null) {
+          sendNotificationToSeller(orderId, widget.service.sellerId.toString());
           return completeOrder;
         } else {
           ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
@@ -550,6 +551,38 @@ class _ServiceOrderScreenState extends State<ServiceOrderScreen> {
       },
     );
   }
+
+  void sendNotificationToSeller(int orderId, String sellerId) async {
+    // Construct the FCM message payload
+    var message = {
+        'notification': {
+            'title': 'New Order',
+            'body': 'You have a new order. Check it at your upcoming order list.'
+        },
+        'data': {
+            // You can add additional data if needed
+            'orderId': orderId.toString(),
+        },
+        'to': 'seller_$sellerId', // FCM topic for the seller
+    };
+
+    // Send the FCM message using HTTP POST request
+    var response = await http.post(
+        Uri.parse('https://fcm.googleapis.com/fcm/send'),
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': 'key=AAAAb8bcc_g:APA91bFiMsZrgZ1Oo_zVL83qWA0HhBN8f00oiJ2VJNgoamrjgUaAwrIypjmrDQ0MhLgCcTCLg3itJRptmPh4owUN4bMXdpMAPR_XPRdWSRq716RB8hynp-iLs_ggiNjnz6IBF-LSoF_1', // Replace with your server key
+        },
+        body: jsonEncode(message),
+    );
+
+    if (response.statusCode == 200) {
+        print('Notification sent to seller successfully');
+    } else {
+        print('Failed to send notification to seller. Status code: ${response.statusCode}');
+    }
+}
+
 }
 
 // import 'dart:convert';

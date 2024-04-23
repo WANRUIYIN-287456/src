@@ -7,7 +7,6 @@ import 'package:local_service_marketplace/a5_6_userorderlistscreen.dart';
 import 'package:local_service_marketplace/config.dart';
 import 'package:local_service_marketplace/model/service.dart';
 import 'package:local_service_marketplace/model/user.dart';
-import 'package:local_service_marketplace/model/seller.dart';
 
 class HomeTabScreen extends StatefulWidget {
   final User user;

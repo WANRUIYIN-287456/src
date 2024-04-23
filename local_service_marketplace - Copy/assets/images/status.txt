@@ -1,0 +1,39 @@
+
+Dear Service Providers,
+
+Thank you for choosing our e-commerce platform. Below are the details regarding identity verification and service provider status:
+
+1. Identity Verification:
+   - You must verify your identity within 30 days of registration.
+   - Identity verification is mandatory for obtaining any status.
+
+2. Pro Status:
+   - Criteria:
+     - You must have verified professional certifications.
+   - Status: "Pro"
+   
+3. Preferred Status:
+   - Criteria:
+     - Identity verification is required.
+     - You must have ratings above 4.8.
+   - Status: "Preferred"
+
+4. Available Status:
+   - Criteria:
+     - You have a token balance of -5 and below.
+     - Initial token balance for every service provider is 0.
+   - Status: "Available"
+
+5. Order Handling:
+   - If you have an "Available" status:
+     - You cannot receive orders.
+     - Please contact customer service for resolution.
+
+6. Token System:
+   - Each rejection of an order deducts one token from your balance.
+
+7. Verification Notification:
+   - Upon successful identity and certifications verification, you will receive a notification.
+   - Your current status tag will be prominently displayed.
+
+Thank you for your cooperation and understanding.

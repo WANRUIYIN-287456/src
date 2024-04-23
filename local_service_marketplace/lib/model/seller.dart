@@ -10,6 +10,7 @@ class Seller {
   String? uploadDate;
   String? verifyStatus;
   String? token;
+  String? fcmToken;
   String? sellerName;
 
   Seller(
@@ -24,6 +25,7 @@ class Seller {
       this.uploadDate,
       this.verifyStatus,
       this.token,
+      this.fcmToken,
       this.sellerName,
     });
 
@@ -39,6 +41,7 @@ class Seller {
     uploadDate = json['upload_date'];
     verifyStatus = json['verify'];
     token = json['token'];
+    fcmToken = json['fcm_token'];
     sellerName = json['seller_name'];
   }
 
@@ -55,6 +58,7 @@ class Seller {
     data['upload_date'] = uploadDate;
     data['verify'] = verifyStatus;
     data['token'] = token;
+    data['fcm_token'] = fcmToken;
     data['seller_name'] = sellerName;
     return data;
   }
