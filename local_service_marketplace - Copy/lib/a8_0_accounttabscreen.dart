@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 import 'dart:math';
 import 'package:cached_network_image/cached_network_image.dart';
@@ -29,11 +30,21 @@ class _AccountTabScreenState extends State<AccountTabScreen> {
   late List<Widget> tabchildren;
   String maintitle = "Account";
   late double screenHeight, screenWidth, cardwitdh;
-  final TextEditingController _oldpasswordController = TextEditingController();
-  final TextEditingController _newpasswordController = TextEditingController();
+  // final TextEditingController _oldpasswordController = TextEditingController();
+  // final TextEditingController _newpasswordController = TextEditingController();
   bool isDisable = false;
   double userid = 0;
   // late String _updatedImageUrl;
+  
+  final TextEditingController _otp2EditingController = TextEditingController();
+  final TextEditingController _newpassEditingController =
+      TextEditingController();
+  final TextEditingController _forgotPasswordEmailController =
+      TextEditingController(); // Added for forgot password
+  bool _isResendEnabled = false;
+  bool isRegistered = false;
+  bool isExist = true;
+  String _otp = '';
   Random random = Random();
   var val = 50;
 
@@ -257,6 +268,7 @@ class _AccountTabScreenState extends State<AccountTabScreen> {
                         ),
                         MaterialButton(
                           onPressed: () {
+                            sendOTP2();
                             _changePassDialog();
                           },
                           child: Padding(
@@ -349,60 +361,199 @@ class _AccountTabScreenState extends State<AccountTabScreen> {
     }
   }
 
+  // void _changePassDialog() {
+  //   showDialog(
+  //     context: context,
+  //     builder: (BuildContext context) {
+  //       // return object of type Dialog
+  //       return AlertDialog(
+  //         shape: const RoundedRectangleBorder(
+  //             borderRadius: BorderRadius.all(Radius.circular(20.0))),
+  //         title: const Text(
+  //           "Change Password?",
+  //           style: TextStyle(),
+  //         ),
+  //         content: SingleChildScrollView(
+  //           child: Column(
+  //             mainAxisSize: MainAxisSize.min,
+  //             children: [
+  //               TextFormField(
+  //                 controller: _oldpasswordController,
+  //                 obscureText: true,
+  //                 decoration: InputDecoration(
+  //                   labelText: 'Old Password',
+  //                   border: OutlineInputBorder(
+  //                     borderRadius: BorderRadius.circular(5.0),
+  //                   ),
+  //                 ),
+  //               ),
+  //               const SizedBox(height: 5),
+  //               TextFormField(
+  //                 controller: _newpasswordController,
+  //                 obscureText: true,
+  //                 decoration: InputDecoration(
+  //                   labelText: 'New Password',
+  //                   border: OutlineInputBorder(
+  //                     borderRadius: BorderRadius.circular(5.0),
+  //                   ),
+  //                 ),
+  //               ),
+  //             ],
+  //           ),
+  //         ),
+  //         actions: <Widget>[
+  //           TextButton(
+  //             child: const Text(
+  //               "Yes",
+  //               style: TextStyle(),
+  //             ),
+  //             onPressed: () {
+  //               Navigator.of(context).pop();
+  //               changePass();
+  //             },
+  //           ),
+  //           TextButton(
+  //             child: const Text(
+  //               "No",
+  //               style: TextStyle(),
+  //             ),
+  //             onPressed: () {
+  //               Navigator.of(context).pop();
+  //             },
+  //           ),
+  //         ],
+  //       );
+  //     },
+  //   );
+  // }
+
+  // void changePass() {
+  //   http.post(Uri.parse("${Config.server}/lsm/php/update_password.php"), body: {
+  //     "userid": widget.user.id,
+  //     "oldpass": _oldpasswordController.text,
+  //     "newpass": _newpasswordController.text,
+  //   }).then((response) {
+  //     print(response.body);
+  //     print(response.statusCode);
+  //     var jsondata = jsonDecode(response.body);
+  //     if (response.statusCode == 200 && jsondata['status'] == 'success') {
+  //       ScaffoldMessenger.of(context)
+  //           .showSnackBar(const SnackBar(content: Text("Update Success.")));
+  //     } else {
+  //       ScaffoldMessenger.of(context)
+  //           .showSnackBar(const SnackBar(content: Text("Update Failed")));
+  //       ;
+  //     }
+  //   });
+  // }
+
   void _changePassDialog() {
     showDialog(
       context: context,
       builder: (BuildContext context) {
-        // return object of type Dialog
         return AlertDialog(
-          shape: const RoundedRectangleBorder(
-              borderRadius: BorderRadius.all(Radius.circular(20.0))),
           title: const Text(
-            "Change Password?",
+            "Change Password",
             style: TextStyle(),
           ),
           content: SingleChildScrollView(
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                TextFormField(
-                  controller: _oldpasswordController,
-                  obscureText: true,
-                  decoration: InputDecoration(
-                    labelText: 'Old Password',
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(5.0),
+            child: SizedBox(
+              width: double.maxFinite,
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text(
+                    "Press 'Enter' after filling the text field.",
+                    style: TextStyle(
+                      fontStyle: FontStyle.italic, fontSize: 12
                     ),
                   ),
-                ),
-                const SizedBox(height: 5),
-                TextFormField(
-                  controller: _newpasswordController,
-                  obscureText: true,
-                  decoration: InputDecoration(
-                    labelText: 'New Password',
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(5.0),
-                    ),
+                  // TextFormField(
+                  //   controller: _forgotPasswordEmailController,
+                  //   keyboardType: TextInputType.emailAddress,
+                  //   decoration: const InputDecoration(
+                  //       labelText: "Email",
+                  //       labelStyle: TextStyle(),
+                  //       icon: Icon(Icons.email),
+                  //       focusedBorder: OutlineInputBorder(
+                  //         borderSide: BorderSide(width: 2.0),
+                  //       )),
+                  //   onFieldSubmitted: (value) {
+                  //     isExist = true;
+                  //     verifyEmailExist2(_forgotPasswordEmailController.text);
+                  //   },
+                  // ),
+                  Row(
+                    children: [
+                      Expanded(
+                        child: TextField(
+                          controller: _otp2EditingController,
+                          decoration: const InputDecoration(
+                            contentPadding: EdgeInsets.all(12),
+                            icon: Icon(Icons.security),
+                            hintText: 'Enter otp',
+                            border: InputBorder.none,
+                          ),
+                          keyboardType: TextInputType.number,
+                          onSubmitted: (v) {
+                            String enteredOTP = _otp2EditingController.text;
+                            if (enteredOTP != _otp) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                  const SnackBar(content: Text("Invalid OTP")));
+                              _otp2EditingController.clear();
+                              return;
+                            } else {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                  const SnackBar(content: Text("Correct OTP")));
+                            }
+                          },
+                        ),
+                      ),
+                      // Container(
+                      //   child: isExist
+                      //       ? null
+                      //       : Text(
+                      //           "Account not registered yet. Please register a new account.",
+                      //           style:
+                      //               TextStyle(color: Colors.red, fontSize: 10)),
+                      // ),
+                      const SizedBox(
+                        width: 5,
+                      ),
+                      ElevatedButton(
+                          onPressed: _isResendEnabled ? sendOTP2 : null,
+                          child: const Text("Resend")),
+                    ],
                   ),
-                ),
-              ],
+                  TextField(
+                    controller: _newpassEditingController,
+                    obscureText: true,
+                    decoration: const InputDecoration(
+                      contentPadding: EdgeInsets.all(12),
+                      hintText: 'Enter new password',
+                      icon: Icon(Icons.lock),
+                      border: InputBorder.none,
+                    ),
+                    onSubmitted: (v) {},
+                  ),
+                ],
+              ),
             ),
           ),
           actions: <Widget>[
             TextButton(
               child: const Text(
-                "Yes",
+                "Submit",
                 style: TextStyle(),
               ),
               onPressed: () {
-                Navigator.of(context).pop();
-                changePass();
+                Navigator.pop(context);
+                sendForgotPasswordRequest();
               },
             ),
             TextButton(
               child: const Text(
-                "No",
+                "Cancel",
                 style: TextStyle(),
               ),
               onPressed: () {
@@ -415,23 +566,86 @@ class _AccountTabScreenState extends State<AccountTabScreen> {
     );
   }
 
-  void changePass() {
-    http.post(Uri.parse("${Config.server}/lsm/php/update_password.php"), body: {
-      "userid": widget.user.id,
-      "oldpass": _oldpasswordController.text,
-      "newpass": _newpasswordController.text,
-    }).then((response) {
-      print(response.body);
-      print(response.statusCode);
-      var jsondata = jsonDecode(response.body);
-      if (response.statusCode == 200 && jsondata['status'] == 'success') {
-        ScaffoldMessenger.of(context)
-            .showSnackBar(const SnackBar(content: Text("Update Success.")));
+  void sendForgotPasswordRequest() {
+    String email = widget.user.email.toString();
+    String newpass = _newpassEditingController.text;
+    print("email: " + email + " newpass: " + newpass);
+    http.post(
+        Uri.parse("https://labassign2.nwarz.com/lsm/php/forgot_password.php"),
+        body: {
+          "email": email,
+          "newpass": newpass,
+        }).then((response) {
+      if (response.statusCode == 200) {
+        var data = jsonDecode(response.body);
+        if (data['status'] == 'success') {
+          ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(content: Text("Password reset successful")));
+        } else {
+          ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(content: Text("Password reset failed")));
+        }
+      }
+    }).catchError((error) {
+      print("Error occurred while sending forgot password request: $error");
+    });
+  }
+
+  // void verifyEmailExist2(String email) {
+  //   http.post(
+  //       Uri.parse("https://labassign2.nwarz.com/lsm/php/verify_emailexist.php"),
+  //       body: {"email": email}).then((response) {
+  //     if (response.statusCode == 200) {
+  //       var data = jsonDecode(response.body);
+  //       if (data['status'] == 'success') {
+  //         sendOTP2();
+  //         print("email: " + email + "otp: " + _otp);
+  //         ScaffoldMessenger.of(context)
+  //             .showSnackBar(const SnackBar(content: Text("Email exist")));
+  //       } else {
+  //         setState(() {
+  //           isExist = false;
+  //         });
+  //         ScaffoldMessenger.of(context).showSnackBar(
+  //             const SnackBar(content: Text("Email is not registered yet.")));
+  //       }
+  //     }
+  //   }).catchError((error) {
+  //     print("Error occurred while verifying email existence: $error");
+  //   });
+  // }
+
+   void sendOTP2() {
+    _otp = generateOTP();
+    print("email: " + widget.user.email.toString() + "otp: " + _otp);
+    http.post(Uri.parse("https://labassign2.nwarz.com/lsm/php/send_otp.php"),
+        body: {
+          "email": widget.user.email,
+          "otp": _otp,
+          "name": widget.user.name,
+        }).then((response) {
+      if (response.statusCode == 200) {
+        ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text("OTP sent to your email")));
+        setState(() {
+          _isResendEnabled = false;
+        });
+        Timer(Duration(seconds: 60), () {
+          setState(() {
+            _isResendEnabled = true;
+          });
+        });
       } else {
         ScaffoldMessenger.of(context)
-            .showSnackBar(const SnackBar(content: Text("Update Failed")));
-        ;
+            .showSnackBar(const SnackBar(content: Text("Failed to send OTP")));
       }
+    }).catchError((error) {
+      ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text("Error occurred while sending OTP")));
     });
+  }
+
+  String generateOTP() {
+    return (10000 + Random().nextInt(90000)).toString();
   }
 }

@@ -89,7 +89,7 @@ class _SplashScreenState extends State<SplashScreen> {
            } else {
               print("2");
       user = User(
-          id: "na",
+          id: "0",
           name: "na",
           email: "na",
           phone: "na",
@@ -113,7 +113,7 @@ class _SplashScreenState extends State<SplashScreen> {
         } else {
             print("2");
       user = User(
-          id: "na",
+          id: "0",
           name: "na",
           email: "na",
           phone: "na",
@@ -136,7 +136,7 @@ class _SplashScreenState extends State<SplashScreen> {
   }else {
             print("2");
       user = User(
-          id: "na",
+          id: "0",
           name: "na",
           email: "na",
           phone: "na",

@@ -38,22 +38,22 @@ dependencies:
   carousel_slider: ^4.2.1
   cupertino_icons: ^1.0.5
   dots_indicator: ^3.0.0
-  geocoding: ^2.1.0
-  geolocator: ^9.0.2
+  geocoding: ^3.0.0
+  geolocator: ^11.0.0
   google_fonts: ^4.0.4
   http: ^0.13.6
   image_cropper: ^4.0.1
-  image_picker: ^0.8.7+5
+  image_picker: ^1.0.4
   intl: ^0.18.1
   shared_preferences: ^2.1.1
   stripe_checkout: ^1.0.2
-  file_picker: ^4.0.0
+  file_picker: ^5.3.1
   dio: ^5.4.1
   path: ^1.8.2
   webview_flutter: ^3.0.4
   flutter_rating_bar: ^4.0.0
   grouped_list: ^5.1.2
-  flutter_local_notifications: ^8.2.0
+  flutter_local_notifications: ^17.1.0
   firebase_messaging: ^14.7.10
   firebase_core: ^2.24.2
 
