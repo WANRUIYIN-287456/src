@@ -46,6 +46,7 @@ class _ServiceOrderScreenState extends State<ServiceOrderScreen> {
     super.initState();
     servicedate = DateTime.now();
     servicetime = TimeOfDay.now();
+    loadaddress();
   }
 
   @override
@@ -359,136 +360,136 @@ class _ServiceOrderScreenState extends State<ServiceOrderScreen> {
     }
   }
 
-  Future<Order?> orderService() async {
-    // Convert servicedate to the format expected by PHP (YYYY-MM-DD)
-    String formattedDate =
-        "${servicedate.year}-${servicedate.month}-${servicedate.day}";
+  // Future<Order?> orderService() async {
+  //   // Convert servicedate to the format expected by PHP (YYYY-MM-DD)
+  //   String formattedDate =
+  //       "${servicedate.year}-${servicedate.month}-${servicedate.day}";
 
-    // Convert TimeOfDay to DateTime for database insertion
-    final DateTime selectedDateTime = DateTime(
-      servicedate.year,
-      servicedate.month,
-      servicedate.day,
-      servicetime.hour,
-      servicetime.minute,
-    );
+  //   // Convert TimeOfDay to DateTime for database insertion
+  //   final DateTime selectedDateTime = DateTime(
+  //     servicedate.year,
+  //     servicedate.month,
+  //     servicedate.day,
+  //     servicetime.hour,
+  //     servicetime.minute,
+  //   );
 
-    http.Response response = await http
-        .post(Uri.parse("${Config.server}/lsm/php/insert_order.php"), body: {
-      "serviceid": widget.service.serviceId.toString(),
-      "userid": widget.user.id.toString(),
-      "sellerid": widget.service.sellerId.toString(),
-      "servicename": widget.service.serviceName.toString(),
-      "serviceprice": widget.service.servicePrice.toString(),
-      "serviceunit": widget.service.serviceUnit.toString(),
-      "servicequantity": qtyEditingController.text,
-      "orderprice": totalprice.toString(),
-      "date": formattedDate, // Use formattedDate here
-      "time": tf.format(selectedDateTime), // Format time for database insertion
-      "address": addressEditingController.text,
-      "message": messageEditingController.text,
-      "userstatus": "New",
-      "sellerstatus": "New",
-      "orderstatus": "Upcoming",
-      "paymentstatus": "Pending",
-      "receipt": "Pending",
-    });
+  //   http.Response response = await http
+  //       .post(Uri.parse("${Config.server}/lsm/php/insert_order.php"), body: {
+  //     "serviceid": widget.service.serviceId.toString(),
+  //     "userid": widget.user.id.toString(),
+  //     "sellerid": widget.service.sellerId.toString(),
+  //     "servicename": widget.service.serviceName.toString(),
+  //     "serviceprice": widget.service.servicePrice.toString(),
+  //     "serviceunit": widget.service.serviceUnit.toString(),
+  //     "servicequantity": qtyEditingController.text,
+  //     "orderprice": totalprice.toString(),
+  //     "date": formattedDate, // Use formattedDate here
+  //     "time": tf.format(selectedDateTime), // Format time for database insertion
+  //     "address": addressEditingController.text,
+  //     "message": messageEditingController.text,
+  //     "userstatus": "New",
+  //     "sellerstatus": "New",
+  //     "orderstatus": "Upcoming",
+  //     "paymentstatus": "Pending",
+  //     "receipt": "Pending",
+  //   });
 
-    if (response.statusCode == 200) {
-      var jsonData = jsonDecode(response.body);
-      print(jsonData); // Print the JSON response for debugging
+  //   if (response.statusCode == 200) {
+  //     var jsonData = jsonDecode(response.body);
+  //     print(jsonData); // Print the JSON response for debugging
 
-      if (jsonData != null && jsonData['status'] == 'success') {
-        // Extract the order ID from the response
-        int orderId = jsonData['data']['orderid'];
+  //     if (jsonData != null && jsonData['status'] == 'success') {
+  //       // Extract the order ID from the response
+  //       int orderId = jsonData['data']['orderid'];
 
-        // Fetch complete order details using load_userorder.php
-        Order? completeOrder = await fetchCompleteOrder(orderId);
+  //       // Fetch complete order details using load_userorder.php
+  //       Order? completeOrder = await fetchCompleteOrder(orderId);
 
-        if (completeOrder != null) {
-          sendNotificationToSeller(orderId, widget.service.sellerId.toString());
-          return completeOrder;
-        } else {
-          ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-              content: Text("Failed to fetch complete order details")));
-          return null;
-        }
-      } else {
-        print("Order request failed or status is not 'success'");
-        ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text("Order request failed")));
-        return null;
-      }
-    } else {
-      print(
-          "Failed to fetch data from server. Status code: ${response.statusCode}");
-      ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text("Failed to fetch data from server")));
-      return null;
-    }
-  }
+  //       if (completeOrder != null) {
+  //         sendNotificationToSeller(orderId, widget.service.sellerId.toString());
+  //         return completeOrder;
+  //       } else {
+  //         ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+  //             content: Text("Failed to fetch complete order details")));
+  //         return null;
+  //       }
+  //     } else {
+  //       print("Order request failed or status is not 'success'");
+  //       ScaffoldMessenger.of(context).showSnackBar(
+  //           const SnackBar(content: Text("Order request failed")));
+  //       return null;
+  //     }
+  //   } else {
+  //     print(
+  //         "Failed to fetch data from server. Status code: ${response.statusCode}");
+  //     ScaffoldMessenger.of(context).showSnackBar(
+  //         const SnackBar(content: Text("Failed to fetch data from server")));
+  //     return null;
+  //   }
+  // }
 
-  Future<Order?> fetchCompleteOrder(int orderId) async {
-    http.Response response = await http
-        .post(Uri.parse("${Config.server}/lsm/php/load_userorder.php"), body: {
-      "userid": widget.user.id.toString(),
-      "orderid": orderId.toString(),
-    });
+  // Future<Order?> fetchCompleteOrder(int orderId) async {
+  //   http.Response response = await http
+  //       .post(Uri.parse("${Config.server}/lsm/php/load_userorder.php"), body: {
+  //     "userid": widget.user.id.toString(),
+  //     "orderid": orderId.toString(),
+  //   });
 
-    if (response.statusCode == 200) {
-      var jsonData = jsonDecode(response.body);
-      print(jsonData); // Print the JSON response for debugging
+  //   if (response.statusCode == 200) {
+  //     var jsonData = jsonDecode(response.body);
+  //     print(jsonData); // Print the JSON response for debugging
 
-      if (jsonData != null && jsonData['status'] == 'success') {
-        var orderData = jsonData['data']['order'];
-        if (orderData != null && orderData.isNotEmpty) {
-          var orderItem = orderData[0];
-          // Create an Order object from the JSON data
-          Order order = Order(
-            orderId: orderItem['order_id'],
-            serviceId: orderItem['service_id'],
-            userId: orderItem['user_id'],
-            sellerId: orderItem['seller_id'],
-            serviceName: orderItem['service_name'],
-            servicePrice: orderItem['service_price'],
-            serviceUnit: orderItem['service_unit'],
-            orderQuantity: orderItem['order_quantity'],
-            orderTotalprice: orderItem['order_totalprice'],
-            orderServicedate: orderItem['order_servicedate'],
-            orderServicetime: orderItem['order_servicetime'],
-            orderServiceaddress: orderItem['order_serviceaddress'],
-            orderMessage: orderItem['order_message'],
-            orderDate: orderItem['order_date'],
-            orderUserstatus: orderItem['order_userstatus'],
-            orderSellerstatus: orderItem['order_sellerstatus'],
-            orderStatus: orderItem['order_status'],
-            paymentStatus: orderItem['payment_status'],
-            receiptId: orderItem['receipt_id'],
-          );
+  //     if (jsonData != null && jsonData['status'] == 'success') {
+  //       var orderData = jsonData['data']['order'];
+  //       if (orderData != null && orderData.isNotEmpty) {
+  //         var orderItem = orderData[0];
+  //         // Create an Order object from the JSON data
+  //         Order order = Order(
+  //           orderId: orderItem['order_id'],
+  //           serviceId: orderItem['service_id'],
+  //           userId: orderItem['user_id'],
+  //           sellerId: orderItem['seller_id'],
+  //           serviceName: orderItem['service_name'],
+  //           servicePrice: orderItem['service_price'],
+  //           serviceUnit: orderItem['service_unit'],
+  //           orderQuantity: orderItem['order_quantity'],
+  //           orderTotalprice: orderItem['order_totalprice'],
+  //           orderServicedate: orderItem['order_servicedate'],
+  //           orderServicetime: orderItem['order_servicetime'],
+  //           orderServiceaddress: orderItem['order_serviceaddress'],
+  //           orderMessage: orderItem['order_message'],
+  //           orderDate: orderItem['order_date'],
+  //           orderUserstatus: orderItem['order_userstatus'],
+  //           orderSellerstatus: orderItem['order_sellerstatus'],
+  //           orderStatus: orderItem['order_status'],
+  //           paymentStatus: orderItem['payment_status'],
+  //           receiptId: orderItem['receipt_id'],
+  //         );
 
-          // Return the Order object
-          return order;
-        } else {
-          print("No order data found in JSON response");
-          ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(content: Text("Order data not found")));
-          return null;
-        }
-      } else {
-        print(
-            "Failed to fetch complete order details. Status: ${jsonData['status']}");
-        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-            content: Text("Failed to fetch complete order details")));
-        return null;
-      }
-    } else {
-      print(
-          "Failed to fetch data from server. Status code: ${response.statusCode}");
-      ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text("Failed to fetch data from server")));
-      return null;
-    }
-  }
+  //         // Return the Order object
+  //         return order;
+  //       } else {
+  //         print("No order data found in JSON response");
+  //         ScaffoldMessenger.of(context).showSnackBar(
+  //             const SnackBar(content: Text("Order data not found")));
+  //         return null;
+  //       }
+  //     } else {
+  //       print(
+  //           "Failed to fetch complete order details. Status: ${jsonData['status']}");
+  //       ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+  //           content: Text("Failed to fetch complete order details")));
+  //       return null;
+  //     }
+  //   } else {
+  //     print(
+  //         "Failed to fetch data from server. Status code: ${response.statusCode}");
+  //     ScaffoldMessenger.of(context).showSnackBar(
+  //         const SnackBar(content: Text("Failed to fetch data from server")));
+  //     return null;
+  //   }
+  // }
 
   void _orderdialog() {
     if (widget.user.id.toString() == widget.service.sellerId.toString()) {
@@ -551,6 +552,160 @@ class _ServiceOrderScreenState extends State<ServiceOrderScreen> {
       },
     );
   }
+
+  Future<Order?> orderService() async {
+  // Convert servicedate to the format expected by PHP (YYYY-MM-DD)
+  String formattedDate =
+      "${servicedate.year}-${servicedate.month}-${servicedate.day}";
+
+  // Convert TimeOfDay to String for database insertion
+  String formattedTime = tf.format(
+    DateTime(
+      servicedate.year,
+      servicedate.month,
+      servicedate.day,
+      servicetime.hour,
+      servicetime.minute,
+    ),
+  );
+
+  http.Response response = await http.post(
+    Uri.parse("${Config.server}/lsm/php/insert_order.php"),
+    body: {
+      "serviceid": widget.service.serviceId.toString(),
+      "userid": widget.user.id.toString(),
+      "sellerid": widget.service.sellerId.toString(),
+      "servicename": widget.service.serviceName.toString(),
+      "serviceprice": widget.service.servicePrice.toString(),
+      "serviceunit": widget.service.serviceUnit.toString(),
+      "servicequantity": qtyEditingController.text,
+      "orderprice": totalprice.toString(),
+      "date": formattedDate,
+      "time": formattedTime,
+      "address": addressEditingController.text,
+      "message": messageEditingController.text,
+      "userstatus": "New",
+      "sellerstatus": "New",
+      "orderstatus": "Upcoming",
+      "paymentstatus": "Pending",
+      "receipt": "Pending",
+    },
+  );
+
+  if (response.statusCode == 200) {
+    var jsonData = jsonDecode(response.body);
+    print(jsonData); // Print the JSON response for debugging
+
+    if (jsonData != null && jsonData['status'] == 'success') {
+      // Extract the order ID from the response
+      int orderId = jsonData['data']['orderid'];
+
+      // Fetch complete order details using load_userorder.php
+      Order? completeOrder = await fetchCompleteOrder(orderId);
+
+      if (completeOrder != null) {
+        sendNotificationToSeller(orderId, widget.service.sellerId.toString());
+        return completeOrder;
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text("Failed to fetch complete order details")),
+        );
+        return null;
+      }
+    } else {
+      print("Order request failed or status is not 'success'");
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text("Order request failed")),
+      );
+      return null;
+    }
+  } else {
+    print(
+      "Failed to fetch data from server. Status code: ${response.statusCode}",
+    );
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text("Failed to fetch data from server")),
+    );
+    return null;
+  }
+}
+
+Future<Order?> fetchCompleteOrder(int orderId) async {
+  http.Response response = await http.post(
+    Uri.parse("${Config.server}/lsm/php/load_userorder.php"),
+    body: {
+      "userid": widget.user.id.toString(),
+      "orderid": orderId.toString(),
+    },
+  );
+
+  if (response.statusCode == 200) {
+    var jsonData = jsonDecode(response.body);
+    print(jsonData); // Print the JSON response for debugging
+
+    if (jsonData != null && jsonData['status'] == 'success') {
+      var orderData = jsonData['data']['order'];
+      if (orderData != null && orderData.isNotEmpty) {
+        var orderItem = orderData[0];
+        // Create an Order object from the JSON data
+        Order order = Order.fromJson(orderItem);
+        // Return the Order object
+        return order;
+      } else {
+        print("No order data found in JSON response");
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text("Order data not found")),
+        );
+        return null;
+      }
+    } else {
+      print(
+        "Failed to fetch complete order details. Status: ${jsonData['status']}",
+      );
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text("Failed to fetch complete order details"),
+        ),
+      );
+      return null;
+    }
+  } else {
+    print(
+      "Failed to fetch data from server. Status code: ${response.statusCode}",
+    );
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text("Failed to fetch data from server")),
+    );
+    return null;
+  }
+}
+
+void loadaddress() {
+  http.post(
+    Uri.parse("${Config.server}/lsm/php/load_address.php"),
+    body: {
+      "userid": widget.user.id.toString(),
+    },
+  ).then((response) {
+    print(response.statusCode);
+    log(response.body);
+    if (response.statusCode == 200) {
+      var jsondata = jsonDecode(response.body);
+      if (jsondata['status'] == "success") {
+        var orderData = jsondata['data']['order'];
+        if (orderData != null && orderData.isNotEmpty) {
+          var orderItem = orderData[0];
+          setState(() {
+            addressEditingController.text =
+                orderItem['order_serviceaddress'].toString();
+          });
+        } else {
+          addressEditingController.text = "";
+        }
+      }
+    }
+  });
+}
 
   void sendNotificationToSeller(int orderId, String sellerId) async {
     // Construct the FCM message payload

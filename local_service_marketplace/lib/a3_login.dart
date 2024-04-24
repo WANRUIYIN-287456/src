@@ -1,3 +1,4 @@
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:local_service_marketplace/a2_register.dart';
@@ -215,6 +216,7 @@ class _LoginScreenState extends State<LoginScreen> {
           if (jsondata['status'] == 'success') {
             late User user;
             user = User.fromJson(jsondata['data']);
+            updatetoken();
             ScaffoldMessenger.of(context)
                 .showSnackBar(const SnackBar(content: Text("Login Success")));
             Navigator.pushReplacement(
@@ -282,4 +284,34 @@ class _LoginScreenState extends State<LoginScreen> {
           .showSnackBar(const SnackBar(content: Text("Preferences Removed")));
     }
   }
+
+Future<void> updatetoken() async {
+    String _email = _emailEditingController.text;
+    String? token = await FirebaseMessaging.instance.getToken();
+    http.post(Uri.parse("${Config.server}/lsm/php/update_fcmtoken.php"), body: {
+      "email": _email,
+      "fcmtoken": token.toString(),
+    }).then((response) {
+      print(response.body);
+      try {
+        print(response.statusCode);
+        if (response.statusCode == 200) {
+          print(response.body);
+          var jsondata = jsonDecode(response.body);
+          //print(jsondata['data']);
+          if (jsondata['status'] == 'success') {
+
+           print("sucess");
+          } else {
+            print("fcm: 1");
+          }
+        } else {
+          print("fcm: 2");
+        }
+      } catch (e, _) {
+        debugPrint(e.toString());
+      }
+    });
+  }
+
 }
