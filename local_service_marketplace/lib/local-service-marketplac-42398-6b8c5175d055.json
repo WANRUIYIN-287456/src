@@ -1,0 +1,13 @@
+{
+  "type": "service_account",
+  "project_id": "local-service-marketplac-42398",
+  "private_key_id": "6b8c5175d05543a879130e534dfa31e7df53b14b",
+  "private_key": "-----BEGIN PRIVATE KEY-----\nMIIEvQIBADANBgkqhkiG9w0BAQEFAASCBKcwggSjAgEAAoIBAQDXNqnCTqtKdb++\ntN45mMh0EBjnNbr4r/vXyH4dD3thxwJCm6gscVNJwTke5czGR8lDKGkfjj1+jcQn\nnWj2soCPhhDnQ+jBlEi8JmQNz3/EYFgR+Ux/J+rDIMY58HkfObYcJb9tzi61WGXY\nVekVyerm7FlWK7CCZiTEFZjzfxl8y4BLQz9t0/B6lhsarEGKewmFFxaE37zLL/KM\nVjM+WHEHfkd3PQemMeInjN++uWWCPASQLGPIWlUsYOPkZruxFykErKGERFMmQjKK\nuMgJIm0cSVNp079FlDtye9LDrLdIzcC2brnzgS2QV36l2RiE/DZFxb2lRKmZiIWy\nOPy9sJv7AgMBAAECggEAPPQA8YT5c53U4Ez2saZpg6G5g+aOXXfuYqeovE9RuRg1\ntirC3097cOS2al9Yd4IGaSxtVaAiH5FEUJn/C/vzeHLWn8F2jzkRvqQ660RtIe/N\nkc2jUlI6ZeiG7AsFKwhb4S35wT5HsVnngnWWjfLBwoSHKuY12EDYweaCCtjhHZw6\ndL9ylUjY31TK2/KgR+ubE2mZ/CoOcCAgVAu1DMveRvzjfiwaV5U1NK3EqkAizcy0\nKK7tsBqiZjATcrTYMMPi4GC6TGXHu2JF1nRP3TwIS5TY/mUHx31ByTJyT1KWBBZb\nJGu9LvZeAm0c7cWnjSAEH83sW/T4AYZmrwsvnu1WrQKBgQDrNgk5BDQLLWWcBxpf\nGVnU7hi7FVFMutNg7eCPwVMNRVBIaU2dVxfcdxdnTjjELxc34dGZP/9c8fe76wUT\nuGipkM5kg/SW7X9BPRzm5takI5FETbN/pbD8hpERtQalKUxiDHLHUeN/zoMIrFB7\nxDDe3ASZ34i8iAcgiHYjungEDQKBgQDqPCfnmuByay9LOqLIkUfIG9JgPRWD3BwZ\nS5jFu9vFdoO4fmhWGeX7J13qeKuJSwp1GLsmkO31LPpLVTmlodUZhO8sI4c5u8O/\nEdGNr1WXOquY0AkFOqBblPnbM/+1CBoj9iNl+I9XpI/HWx/mKfwgjtVkGZIxJxIM\nsDNI3TJ2JwKBgGALc56lmb7KrcgVmm4kwurQwqZ6IPWNAE1/NQheb9Rmbk7zOO87\nphGvS44ygbmSZQ+7lUPXvyWr5HYGlM8lqQ88gxrGSzTqC+GO2+NpdVIW9/WFKPvB\no9Cp/kjVu73rbDZJUQEU7im9IQKEomS3iyElhHd0sLgTb52YO22BcgptAoGBAMk4\nnF9OoXopshtCaA09IRk7LWMXlqAMOudQFhHn7EiaI1Ye4ar13KgBjaCbwWDUYktt\nz3i2EHYLCYol0LwFZnfhx0V3z/c84lAGEqtQ8IpWEIvaS6V+U7vZIzu4U/dE2pAC\nJy62dQ2phQqRsbmcX8fobFDt1rT7B3p289eojm0JAoGAO2uuDWUyMd5ZIMeL9l4t\nL4tGtBjog63E5rRtaKst1AgJh0i9xNvm+pLc6fnShvlb3AQHZ210NUSncXvXqvvG\nhHFla9K2Zi0nWElGHr7gn7mp+TGBrKaQKQe81gNa/kGe7SKlbNXaZSN9IZSQz8iH\nmSO2hIHLEnX34erK/BIAUiE=\n-----END PRIVATE KEY-----\n",
+  "client_email": "firebase-adminsdk-175xm@local-service-marketplac-42398.iam.gserviceaccount.com",
+  "client_id": "115583668754870131505",
+  "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+  "token_uri": "https://oauth2.googleapis.com/token",
+  "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
+  "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/firebase-adminsdk-175xm%40local-service-marketplac-42398.iam.gserviceaccount.com",
+  "universe_domain": "googleapis.com"
+}

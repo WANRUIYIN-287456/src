@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:local_service_marketplace/a5_1_userservicedetails.dart';
@@ -125,6 +126,7 @@ class _HomeTabScreenState extends State<HomeTabScreen> {
   void initState() {
     super.initState();
    loadpageService(1);
+   updatetoken();
   }
 
 @override
@@ -677,5 +679,36 @@ void filterDialog() {
     },
   );
 }
+
+Future<void> updatetoken() async {
+
+    String _email = widget.user.email.toString();
+     String? token = await FirebaseMessaging.instance.getToken();
+    http.post(Uri.parse("${Config.server}/lsm/php/update_fcmtoken.php"), body: {
+      "email": _email,
+      "fcmtoken": token.toString(),
+    }).then((response) {
+      print(response.body);
+      try {
+        print(response.statusCode);
+        if (response.statusCode == 200) {
+          print(response.body);
+          var jsondata = jsonDecode(response.body);
+          //print(jsondata['data']);
+          if (jsondata['status'] == 'success') {
+           print("succes. home tab fcm token: " + token.toString());
+          } else {
+            print("FCM 1");
+          }
+        } else {
+          ScaffoldMessenger.of(context)
+              .showSnackBar(const SnackBar(content: Text("Login Failed")));
+          print("FCM 2");
+        }
+      } catch (e, _) {
+        debugPrint(e.toString());
+      }
+    });
+  }
 
 }

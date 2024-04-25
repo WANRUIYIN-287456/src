@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:developer';
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
@@ -8,8 +9,11 @@ import 'package:local_service_marketplace/a5_3_orderpaymentscreen.dart';
 import 'package:local_service_marketplace/a5_7_userorderdetailsscreen.dart';
 import 'package:local_service_marketplace/config.dart';
 import 'package:local_service_marketplace/model/order.dart';
+import 'package:local_service_marketplace/model/seller.dart';
 import 'package:local_service_marketplace/model/service.dart';
 import 'package:local_service_marketplace/model/user.dart';
+import 'package:googleapis_auth/auth_io.dart' as auth;
+import 'package:googleapis/servicecontrol/v1.dart' as servicecontrol;
 
 class ServiceOrderScreen extends StatefulWidget {
   final User user;
@@ -40,10 +44,12 @@ class _ServiceOrderScreenState extends State<ServiceOrderScreen> {
   late DateTime servicedate;
   late TimeOfDay servicetime;
   late Order order;
+  List<Seller> sellerList = <Seller>[];
 
   @override
   void initState() {
     super.initState();
+    loadaddress();
     servicedate = DateTime.now();
     servicetime = TimeOfDay.now();
   }
@@ -132,7 +138,7 @@ class _ServiceOrderScreenState extends State<ServiceOrderScreen> {
                         key: _quantityFormKey,
                         child: TextFormField(
                           controller: qtyEditingController,
-                          onFieldSubmitted: (val) {
+                          onChanged: (val) {
                             setState(() {
                               qty = double.parse(qtyEditingController.text);
                               totalprice = double.parse(
@@ -359,136 +365,136 @@ class _ServiceOrderScreenState extends State<ServiceOrderScreen> {
     }
   }
 
-  Future<Order?> orderService() async {
-    // Convert servicedate to the format expected by PHP (YYYY-MM-DD)
-    String formattedDate =
-        "${servicedate.year}-${servicedate.month}-${servicedate.day}";
+  // Future<Order?> orderService() async {
+  //   // Convert servicedate to the format expected by PHP (YYYY-MM-DD)
+  //   String formattedDate =
+  //       "${servicedate.year}-${servicedate.month}-${servicedate.day}";
 
-    // Convert TimeOfDay to DateTime for database insertion
-    final DateTime selectedDateTime = DateTime(
-      servicedate.year,
-      servicedate.month,
-      servicedate.day,
-      servicetime.hour,
-      servicetime.minute,
-    );
+  //   // Convert TimeOfDay to DateTime for database insertion
+  //   final DateTime selectedDateTime = DateTime(
+  //     servicedate.year,
+  //     servicedate.month,
+  //     servicedate.day,
+  //     servicetime.hour,
+  //     servicetime.minute,
+  //   );
 
-    http.Response response = await http
-        .post(Uri.parse("${Config.server}/lsm/php/insert_order.php"), body: {
-      "serviceid": widget.service.serviceId.toString(),
-      "userid": widget.user.id.toString(),
-      "sellerid": widget.service.sellerId.toString(),
-      "servicename": widget.service.serviceName.toString(),
-      "serviceprice": widget.service.servicePrice.toString(),
-      "serviceunit": widget.service.serviceUnit.toString(),
-      "servicequantity": qtyEditingController.text,
-      "orderprice": totalprice.toString(),
-      "date": formattedDate, // Use formattedDate here
-      "time": tf.format(selectedDateTime), // Format time for database insertion
-      "address": addressEditingController.text,
-      "message": messageEditingController.text,
-      "userstatus": "New",
-      "sellerstatus": "New",
-      "orderstatus": "Upcoming",
-      "paymentstatus": "Pending",
-      "receipt": "Pending",
-    });
+  //   http.Response response = await http
+  //       .post(Uri.parse("${Config.server}/lsm/php/insert_order.php"), body: {
+  //     "serviceid": widget.service.serviceId.toString(),
+  //     "userid": widget.user.id.toString(),
+  //     "sellerid": widget.service.sellerId.toString(),
+  //     "servicename": widget.service.serviceName.toString(),
+  //     "serviceprice": widget.service.servicePrice.toString(),
+  //     "serviceunit": widget.service.serviceUnit.toString(),
+  //     "servicequantity": qtyEditingController.text,
+  //     "orderprice": totalprice.toString(),
+  //     "date": formattedDate, // Use formattedDate here
+  //     "time": tf.format(selectedDateTime), // Format time for database insertion
+  //     "address": addressEditingController.text,
+  //     "message": messageEditingController.text,
+  //     "userstatus": "New",
+  //     "sellerstatus": "New",
+  //     "orderstatus": "Upcoming",
+  //     "paymentstatus": "Pending",
+  //     "receipt": "Pending",
+  //   });
 
-    if (response.statusCode == 200) {
-      var jsonData = jsonDecode(response.body);
-      print(jsonData); // Print the JSON response for debugging
+  //   if (response.statusCode == 200) {
+  //     var jsonData = jsonDecode(response.body);
+  //     print(jsonData); // Print the JSON response for debugging
 
-      if (jsonData != null && jsonData['status'] == 'success') {
-        // Extract the order ID from the response
-        int orderId = jsonData['data']['orderid'];
+  //     if (jsonData != null && jsonData['status'] == 'success') {
+  //       // Extract the order ID from the response
+  //       int orderId = jsonData['data']['orderid'];
 
-        // Fetch complete order details using load_userorder.php
-        Order? completeOrder = await fetchCompleteOrder(orderId);
+  //       // Fetch complete order details using load_userorder.php
+  //       Order? completeOrder = await fetchCompleteOrder(orderId);
 
-        if (completeOrder != null) {
-          sendNotificationToSeller(orderId, widget.service.sellerId.toString());
-          return completeOrder;
-        } else {
-          ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-              content: Text("Failed to fetch complete order details")));
-          return null;
-        }
-      } else {
-        print("Order request failed or status is not 'success'");
-        ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text("Order request failed")));
-        return null;
-      }
-    } else {
-      print(
-          "Failed to fetch data from server. Status code: ${response.statusCode}");
-      ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text("Failed to fetch data from server")));
-      return null;
-    }
-  }
+  //       if (completeOrder != null) {
+  //         sendNotificationToSeller(orderId, widget.service.sellerId.toString());
+  //         return completeOrder;
+  //       } else {
+  //         ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+  //             content: Text("Failed to fetch complete order details")));
+  //         return null;
+  //       }
+  //     } else {
+  //       print("Order request failed or status is not 'success'");
+  //       ScaffoldMessenger.of(context).showSnackBar(
+  //           const SnackBar(content: Text("Order request failed")));
+  //       return null;
+  //     }
+  //   } else {
+  //     print(
+  //         "Failed to fetch data from server. Status code: ${response.statusCode}");
+  //     ScaffoldMessenger.of(context).showSnackBar(
+  //         const SnackBar(content: Text("Failed to fetch data from server")));
+  //     return null;
+  //   }
+  // }
 
-  Future<Order?> fetchCompleteOrder(int orderId) async {
-    http.Response response = await http
-        .post(Uri.parse("${Config.server}/lsm/php/load_userorder.php"), body: {
-      "userid": widget.user.id.toString(),
-      "orderid": orderId.toString(),
-    });
+  // Future<Order?> fetchCompleteOrder(int orderId) async {
+  //   http.Response response = await http
+  //       .post(Uri.parse("${Config.server}/lsm/php/load_userorder.php"), body: {
+  //     "userid": widget.user.id.toString(),
+  //     "orderid": orderId.toString(),
+  //   });
 
-    if (response.statusCode == 200) {
-      var jsonData = jsonDecode(response.body);
-      print(jsonData); // Print the JSON response for debugging
+  //   if (response.statusCode == 200) {
+  //     var jsonData = jsonDecode(response.body);
+  //     print(jsonData); // Print the JSON response for debugging
 
-      if (jsonData != null && jsonData['status'] == 'success') {
-        var orderData = jsonData['data']['order'];
-        if (orderData != null && orderData.isNotEmpty) {
-          var orderItem = orderData[0];
-          // Create an Order object from the JSON data
-          Order order = Order(
-            orderId: orderItem['order_id'],
-            serviceId: orderItem['service_id'],
-            userId: orderItem['user_id'],
-            sellerId: orderItem['seller_id'],
-            serviceName: orderItem['service_name'],
-            servicePrice: orderItem['service_price'],
-            serviceUnit: orderItem['service_unit'],
-            orderQuantity: orderItem['order_quantity'],
-            orderTotalprice: orderItem['order_totalprice'],
-            orderServicedate: orderItem['order_servicedate'],
-            orderServicetime: orderItem['order_servicetime'],
-            orderServiceaddress: orderItem['order_serviceaddress'],
-            orderMessage: orderItem['order_message'],
-            orderDate: orderItem['order_date'],
-            orderUserstatus: orderItem['order_userstatus'],
-            orderSellerstatus: orderItem['order_sellerstatus'],
-            orderStatus: orderItem['order_status'],
-            paymentStatus: orderItem['payment_status'],
-            receiptId: orderItem['receipt_id'],
-          );
+  //     if (jsonData != null && jsonData['status'] == 'success') {
+  //       var orderData = jsonData['data']['order'];
+  //       if (orderData != null && orderData.isNotEmpty) {
+  //         var orderItem = orderData[0];
+  //         // Create an Order object from the JSON data
+  //         Order order = Order(
+  //           orderId: orderItem['order_id'],
+  //           serviceId: orderItem['service_id'],
+  //           userId: orderItem['user_id'],
+  //           sellerId: orderItem['seller_id'],
+  //           serviceName: orderItem['service_name'],
+  //           servicePrice: orderItem['service_price'],
+  //           serviceUnit: orderItem['service_unit'],
+  //           orderQuantity: orderItem['order_quantity'],
+  //           orderTotalprice: orderItem['order_totalprice'],
+  //           orderServicedate: orderItem['order_servicedate'],
+  //           orderServicetime: orderItem['order_servicetime'],
+  //           orderServiceaddress: orderItem['order_serviceaddress'],
+  //           orderMessage: orderItem['order_message'],
+  //           orderDate: orderItem['order_date'],
+  //           orderUserstatus: orderItem['order_userstatus'],
+  //           orderSellerstatus: orderItem['order_sellerstatus'],
+  //           orderStatus: orderItem['order_status'],
+  //           paymentStatus: orderItem['payment_status'],
+  //           receiptId: orderItem['receipt_id'],
+  //         );
 
-          // Return the Order object
-          return order;
-        } else {
-          print("No order data found in JSON response");
-          ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(content: Text("Order data not found")));
-          return null;
-        }
-      } else {
-        print(
-            "Failed to fetch complete order details. Status: ${jsonData['status']}");
-        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-            content: Text("Failed to fetch complete order details")));
-        return null;
-      }
-    } else {
-      print(
-          "Failed to fetch data from server. Status code: ${response.statusCode}");
-      ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text("Failed to fetch data from server")));
-      return null;
-    }
-  }
+  //         // Return the Order object
+  //         return order;
+  //       } else {
+  //         print("No order data found in JSON response");
+  //         ScaffoldMessenger.of(context).showSnackBar(
+  //             const SnackBar(content: Text("Order data not found")));
+  //         return null;
+  //       }
+  //     } else {
+  //       print(
+  //           "Failed to fetch complete order details. Status: ${jsonData['status']}");
+  //       ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+  //           content: Text("Failed to fetch complete order details")));
+  //       return null;
+  //     }
+  //   } else {
+  //     print(
+  //         "Failed to fetch data from server. Status code: ${response.statusCode}");
+  //     ScaffoldMessenger.of(context).showSnackBar(
+  //         const SnackBar(content: Text("Failed to fetch data from server")));
+  //     return null;
+  //   }
+  // }
 
   void _orderdialog() {
     if (widget.user.id.toString() == widget.service.sellerId.toString()) {
@@ -552,37 +558,334 @@ class _ServiceOrderScreenState extends State<ServiceOrderScreen> {
     );
   }
 
-  void sendNotificationToSeller(int orderId, String sellerId) async {
-    // Construct the FCM message payload
-    var message = {
-        'notification': {
-            'title': 'New Order',
-            'body': 'You have a new order. Check it at your upcoming order list.'
-        },
-        'data': {
-            // You can add additional data if needed
-            'orderId': orderId.toString(),
-        },
-        'to': 'seller_$sellerId', // FCM topic for the seller
-    };
+  Future<Order?> orderService() async {
+    // Convert servicedate to the format expected by PHP (YYYY-MM-DD)
+    String formattedDate =
+        "${servicedate.year}-${servicedate.month}-${servicedate.day}";
 
-    // Send the FCM message using HTTP POST request
-    var response = await http.post(
-        Uri.parse('https://fcm.googleapis.com/fcm/send'),
-        headers: {
-            'Content-Type': 'application/json',
-            'Authorization': 'key=AAAAb8bcc_g:APA91bFiMsZrgZ1Oo_zVL83qWA0HhBN8f00oiJ2VJNgoamrjgUaAwrIypjmrDQ0MhLgCcTCLg3itJRptmPh4owUN4bMXdpMAPR_XPRdWSRq716RB8hynp-iLs_ggiNjnz6IBF-LSoF_1', // Replace with your server key
-        },
-        body: jsonEncode(message),
+    // Convert TimeOfDay to String for database insertion
+    String formattedTime = tf.format(
+      DateTime(
+        servicedate.year,
+        servicedate.month,
+        servicedate.day,
+        servicetime.hour,
+        servicetime.minute,
+      ),
+    );
+
+    http.Response response = await http.post(
+      Uri.parse("${Config.server}/lsm/php/insert_order.php"),
+      body: {
+        "serviceid": widget.service.serviceId.toString(),
+        "userid": widget.user.id.toString(),
+        "sellerid": widget.service.sellerId.toString(),
+        "servicename": widget.service.serviceName.toString(),
+        "serviceprice": widget.service.servicePrice.toString(),
+        "serviceunit": widget.service.serviceUnit.toString(),
+        "servicequantity": qtyEditingController.text,
+        "orderprice": totalprice.toString(),
+        "date": formattedDate,
+        "time": formattedTime,
+        "address": addressEditingController.text,
+        "message": messageEditingController.text,
+        "userstatus": "New",
+        "sellerstatus": "New",
+        "orderstatus": "Upcoming",
+        "paymentstatus": "Pending",
+        "receipt": "Pending",
+      },
     );
 
     if (response.statusCode == 200) {
-        print('Notification sent to seller successfully');
-    } else {
-        print('Failed to send notification to seller. Status code: ${response.statusCode}');
-    }
-}
+      var jsonData = jsonDecode(response.body);
+      print(jsonData); // Print the JSON response for debugging
 
+      if (jsonData != null && jsonData['status'] == 'success') {
+        // Extract the order ID from the response
+        int orderId = jsonData['data']['orderid'];
+
+        // Fetch complete order details using load_userorder.php
+        Order? completeOrder = await fetchCompleteOrder(orderId);
+
+        if (completeOrder != null) {
+          sendNotificationToSeller(orderId, widget.service.sellerId.toString());
+          sendemail();
+          return completeOrder;
+        } else {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+                content: Text("Failed to fetch complete order details")),
+          );
+          return null;
+        }
+      } else {
+        print("Order request failed or status is not 'success'");
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text("Order request failed")),
+        );
+        return null;
+      }
+    } else {
+      print(
+        "Failed to fetch data from server. Status code: ${response.statusCode}",
+      );
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text("Failed to fetch data from server")),
+      );
+      return null;
+    }
+  }
+
+  Future<Order?> fetchCompleteOrder(int orderId) async {
+    http.Response response = await http.post(
+      Uri.parse("${Config.server}/lsm/php/load_userorder.php"),
+      body: {
+        "userid": widget.user.id.toString(),
+        "orderid": orderId.toString(),
+      },
+    );
+
+    if (response.statusCode == 200) {
+      var jsonData = jsonDecode(response.body);
+      print(jsonData); // Print the JSON response for debugging
+
+      if (jsonData != null && jsonData['status'] == 'success') {
+        var orderData = jsonData['data']['order'];
+        if (orderData != null && orderData.isNotEmpty) {
+          var orderItem = orderData[0];
+          // Create an Order object from the JSON data
+          Order order = Order.fromJson(orderItem);
+          // Return the Order object
+          return order;
+        } else {
+          print("No order data found in JSON response");
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text("Order data not found")),
+          );
+          return null;
+        }
+      } else {
+        print(
+          "Failed to fetch complete order details. Status: ${jsonData['status']}",
+        );
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text("Failed to fetch complete order details"),
+          ),
+        );
+        return null;
+      }
+    } else {
+      print(
+        "Failed to fetch data from server. Status code: ${response.statusCode}",
+      );
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text("Failed to fetch data from server")),
+      );
+      return null;
+    }
+  }
+
+  void loadaddress() {
+    http.post(
+      Uri.parse("${Config.server}/lsm/php/load_address.php"),
+      body: {
+        "userid": widget.user.id.toString(),
+      },
+    ).then((response) {
+      print(response.statusCode);
+      log(response.body);
+      if (response.statusCode == 200) {
+        var jsondata = jsonDecode(response.body);
+        if (jsondata['status'] == "success") {
+          var orderData = jsondata['data']['order'];
+          if (orderData != null && orderData.isNotEmpty) {
+            var orderItem = orderData[0];
+            setState(() {
+              addressEditingController.text =
+                  orderItem['order_serviceaddress'].toString();
+            });
+          } else {
+            addressEditingController.text = "";
+          }
+        }
+      }
+    });
+  }
+
+//   ** Legacy method **
+//   void sendNotificationToSeller(int orderId, String sellerId) async {
+//     // Construct the FCM message payload
+//     var message = {
+//         'notification': {
+//             'title': 'New Order',
+//             'body': 'You have a new order. Check it at your upcoming order list.'
+//         },
+//         'data': {
+//             // You can add additional data if needed
+//             'orderId': orderId.toString(),
+//         },
+//         'to': 'seller_$sellerId', // FCM topic for the seller
+//     };
+
+//     // Send the FCM message using HTTP POST request
+//     var response = await http.post(
+//         Uri.parse('https://fcm.googleapis.com/fcm/send'),
+//         headers: {
+//             'Content-Type': 'application/json',
+//             'Authorization': 'key=AAAAb8bcc_g:APA91bFiMsZrgZ1Oo_zVL83qWA0HhBN8f00oiJ2VJNgoamrjgUaAwrIypjmrDQ0MhLgCcTCLg3itJRptmPh4owUN4bMXdpMAPR_XPRdWSRq716RB8hynp-iLs_ggiNjnz6IBF-LSoF_1', // Replace with your server key
+//         },
+//         body: jsonEncode(message),
+//     );
+
+//     if (response.statusCode == 200) {
+//         print('Notification sent to seller successfully');
+//     } else {
+//         print('Failed to send notification to seller. Status code: ${response.statusCode}');
+//     }
+// }
+
+  Future<String> loadVerify(int index) async {
+    try {
+      final response = await http.post(
+          Uri.parse("${Config.server}/lsm/php/load_verify.php"),
+          body: {"sellerid": widget.service.sellerId.toString()});
+
+      if (response.statusCode == 200) {
+        var jsondata = jsonDecode(response.body);
+        if (jsondata['status'] == "success") {
+          var extractdata = jsondata['data'];
+          for (var v in extractdata) {
+            sellerList.add(Seller.fromJson(v));
+
+            String fcmtoken = sellerList[index].fcmToken.toString();
+            print("insert order : $fcmtoken");
+            return fcmtoken;
+          }
+        }
+      }
+    } catch (e, _) {
+      debugPrint(e.toString());
+    }
+
+    String? fcmtokennull = await FirebaseMessaging.instance.getToken();
+    print("null : $fcmtokennull");
+    return fcmtokennull.toString();
+  }
+
+  Future<String> getAccessToken() async {
+    final serviceAccountJson = {
+      "type": "service_account",
+      "project_id": "local-service-marketplac-42398",
+      "private_key_id": "6b8c5175d05543a879130e534dfa31e7df53b14b",
+      "private_key":
+          "-----BEGIN PRIVATE KEY-----\nMIIEvQIBADANBgkqhkiG9w0BAQEFAASCBKcwggSjAgEAAoIBAQDXNqnCTqtKdb++\ntN45mMh0EBjnNbr4r/vXyH4dD3thxwJCm6gscVNJwTke5czGR8lDKGkfjj1+jcQn\nnWj2soCPhhDnQ+jBlEi8JmQNz3/EYFgR+Ux/J+rDIMY58HkfObYcJb9tzi61WGXY\nVekVyerm7FlWK7CCZiTEFZjzfxl8y4BLQz9t0/B6lhsarEGKewmFFxaE37zLL/KM\nVjM+WHEHfkd3PQemMeInjN++uWWCPASQLGPIWlUsYOPkZruxFykErKGERFMmQjKK\nuMgJIm0cSVNp079FlDtye9LDrLdIzcC2brnzgS2QV36l2RiE/DZFxb2lRKmZiIWy\nOPy9sJv7AgMBAAECggEAPPQA8YT5c53U4Ez2saZpg6G5g+aOXXfuYqeovE9RuRg1\ntirC3097cOS2al9Yd4IGaSxtVaAiH5FEUJn/C/vzeHLWn8F2jzkRvqQ660RtIe/N\nkc2jUlI6ZeiG7AsFKwhb4S35wT5HsVnngnWWjfLBwoSHKuY12EDYweaCCtjhHZw6\ndL9ylUjY31TK2/KgR+ubE2mZ/CoOcCAgVAu1DMveRvzjfiwaV5U1NK3EqkAizcy0\nKK7tsBqiZjATcrTYMMPi4GC6TGXHu2JF1nRP3TwIS5TY/mUHx31ByTJyT1KWBBZb\nJGu9LvZeAm0c7cWnjSAEH83sW/T4AYZmrwsvnu1WrQKBgQDrNgk5BDQLLWWcBxpf\nGVnU7hi7FVFMutNg7eCPwVMNRVBIaU2dVxfcdxdnTjjELxc34dGZP/9c8fe76wUT\nuGipkM5kg/SW7X9BPRzm5takI5FETbN/pbD8hpERtQalKUxiDHLHUeN/zoMIrFB7\nxDDe3ASZ34i8iAcgiHYjungEDQKBgQDqPCfnmuByay9LOqLIkUfIG9JgPRWD3BwZ\nS5jFu9vFdoO4fmhWGeX7J13qeKuJSwp1GLsmkO31LPpLVTmlodUZhO8sI4c5u8O/\nEdGNr1WXOquY0AkFOqBblPnbM/+1CBoj9iNl+I9XpI/HWx/mKfwgjtVkGZIxJxIM\nsDNI3TJ2JwKBgGALc56lmb7KrcgVmm4kwurQwqZ6IPWNAE1/NQheb9Rmbk7zOO87\nphGvS44ygbmSZQ+7lUPXvyWr5HYGlM8lqQ88gxrGSzTqC+GO2+NpdVIW9/WFKPvB\no9Cp/kjVu73rbDZJUQEU7im9IQKEomS3iyElhHd0sLgTb52YO22BcgptAoGBAMk4\nnF9OoXopshtCaA09IRk7LWMXlqAMOudQFhHn7EiaI1Ye4ar13KgBjaCbwWDUYktt\nz3i2EHYLCYol0LwFZnfhx0V3z/c84lAGEqtQ8IpWEIvaS6V+U7vZIzu4U/dE2pAC\nJy62dQ2phQqRsbmcX8fobFDt1rT7B3p289eojm0JAoGAO2uuDWUyMd5ZIMeL9l4t\nL4tGtBjog63E5rRtaKst1AgJh0i9xNvm+pLc6fnShvlb3AQHZ210NUSncXvXqvvG\nhHFla9K2Zi0nWElGHr7gn7mp+TGBrKaQKQe81gNa/kGe7SKlbNXaZSN9IZSQz8iH\nmSO2hIHLEnX34erK/BIAUiE=\n-----END PRIVATE KEY-----\n",
+      "client_email":
+          "firebase-adminsdk-175xm@local-service-marketplac-42398.iam.gserviceaccount.com",
+      "client_id": "115583668754870131505",
+      "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+      "token_uri": "https://oauth2.googleapis.com/token",
+      "auth_provider_x509_cert_url":
+          "https://www.googleapis.com/oauth2/v1/certs",
+      "client_x509_cert_url":
+          "https://www.googleapis.com/robot/v1/metadata/x509/firebase-adminsdk-175xm%40local-service-marketplac-42398.iam.gserviceaccount.com",
+      "universe_domain": "googleapis.com"
+    };
+
+    List<String> scopes = [
+      "https://www.googleapis.com/auth/userinfo.email",
+      "https://www.googleapis.com/auth/firebase.database",
+      "https://www.googleapis.com/auth/firebase.messaging",
+    ];
+
+    http.Client client = await auth.clientViaServiceAccount(
+      auth.ServiceAccountCredentials.fromJson(serviceAccountJson),
+      scopes,
+    );
+
+    auth.AccessCredentials credentials =
+        await auth.obtainAccessCredentialsViaServiceAccount(
+      auth.ServiceAccountCredentials.fromJson(serviceAccountJson),
+      scopes,
+      client,
+    );
+
+    client.close();
+
+    return credentials.accessToken.data;
+  }
+
+//ACCESS TOKE KEY 6b8c5175d05543a879130e534dfa31e7df53b14b
+  Future<void> sendNotificationToSeller(int orderId, String sellerId) async {
+    final String serverKey =
+        await getAccessToken(); // Replace "YOUR_SERVER_KEY" with your actual server key
+    final String fromEndpoint =
+        "https://fcm.googleapis.com/v1/projects/local-service-marketplac-42398/messages:send";
+    String? currentFCMToken = await loadVerify(0);
+    print("send message: " + currentFCMToken);
+
+    // Check if currentFCMToken is not null
+    if (currentFCMToken != null) {
+      // Construct the FCM message payload
+      final Map<String, dynamic> message = {
+        'message': {
+          'token': currentFCMToken,
+          'notification': {
+            'title': 'New Order',
+            'body':
+                'You have a new order. Check it at your upcoming order list.'
+          },
+
+          'data': {
+            // You can add additional data if needed
+            'orderId': orderId.toString(),
+            'current_user_fcm_token': currentFCMToken,
+          },
+          // 'to': 'seller_$sellerId', // FCM topic for the seller
+        }
+      };
+
+      // Send the FCM message using HTTP POST request
+      final http.Response response = await http.post(
+        Uri.parse(fromEndpoint),
+        headers: <String, String>{
+          'Content-Type': 'application/json',
+          'Authorization':
+              'Bearer $serverKey', // Use the server key for authorization
+        },
+        body: jsonEncode(message),
+      );
+
+      if (response.statusCode == 200) {
+        print('Notification sent to seller successfully');
+      } else {
+        print(
+            'Failed to send notification to seller. Status code: ${response.statusCode}');
+        print('Response body: ${response.body}');
+      }
+    } else {
+      print('Failed to get FCM token for seller.');
+    }
+  }
+
+  void sendemail() {
+    print("email: " + widget.user.email.toString() + "sellerid" + widget.service.sellerId.toString());
+    http.post(
+        Uri.parse(
+            "https://labassign2.nwarz.com/lsm/php/send_notificationorderupdates.php"),
+        body: {
+          "sellerid": widget.service.sellerId,
+        }).then((response) {
+      if (response.statusCode == 200) {
+        print("Notify seller via email");
+      } else {
+        print("Failed to send email");
+      }
+    }).catchError((error) {
+      print("Error occured in sending email");
+    });
+  }
 }
 
 // import 'dart:convert';
@@ -940,7 +1243,6 @@ class _ServiceOrderScreenState extends State<ServiceOrderScreen> {
 //   }
 // }
 
-
 //   Future<void> _selectTime(BuildContext context) async {
 //     final TimeOfDay? pickedTime = await showTimePicker(
 //       context: context,
@@ -995,7 +1297,6 @@ class _ServiceOrderScreenState extends State<ServiceOrderScreen> {
 
 //           // Call loaduserorders() with the orderid parameter
 //           loaduserorders(orderid);
-
 
 //         } else {
 //           ScaffoldMessenger.of(context)
@@ -1109,10 +1410,7 @@ class _ServiceOrderScreenState extends State<ServiceOrderScreen> {
 //   });
 // }
 
-
 //}
-
-
 
 // import 'dart:convert';
 // import 'dart:developer';
@@ -1609,9 +1907,6 @@ class _ServiceOrderScreenState extends State<ServiceOrderScreen> {
 
 // }
 
-
-
-
 // import 'dart:convert';
 // import 'dart:developer';
 // import 'package:cached_network_image/cached_network_image.dart';
@@ -2105,4 +2400,3 @@ class _ServiceOrderScreenState extends State<ServiceOrderScreen> {
 //     });
 //   }
 // }
-

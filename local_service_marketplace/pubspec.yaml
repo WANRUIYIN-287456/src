@@ -55,6 +55,8 @@ dependencies:
   grouped_list: ^5.1.2
   firebase_messaging: ^14.7.10
   firebase_core: ^2.24.2
+  googleapis: ^11.3.0
+  googleapis_auth: ^1.4.1
 
 
 dev_dependencies:

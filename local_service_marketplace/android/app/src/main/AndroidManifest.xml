@@ -19,6 +19,19 @@
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher"
         android:usesCleartextTraffic="true">
+                <!-- Service for handling FCM messages in the foreground -->
+        <service
+            android:name="io.flutter.plugins.firebase.messaging.FlutterFirebaseMessagingForegroundService"
+            android:exported="false" />
+
+        <!-- Receiver for handling FCM messages when the app is in the background or terminated -->
+        <receiver
+            android:name="io.flutter.plugins.firebase.messaging.FlutterFirebaseMessagingBackgroundReceiver"
+            android:exported="false" >
+            <intent-filter>
+                <action android:name="com.google.firebase.MESSAGING_EVENT" />
+            </intent-filter>
+        </receiver>
         <activity
             android:name=".MainActivity"
             android:exported="true"
