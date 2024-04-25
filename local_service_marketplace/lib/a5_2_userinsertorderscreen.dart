@@ -734,7 +734,7 @@ class _ServiceOrderScreenState extends State<ServiceOrderScreen> {
 //         Uri.parse('https://fcm.googleapis.com/fcm/send'),
 //         headers: {
 //             'Content-Type': 'application/json',
-//             'Authorization': 'key=AAAAb8bcc_g:APA91bFiMsZrgZ1Oo_zVL83qWA0HhBN8f00oiJ2VJNgoamrjgUaAwrIypjmrDQ0MhLgCcTCLg3itJRptmPh4owUN4bMXdpMAPR_XPRdWSRq716RB8hynp-iLs_ggiNjnz6IBF-LSoF_1', // Replace with your server key
+//             'Authorization': 'key= SERVERKEY', // Replace with your server key
 //         },
 //         body: jsonEncode(message),
 //     );
@@ -802,7 +802,7 @@ class _ServiceOrderScreenState extends State<ServiceOrderScreen> {
     return credentials.accessToken.data;
   }
 
-//ACCESS TOKE KEY 6b8c5175d05543a879130e534dfa31e7df53b14b
+
   Future<void> sendNotificationToSeller(int orderId, String sellerId) async {
     final String serverKey =
         await getAccessToken(); // Replace "YOUR_SERVER_KEY" with your actual server key
