@@ -405,12 +405,17 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
   bool _isTap = false;
   bool _isResendEnabled = false;
   bool isRegistered = false;
-  bool isExist = true;
+  bool isExist = false;
   final _formKey = GlobalKey<FormState>();
   late double screenHeight, screenWidth, cardwidth;
   String eula = "";
   late String _imageString;
   String _otp = '';
+  bool isOTPSent = false;
+  bool isOTPCorrect = false;
+  bool isOTPIncorrect = false;
+  bool isResendEnabled = true;
+  String resendButtonText = "Send OTP";
 
   @override
   void initState() {
@@ -747,36 +752,6 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
     });
   }
 
-  void sendOTP2() {
-    _otp = generateOTP();
-    print("email: " + _forgotPasswordEmailController.text + "otp: " + _otp);
-    http.post(Uri.parse("https://labassign2.nwarz.com/lsm/php/send_otp.php"),
-        body: {
-          "email": _forgotPasswordEmailController.text,
-          "otp": _otp,
-          "name": "User"
-        }).then((response) {
-      if (response.statusCode == 200) {
-        ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text("OTP sent to your email")));
-        setState(() {
-          _isResendEnabled = false;
-        });
-        Timer(Duration(seconds: 60), () {
-          setState(() {
-            _isResendEnabled = true;
-          });
-        });
-      } else {
-        ScaffoldMessenger.of(context)
-            .showSnackBar(const SnackBar(content: Text("Failed to send OTP")));
-      }
-    }).catchError((error) {
-      ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text("Error occurred while sending OTP")));
-    });
-  }
-
   String generateOTP() {
     return (10000 + Random().nextInt(90000)).toString();
   }
@@ -896,34 +871,123 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
     });
   }
 
-  void verifyEmailExist2(String email) {
+  Future<bool> verifyEmailExist2(String email) async {
+    Completer<bool> completer = Completer<bool>();
+
     http.post(
         Uri.parse("https://labassign2.nwarz.com/lsm/php/verify_emailexist.php"),
         body: {"email": email}).then((response) {
       if (response.statusCode == 200) {
         var data = jsonDecode(response.body);
         if (data['status'] == 'success') {
-          sendOTP2();
-          print("email: " + email + "otp: " + _otp);
-          ScaffoldMessenger.of(context)
-              .showSnackBar(const SnackBar(content: Text("Email exist")));
-        } else {
-          setState(() {
-            isExist = false;
-          });
-          ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(content: Text("Email is not registered yet.")));
+          completer.complete(true);
+          return true;
+        } else if (data['status'] == 'failed') {
+          completer.complete(false);
+          return false;
         }
       }
     }).catchError((error) {
-      print("Error occurred while verifying email existence: $error");
+      completer.completeError(error);
     });
+
+    return completer.future;
+  }
+
+  // void sendOTP2() {
+  //   _otp = generateOTP();
+  //   print("email: " + _forgotPasswordEmailController.text + "otp: " + _otp);
+  //   http.post(Uri.parse("https://labassign2.nwarz.com/lsm/php/send_otp.php"),
+  //       body: {
+  //         "email": _forgotPasswordEmailController.text,
+  //         "otp": _otp,
+  //         "name": "User"
+  //       }).then((response) {
+  //         print(response.statusCode);
+  //     if (response.statusCode == 200) {
+  //       print(response.body);
+  //       ScaffoldMessenger.of(context).showSnackBar(
+  //           const SnackBar(content: Text("OTP sent to your email")));
+  //       setState(() {
+  //         // Update the boolean variables
+  //         isOTPSent = true;
+  //         resendButtonText = "Resend";
+  //         isResendEnabled = false;
+  //       });
+  //       print("resend enabled 1 : " +
+  //           isResendEnabled.toString() +
+  //           " resend button text : " +
+  //           resendButtonText.toString());
+  //       Timer(Duration(seconds: 60), () {
+  //         setState(() {
+  //           // Reset the UI after 60 seconds
+  //           isOTPSent = false;
+  //           isResendEnabled = true;
+  //           resendButtonText = "Resend";
+  //         });
+  //       });
+  //     } else {
+  //       ScaffoldMessenger.of(context)
+  //           .showSnackBar(const SnackBar(content: Text("Failed to send OTP")));
+  //     }
+  //     print("resend enabled 2 : " +
+  //         isResendEnabled.toString() +
+  //         " resend button text : " +
+  //         resendButtonText.toString());
+  //   }).catchError((error) {
+  //     ScaffoldMessenger.of(context).showSnackBar(
+  //         const SnackBar(content: Text("Error occurred while sending OTP")));
+  //   });
+  // }
+
+  Future<bool> sendOTP2() async {
+    _otp = generateOTP();
+    print("email: " + _forgotPasswordEmailController.text + "otp: " + _otp);
+
+    Completer<bool> completer = Completer<bool>();
+
+    http.post(Uri.parse("https://labassign2.nwarz.com/lsm/php/send_otp.php"),
+        body: {
+          "email": _forgotPasswordEmailController.text,
+          "otp": _otp,
+          "name": "User"
+        }).then((response) {
+      if (response.statusCode == 200) {
+        ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text("OTP sent to your email")));
+        completer.complete(true);
+        return true;
+      } else {
+        ScaffoldMessenger.of(context)
+            .showSnackBar(const SnackBar(content: Text("Failed to send OTP")));
+        print("resend enabled 2 : " +
+            isResendEnabled.toString() +
+            " resend button text : " +
+            resendButtonText.toString());
+        completer.complete(false);
+        return false;
+      }
+    }).catchError((error) {
+      ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text("Error occurred while sending OTP")));
+      completer.completeError(error);
+    });
+
+    return completer.future;
   }
 
   void _forgotPassword() {
     showDialog(
       context: context,
       builder: (BuildContext context) {
+        late bool isOTPSent = false;
+        late bool isOTPCorrect = false;
+        late bool isOTPIncorrect = false;
+        late bool isResendEnabled = true;
+        late String resendButtonText = "Send OTP";
+        late bool isExist = false;
+        late Timer resendTimer;
+
         return AlertDialog(
           title: const Text(
             "Forgot Password",
@@ -936,78 +1000,169 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   Text(
-                    "Press 'Enter' after filling the text field.",
-                    style: TextStyle(
-                      fontStyle: FontStyle.italic, fontSize: 12
-                    ),
+                    "Press 'Enter' after filling the text field.\n",
+                    style: TextStyle(fontStyle: FontStyle.italic, fontSize: 12),
                   ),
-                  TextFormField(
-                    controller: _forgotPasswordEmailController,
-                    keyboardType: TextInputType.emailAddress,
-                    decoration: const InputDecoration(
-                        labelText: "Email",
-                        labelStyle: TextStyle(),
-                        icon: Icon(Icons.email),
-                        focusedBorder: OutlineInputBorder(
-                          borderSide: BorderSide(width: 2.0),
-                        )),
-                    onFieldSubmitted: (value) {
-                      isExist = true;
-                      verifyEmailExist2(_forgotPasswordEmailController.text);
-                    },
-                  ),
-                  Row(
-                    children: [
-                      Expanded(
-                        child: TextField(
-                          controller: _otp2EditingController,
-                          decoration: const InputDecoration(
-                            contentPadding: EdgeInsets.all(12),
-                            icon: Icon(Icons.security),
-                            hintText: 'Enter otp',
-                            border: InputBorder.none,
+                  StatefulBuilder(
+                    builder: (BuildContext context, StateSetter setState) {
+                      return Column(
+                        children: [
+                          TextFormField(
+                            controller: _forgotPasswordEmailController,
+                            keyboardType: TextInputType.emailAddress,
+                            decoration: const InputDecoration(
+                                labelText: "Email",
+                                labelStyle: TextStyle(),
+                                icon: Icon(Icons.email),
+                                focusedBorder: OutlineInputBorder(
+                                  borderSide: BorderSide(width: 2.0),
+                                )),
+                            onFieldSubmitted: (value) {
+                              // verifyEmailExist2(
+                              //     _forgotPasswordEmailController.text);
+                            },
                           ),
-                          keyboardType: TextInputType.number,
-                          onSubmitted: (v) {
-                            String enteredOTP = _otp2EditingController.text;
-                            if (enteredOTP != _otp) {
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                  const SnackBar(content: Text("Invalid OTP")));
-                              _otp2EditingController.clear();
-                              return;
-                            } else {
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                  const SnackBar(content: Text("Correct OTP")));
-                            }
-                          },
-                        ),
-                      ),
-                      Container(
-                        child: isExist
-                            ? null
-                            : Text(
-                                "Account not registered yet. Please register a new account.",
-                                style:
-                                    TextStyle(color: Colors.red, fontSize: 10)),
-                      ),
-                      const SizedBox(
-                        width: 5,
-                      ),
-                      ElevatedButton(
-                          onPressed: _isResendEnabled ? sendOTP2 : null,
-                          child: const Text("Resend")),
-                    ],
-                  ),
-                  TextField(
-                    controller: _newpassEditingController,
-                    obscureText: true,
-                    decoration: const InputDecoration(
-                      contentPadding: EdgeInsets.all(12),
-                      hintText: 'Enter new password',
-                      icon: Icon(Icons.lock),
-                      border: InputBorder.none,
-                    ),
-                    onSubmitted: (v) {},
+                          if (isOTPSent)
+                            Text(
+                              "\nOTP sent to your email\nYou can resend otp if you did not receive the email after 60 seconds.",
+                              style: TextStyle(
+                                  color: Color.fromARGB(255, 8, 82, 11),
+                                  fontSize: 10),
+                            ),
+                          Row(
+                            children: [
+                              Expanded(
+                                child: TextField(
+                                  controller: _otp2EditingController,
+                                  decoration: const InputDecoration(
+                                    contentPadding: EdgeInsets.all(12),
+                                    icon: Icon(Icons.security),
+                                    hintText: 'Enter otp',
+                                    border: InputBorder.none,
+                                  ),
+                                  keyboardType: TextInputType.number,
+                                  onSubmitted: (v) {
+                                    if(isOTPSent){
+                                      String enteredOTP =
+                                        _otp2EditingController.text;
+                                    if (enteredOTP != _otp) {
+                                      ScaffoldMessenger.of(context)
+                                          .showSnackBar(const SnackBar(
+                                              content: Text("Invalid OTP")));
+                                      _otp2EditingController.clear();
+                                      setState(() {
+                                        isOTPCorrect = false;
+                                        isOTPIncorrect = true;
+                                      });
+                                      return;
+                                    } else if (enteredOTP == _otp) {
+                                      setState(() {
+                                        isOTPCorrect = true;
+                                        isOTPIncorrect = false;
+                                      });
+                                      ScaffoldMessenger.of(context)
+                                          .showSnackBar(const SnackBar(
+                                              content: Text("Correct OTP")));
+                                    }else{
+                                      isOTPCorrect = false;
+                                        isOTPIncorrect = false;
+                                    }
+                                    }
+                                  },
+                                ),
+                              ),
+                              const SizedBox(
+                                width: 5,
+                              ),
+                              ElevatedButton(
+                                onPressed: isResendEnabled
+                                    ? () async {
+                                        isExist = await verifyEmailExist2(
+                                            _forgotPasswordEmailController
+                                                .text);
+                                        print(isExist);
+                                        if (isExist) {
+                                          isOTPSent = await sendOTP2();
+                                          if (isOTPSent) {
+                                            setState(() {
+                                              // Update the boolean variables
+                                              isOTPSent = true;
+                                              resendButtonText = "Resend";
+                                              isResendEnabled = false;
+                                            });
+                                            print("resend enabled 1 : " +
+                                                isResendEnabled.toString() +
+                                                " resend button text : " +
+                                                resendButtonText.toString());
+                                            resendTimer = Timer(
+                                                Duration(seconds: 60), () {
+                                              setState(() {
+                                                // Reset the UI after 60 seconds
+                                                isOTPSent = false;
+                                                isResendEnabled = true;
+                                                resendButtonText = "Resend";
+                                              });
+                                            });
+                                          }
+                                        }
+                                      }
+                                    : null,
+                                child: Text(resendButtonText),
+                              )
+                            ],
+                          ),
+                          if (isOTPCorrect)
+                            Text(
+                              "\nCorrect OTP",
+                              style:
+                                  TextStyle(color: Colors.green, fontSize: 12),
+                            ),
+                          if (isOTPIncorrect)
+                            Text(
+                              "\nInvalid OTP",
+                              style: TextStyle(color: Colors.red, fontSize: 12),
+                            ),
+                          TextField(
+                            controller: _newpassEditingController,
+                            obscureText: true,
+                            decoration: const InputDecoration(
+                              contentPadding: EdgeInsets.all(12),
+                              hintText: 'Enter new password',
+                              icon: Icon(Icons.lock),
+                              border: InputBorder.none,
+                            ),
+                            onSubmitted: (v) {},
+                            onTap: () {
+                             if(isOTPSent){
+                               String enteredOTP = _otp2EditingController.text;
+                              if (enteredOTP != _otp) {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                    const SnackBar(
+                                        content: Text("Invalid OTP")));
+                                _otp2EditingController.clear();
+                                setState(() {
+                                  isOTPCorrect = false;
+                                  isOTPIncorrect = true;
+                                });
+                                return;
+                              } else if (enteredOTP == _otp) {
+                                setState(() {
+                                  isOTPCorrect = true;
+                                  isOTPIncorrect = false;
+                                });
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                    const SnackBar(
+                                        content: Text("Correct OTP")));
+                              }else{
+                                      isOTPCorrect = false;
+                                        isOTPIncorrect = false;
+                                    }
+                             }
+                            },
+                          ),
+                        ],
+                      );
+                    },
                   ),
                 ],
               ),
@@ -1022,6 +1177,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
               onPressed: () {
                 Navigator.pop(context);
                 sendForgotPasswordRequest();
+                resendTimer.cancel();
               },
             ),
             TextButton(
@@ -1031,6 +1187,10 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
               ),
               onPressed: () {
                 Navigator.of(context).pop();
+                resendTimer.cancel();
+                _forgotPasswordEmailController.clear();
+                _otp2EditingController.clear();
+                _newpassEditingController.clear();
               },
             ),
           ],
