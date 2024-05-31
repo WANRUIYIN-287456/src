@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:math';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:local_service_marketplace/a5_1_userservicedetails.dart';
@@ -23,6 +24,8 @@ class _FavouriteScreenState extends State<FavouriteScreen> {
   List<Service> serviceList = <Service>[];
   late User user;
   int numberofresult = 0;
+  Random random = Random();
+  var val = 50;
 
   @override
   void initState() {
@@ -83,7 +86,7 @@ class _FavouriteScreenState extends State<FavouriteScreen> {
                                   width: screenWidth * 0.28,
                                   fit: BoxFit.cover,
                                   imageUrl:
-                                      "${Config.server}/lsm/assets/images/${serviceList[index].serviceId}.png",
+                                      "${Config.server}/lsm/assets/images/${serviceList[index].serviceId}.png?v=$val",
                                   placeholder: (context, url) =>
                                       const LinearProgressIndicator(),
                                   errorWidget: (context, url, error) =>
@@ -136,6 +139,7 @@ class _FavouriteScreenState extends State<FavouriteScreen> {
         }
 
         setState(() {
+          val = random.nextInt(1000);
         });
       }
     });

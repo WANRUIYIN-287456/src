@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'dart:developer';
+import 'dart:math';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
@@ -45,6 +46,8 @@ class _ServiceOrderScreenState extends State<ServiceOrderScreen> {
   late TimeOfDay servicetime;
   late Order order;
   List<Seller> sellerList = <Seller>[];
+  Random random = Random();
+  var val = 50;
 
   @override
   void initState() {
@@ -77,7 +80,7 @@ class _ServiceOrderScreenState extends State<ServiceOrderScreen> {
                           width: screenWidth * 0.6,
                           fit: BoxFit.cover,
                           imageUrl:
-                              "${Config.server}/lsm/assets/images/${widget.service.serviceId}.png",
+                              "${Config.server}/lsm/assets/images/${widget.service.serviceId}.png?v=$val",
                           placeholder: (context, url) =>
                               const LinearProgressIndicator(),
                           errorWidget: (context, url, error) =>
@@ -695,7 +698,7 @@ class _ServiceOrderScreenState extends State<ServiceOrderScreen> {
       },
     ).then((response) {
       print(response.statusCode);
-      log(response.body);
+      print(response.body);
       if (response.statusCode == 200) {
         var jsondata = jsonDecode(response.body);
         if (jsondata['status'] == "success") {
@@ -705,6 +708,7 @@ class _ServiceOrderScreenState extends State<ServiceOrderScreen> {
             setState(() {
               addressEditingController.text =
                   orderItem['order_serviceaddress'].toString();
+                  val = random.nextInt(1000);
             });
           } else {
             addressEditingController.text = "";

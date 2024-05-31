@@ -946,7 +946,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
 
     Completer<bool> completer = Completer<bool>();
 
-    http.post(Uri.parse("https://labassign2.nwarz.com/lsm/php/send_otp.php"),
+    http.post(Uri.parse("https://labassign2.nwarz.com/lsm/php/send_otpchangepass.php"),
         body: {
           "email": _forgotPasswordEmailController.text,
           "otp": _otp,

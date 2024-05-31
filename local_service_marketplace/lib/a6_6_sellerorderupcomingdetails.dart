@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'dart:developer';
+import 'dart:math';
 
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
@@ -24,6 +25,7 @@ class SellerOrderUpcomingDetails extends StatefulWidget {
 class _SellerOrderUpcomingDetailsState
     extends State<SellerOrderUpcomingDetails> {
   final df = DateFormat('dd-MM-yyyy hh:mm a');
+  late String combineddate = "0000-00-00 00:00:00.000000";
   late double screenHeight, screenWidth;
   late Order order;
   String submitstatus = "New";
@@ -36,6 +38,8 @@ class _SellerOrderUpcomingDetailsState
   late DateTime servicedate;
   late DateTime orderdate;
   late int token = 0;
+    Random random = Random();
+  var val = 50;
   late User user = User(
       id: "na",
       name: "na",
@@ -83,16 +87,16 @@ class _SellerOrderUpcomingDetailsState
       token = token - 1;
       print(token);
     }
-    // Check if sellerstatus is 'New' and today is 7 days or more than orderdate
-    // else if (sellerstatus == "New" &&
-    //     DateTime.now().difference(orderdate).inDays >= 7) {
-    //   sellerstatus = "Cancelled";
-    //   orderstatus = "Cancelled";
-    //   reason = "Service Provider did not confirm the order within 7 days.";
-    //   cancelService(reason);
-    //   token = token - 1;
-    //   print(token);
-    // }
+    //Check if sellerstatus is 'New' and today is 7 days or more than orderdate
+    else if (sellerstatus == "New" &&
+        DateTime.now().difference(orderdate).inDays >= 7) {
+      sellerstatus = "Cancelled";
+      orderstatus = "Cancelled";
+      reason = "Service Provider did not confirm the order within 7 days.";
+      cancelService(reason);
+      token = token - 1;
+      print(token);
+    }
   }
 
   @override
@@ -115,200 +119,215 @@ class _SellerOrderUpcomingDetailsState
                 icon: const Icon(Icons.message))
           ],
         ),
-        body: Column(children: [
-          SizedBox(
-            //flex: 3,
-            height: screenHeight / 5.5,
-            child: Card(
-                child: Row(
-              children: [
-                Container(
-                  margin: const EdgeInsets.all(10),
-                  width: screenWidth * 0.3,
-                  child: CachedNetworkImage(
-                      imageUrl:
-                          "${Config.server}/lsm/assets/images/profile/${widget.order.userId}.png?",
-                      placeholder: (context, url) =>
-                          const LinearProgressIndicator(),
-                      errorWidget: (context, url, error) => Image.network(
-                            "${Config.server}/lsm/assets/images/profile/0.png",
-                            scale: 2,
-                          )),
-                ),
-                Column(
-                  children: [
-                    user.id == "na"
-                        ? const Center(
-                            child: Text("Loading..."),
-                          )
-                        : Padding(
-                            padding: const EdgeInsets.fromLTRB(8, 16, 8, 16),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text("Name: ${user.name}",
-                                    style: const TextStyle(
-                                        fontSize: 16,
-                                        fontWeight: FontWeight.bold)),
-                                Text("Phone: ${user.phone}",
-                                    style: const TextStyle(
-                                      fontSize: 14,
-                                    )),
-                                Text(
-                                    "Order Status: ${widget.order.orderStatus}",
-                                    style: const TextStyle(
-                                      fontSize: 14,
-                                    )),
-                              ],
-                            ),
-                          )
-                  ],
-                )
-              ],
-            )),
-          ),
-          SizedBox(
-            // color: Colors.red,
-            width: screenWidth,
-            height: screenHeight * 0.1,
-            child: Card(
-              child: Table(columnWidths: const {
-                0: FlexColumnWidth(0.3),
-                1: FlexColumnWidth(4.5),
-                2: FlexColumnWidth(0.3),
-                3: FlexColumnWidth(4.5),
-                4: FlexColumnWidth(0.3),
-              }, children: [
-                TableRow(children: [
-                  const TableCell(child: Text("")),
-                  TableCell(
-                      child: ElevatedButton(
-                    onPressed: isConfirmedEnabled == false ||
-                            sellerstatus == "Confirmed"
-                        ? null
-                        : () {
-                            setState(() {
-                              sellerstatus = "Confirmed";
-                              submitStatus();
-                              isArrivedEnabled = true;
-                              isConfirmedEnabled = false;
-                            });
-                          },
-                    child: const Text("Order Confirmed"),
-                  )),
-                  const TableCell(child: Text("")),
-                  TableCell(
-                      child: ElevatedButton(
-                          onPressed: isArrivedEnabled == false ||
-                                  sellerstatus == "Arrived"
-                              ? null
-                              : () {
-                                  setState(() {
-                                    sellerstatus = "Arrived";
-                                    submitStatus();
-                                    isConfirmedEnabled = false;
-                                    isArrivedEnabled = false;
-                                  });
-                                },
-                          child: const Text("Service Arrived"))),
-                  const TableCell(child: Text("")),
-                ]),
-              ]),
+        body: SingleChildScrollView(
+          child: Column(children: [
+            SizedBox(
+              //flex: 3,
+              height: screenHeight / 5.5,
+              child: Card(
+                  child: Row(
+                children: [
+                  Container(
+                    margin: const EdgeInsets.all(10),
+                    width: screenWidth * 0.3,
+                    child: CachedNetworkImage(
+                        imageUrl:
+                            "${Config.server}/lsm/assets/images/profile/${widget.order.userId}.png",
+                        placeholder: (context, url) =>
+                            const LinearProgressIndicator(),
+                        errorWidget: (context, url, error) => Image.network(
+                              "${Config.server}/lsm/assets/images/profile/0.png",
+                              scale: 2,
+                            )),
+                  ),
+                  Column(
+                    children: [
+                      user.id == "na"
+                          ? const Center(
+                              child: Text("Loading..."),
+                            )
+                          : Padding(
+                              padding: const EdgeInsets.fromLTRB(8, 16, 8, 16),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text("Name: ${user.name}",
+                                      style: const TextStyle(
+                                          fontSize: 16,
+                                          fontWeight: FontWeight.bold)),
+                                  Text("Phone: ${user.phone}",
+                                      style: const TextStyle(
+                                        fontSize: 14,
+                                      )),
+                                  Text(
+                                      "Order Status: ${widget.order.orderStatus}",
+                                      style: const TextStyle(
+                                        fontSize: 14,
+                                      )),
+                                ],
+                              ),
+                            )
+                    ],
+                  )
+                ],
+              )),
             ),
-          ),
-          Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: Card(
-              child: Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Column(
-                  children: [
-                    CachedNetworkImage(
-                      width: screenWidth * 0.40,
-                      fit: BoxFit.contain,
-                      imageUrl:
-                          "${Config.server}/lsm/assets/images/${widget.order.serviceId}.png",
-                      placeholder: (context, url) =>
-                          const LinearProgressIndicator(),
-                      errorWidget: (context, url, error) =>
-                          const Icon(Icons.error),
-                    ),
-                    const SizedBox(height: 8),
-                    Container(
-                        padding: const EdgeInsets.fromLTRB(8, 0, 8, 0),
-                        child: Text(
-                          "${widget.order.serviceName}",
-                          style: const TextStyle(
-                              fontSize: 20,
-                              fontWeight: FontWeight.bold,
-                              color: Colors.blueAccent),
-                        )),
-                  ],
+            SizedBox(
+              // color: Colors.red,
+              width: screenWidth,
+              height: screenHeight * 0.1,
+              child: Card(
+                child: Table(columnWidths: const {
+                  0: FlexColumnWidth(0.3),
+                  1: FlexColumnWidth(4.5),
+                  2: FlexColumnWidth(0.3),
+                  3: FlexColumnWidth(4.5),
+                  4: FlexColumnWidth(0.3),
+                }, children: [
+                  TableRow(children: [
+                    const TableCell(child: Text("")),
+                    TableCell(
+                        child: ElevatedButton(
+                      onPressed: isConfirmedEnabled == false ||
+                              sellerstatus == "Confirmed"
+                          ? null
+                          : () {
+                              setState(() {
+                                sellerstatus = "Confirmed";
+                                submitStatus();
+                                isArrivedEnabled = true;
+                                isConfirmedEnabled = false;
+                              });
+                            },
+                      child: const Text("Order Confirmed"),
+                    )),
+                    const TableCell(child: Text("")),
+                    TableCell(
+                        child: ElevatedButton(
+                            onPressed: isArrivedEnabled == false ||
+                                    sellerstatus == "Arrived"
+                                ? null
+                                : () {
+                                    setState(() {
+                                      sellerstatus = "Arrived";
+                                      submitStatus();
+                                      isConfirmedEnabled = false;
+                                      isArrivedEnabled = false;
+                                    });
+                                  },
+                            child: const Text("Service Arrived"))),
+                    const TableCell(child: Text("")),
+                  ]),
+                ]),
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Card(
+                child: Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Column(
+                    children: [
+                      CachedNetworkImage(
+                        width: screenWidth * 0.35,
+                        fit: BoxFit.contain,
+                        imageUrl:
+                            "${Config.server}/lsm/assets/images/${widget.order.serviceId}.png?v=$val",
+                        placeholder: (context, url) =>
+                            const LinearProgressIndicator(),
+                        errorWidget: (context, url, error) =>
+                            const Icon(Icons.error),
+                      ),
+                      const SizedBox(height: 8),
+                      Container(
+                          padding: const EdgeInsets.fromLTRB(8, 0, 8, 0),
+                          child: Text(
+                            "${widget.order.serviceName}",
+                            style: const TextStyle(
+                                fontSize: 20,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.blueAccent),
+                          )),
+                    ],
+                  ),
                 ),
               ),
             ),
-          ),
-          Padding(
-            padding: const EdgeInsets.all(20.0),
-            child: Table(
-              columnWidths: const {
-                0: FlexColumnWidth(4),
-                1: FlexColumnWidth(6),
-              },
-              children: [
-                TableRow(children: [
-                  const TableCell(
-                    child: Text(
-                      "Quantity Ordered",
-                      style: TextStyle(fontWeight: FontWeight.bold),
+            Padding(
+              padding: const EdgeInsets.all(20.0),
+              child: Table(
+                columnWidths: const {
+                  0: FlexColumnWidth(4),
+                  1: FlexColumnWidth(6),
+                },
+                children: [
+                  TableRow(children: [
+                    const TableCell(
+                      child: Text(
+                        "Quantity Ordered",
+                        style: TextStyle(fontWeight: FontWeight.bold),
+                      ),
                     ),
-                  ),
-                  TableCell(
-                    child: Text(
-                      widget.order.orderQuantity.toString(),
+                    TableCell(
+                      child: Text(
+                        widget.order.orderQuantity.toString(),
+                      ),
+                    )
+                  ]),
+                  TableRow(children: [
+                    const TableCell(
+                      child: Text(
+                        "\nOrder Date",
+                        style: TextStyle(fontWeight: FontWeight.bold),
+                      ),
                     ),
-                  )
-                ]),
-                TableRow(children: [
-                  const TableCell(
-                    child: Text(
-                      "\nOrder Date",
-                      style: TextStyle(fontWeight: FontWeight.bold),
+                    TableCell(
+                      child: Text(
+                        "\n${df.format(DateTime.parse(widget.order.orderDate.toString()))}",
+                      ),
+                    )
+                  ]),
+                  TableRow(children: [
+                    const TableCell(
+                      child: Text(
+                        "\nService Date",
+                        style: TextStyle(fontWeight: FontWeight.bold),
+                      ),
                     ),
-                  ),
-                  TableCell(
-                    child: Text(
-                      "\n${df.format(DateTime.parse(widget.order.orderDate.toString()))}",
+                    TableCell(
+                      child: Text(
+                        "\n${df.format(DateTime.parse(combineddate))}",
+                      ),
+                    )
+                  ]),
+                  TableRow(children: [
+                    const TableCell(
+                      child: Text(
+                        "\nOrder Price",
+                        style: TextStyle(fontWeight: FontWeight.bold),
+                      ),
                     ),
-                  )
-                ]),
-                TableRow(children: [
-                  const TableCell(
-                    child: Text(
-                      "\nOrder Price",
-                      style: TextStyle(fontWeight: FontWeight.bold),
+                    TableCell(
+                      child: Text(
+                        "\nRM ${widget.order.orderTotalprice}",
+                      ),
+                    )
+                  ]),
+                  TableRow(children: [
+                    const TableCell(
+                      child: Text(
+                        "\nOrder Status",
+                        style: TextStyle(fontWeight: FontWeight.bold),
+                      ),
                     ),
-                  ),
-                  TableCell(
-                    child: Text(
-                      "\nRM ${widget.order.orderTotalprice}",
-                    ),
-                  )
-                ]),
-                TableRow(children: [
-                  const TableCell(
-                    child: Text(
-                      "\nOrder Status",
-                      style: TextStyle(fontWeight: FontWeight.bold),
-                    ),
-                  ),
-                  TableCell(
-                      child: Text("\n" + widget.order.orderStatus.toString())),
-                ]),
-              ],
-            ),
-          )
-        ]));
+                    TableCell(
+                        child: Text("\n" + widget.order.orderStatus.toString())),
+                  ]),
+                ],
+              ),
+            )
+          ]),
+        ));
   }
 
   void loaduserorders() {
@@ -317,12 +336,15 @@ class _SellerOrderUpcomingDetailsState
       "orderid": widget.order.orderId,
     }).then((response) {
       print(response.statusCode);
-      log(response.body);
+      //log(response.body);
       if (response.statusCode == 200) {
         var jsondata = jsonDecode(response.body);
         if (jsondata['status'] == "success") {
           order = Order.fromJson(jsondata['data']);
-          setState(() {});
+          setState(() {
+            val = random.nextInt(1000);
+             combineddate = "${widget.order.orderServicedate} ${widget.order.orderServicetime}";
+          });
         } else {
           setState(() {});
           Navigator.of(context).pop();
@@ -342,7 +364,7 @@ class _SellerOrderUpcomingDetailsState
     http.post(Uri.parse("${Config.server}/lsm/php/load_user.php"), body: {
       "userid": widget.order.userId,
     }).then((response) {
-      log(response.body);
+      //log(response.body);
       if (response.statusCode == 200) {
         var jsondata = jsonDecode(response.body);
         if (jsondata['status'] == 'success') {
@@ -357,7 +379,7 @@ class _SellerOrderUpcomingDetailsState
     http.post(Uri.parse("${Config.server}/lsm/php/load_user.php"), body: {
       "userid": widget.order.sellerId,
     }).then((response) {
-      log(response.body);
+      //log(response.body);
       if (response.statusCode == 200) {
         var jsondata = jsonDecode(response.body);
         if (jsondata['status'] == 'success') {
@@ -374,7 +396,7 @@ class _SellerOrderUpcomingDetailsState
           "orderid": widget.order.orderId,
           "sellerstatus": sellerstatus,
         }).then((response) {
-      log(response.body);
+      //log(response.body);
       //orderList.clear();
       if (response.statusCode == 200) {
         var jsondata = jsonDecode(response.body);
@@ -397,7 +419,7 @@ class _SellerOrderUpcomingDetailsState
       "orderstatus": "Cancelled",
       "tokenStr": token.toString(),
     }).then((response) {
-      log(response.body);
+      //log(response.body);
       //orderList.clear();
       if (response.statusCode == 200) {
         var jsondata = jsonDecode(response.body);

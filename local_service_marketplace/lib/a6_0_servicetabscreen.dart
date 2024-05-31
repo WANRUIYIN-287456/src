@@ -113,6 +113,13 @@ class ServiceTabScreenState extends State<ServiceTabScreen> {
                       alignment: Alignment.topCenter,
                       child: GestureDetector(
                         onTap: () {
+                          if (widget.user.id.toString() == "na") {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(
+                                    content: Text(
+                                        "Please register/login to use this feature.")));
+                            return;
+                          }
                           Navigator.push(
                               context,
                               MaterialPageRoute(

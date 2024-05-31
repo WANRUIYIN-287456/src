@@ -57,6 +57,9 @@ dependencies:
   firebase_core: ^2.24.2
   googleapis: ^11.3.0
   googleapis_auth: ^1.4.1
+  connectivity_plus: ^5.0.2
+  permission_handler: ^11.0.1
+  device_info_plus: ^9.1.2
 
 
 dev_dependencies:

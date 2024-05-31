@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:math';
 import 'package:http/http.dart' as http;
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
@@ -35,6 +36,8 @@ class _ServiceDetailScreenState extends State<ServiceDetailScreen> {
   late Icon love = Icon(Icons.favorite_border_rounded);
   List<Seller> sellerList = <Seller>[];
   late bool isAvailable = true;
+  Random random = Random();
+  var val = 50;
 
   @override
   void initState() {
@@ -86,6 +89,13 @@ class _ServiceDetailScreenState extends State<ServiceDetailScreen> {
               ];
             }, onSelected: (value) async {
               if (value == 0) {
+                if (widget.user.id.toString() == "na") {
+                  ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+                      content:
+                          Text("Please register/login to use this feature.")));
+      
+                  return;
+                }
                 await Navigator.push(
                     context,
                     MaterialPageRoute(
@@ -117,7 +127,7 @@ class _ServiceDetailScreenState extends State<ServiceDetailScreen> {
                             child: CachedNetworkImage(
                               fit: BoxFit.cover,
                               imageUrl:
-                                  "${Config.server}/lsm/assets/images/${widget.service.serviceId}.png",
+                                  "${Config.server}/lsm/assets/images/${widget.service.serviceId}.png?v=$val",
                               placeholder: (context, url) =>
                                   const LinearProgressIndicator(),
                               errorWidget: (context, url, error) =>
@@ -240,7 +250,10 @@ class _ServiceDetailScreenState extends State<ServiceDetailScreen> {
                           children: const [
                             ElevatedButton(
                                 onPressed: null, child: Text("Order Now")),
-                            Text("\nThis service provider is not available for now.", style: TextStyle(color: Colors.blue),)
+                            Text(
+                              "\nThis service provider is not available for now.",
+                              style: TextStyle(color: Colors.blue),
+                            )
                           ],
                         )
                 ],
@@ -259,9 +272,7 @@ class _ServiceDetailScreenState extends State<ServiceDetailScreen> {
     if (widget.user.id.toString() == "na") {
       ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
           content: Text("Please register/login to use this feature.")));
-      Navigator.pushReplacement(context,
-          MaterialPageRoute(builder: (context) => const LoginScreen()));
-      return;
+          return;
     }
     Navigator.push(
         context,
@@ -274,8 +285,6 @@ class _ServiceDetailScreenState extends State<ServiceDetailScreen> {
     if (widget.user.id.toString() == "na") {
       ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
           content: Text("Please register/login to use this feature.")));
-      Navigator.pushReplacement(context,
-          MaterialPageRoute(builder: (context) => const LoginScreen()));
       return;
     }
     showDialog(
@@ -321,8 +330,6 @@ class _ServiceDetailScreenState extends State<ServiceDetailScreen> {
     if (widget.user.id.toString() == "na") {
       ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
           content: Text("Please register/login to use this feature.")));
-      Navigator.pushReplacement(context,
-          MaterialPageRoute(builder: (context) => const LoginScreen()));
       return;
     }
     showDialog(
@@ -480,6 +487,7 @@ class _ServiceDetailScreenState extends State<ServiceDetailScreen> {
             setState(() {
               if (mounted) {
                 isAvailable = sellerList[index].availableStatus == "true";
+                val = random.nextInt(1000);
               }
             });
           }

@@ -163,15 +163,15 @@ void editnotifications() {
         var jsondata = jsonDecode(response.body);
         if (jsondata['status'] == 'success') {
           ScaffoldMessenger.of(context)
-              .showSnackBar(const SnackBar(content: Text("Insert Success")));
+              .showSnackBar(const SnackBar(content: Text("Edit Success")));
         } else {
           ScaffoldMessenger.of(context)
-              .showSnackBar(const SnackBar(content: Text("Insert Failed")));
+              .showSnackBar(const SnackBar(content: Text("Edit Failed")));
         }
         Navigator.pop(context, true);
       } else {
         ScaffoldMessenger.of(context)
-            .showSnackBar(const SnackBar(content: Text("Insert Failed")));
+            .showSnackBar(const SnackBar(content: Text("Edit Failed")));
         Navigator.pop(context);
       }
     });

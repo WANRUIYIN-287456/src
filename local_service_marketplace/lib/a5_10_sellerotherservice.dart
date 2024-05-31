@@ -23,6 +23,8 @@ class _SellerOrtherServiceState extends State<SellerOrtherService> {
   late int axiscount = 2;
   String maintitle = "More Services";
   List<Service> serviceList = <Service>[];
+  Random random = Random();
+  var val = 50;
 
   @override
   void initState() {
@@ -127,7 +129,7 @@ class _SellerOrtherServiceState extends State<SellerOrtherService> {
                                   width: screenWidth * 0.35,
                                   fit: BoxFit.contain,
                                   imageUrl:
-                                      "${Config.server}/lsm/assets/images/${serviceList[index].serviceId}.png",
+                                      "${Config.server}/lsm/assets/images/${serviceList[index].serviceId}.png?v=$val",
                                   placeholder: (context, url) =>
                                       const LinearProgressIndicator(),
                                   errorWidget: (context, url, error) =>
@@ -173,6 +175,7 @@ class _SellerOrtherServiceState extends State<SellerOrtherService> {
             serviceList.add(Service.fromJson(v));
           });
         setState(() {
+          val = random.nextInt(1000);
           // serviceList = List<Service>.from(extractData.map((model) => Service.fromJson(model)));
         });
       }

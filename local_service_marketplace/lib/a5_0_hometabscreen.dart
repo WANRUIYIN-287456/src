@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:math';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
@@ -23,7 +24,8 @@ class _HomeTabScreenState extends State<HomeTabScreen> {
   String maintitle = "Services";
   List<Service> serviceList = <Service>[];
   late User user;
-
+  Random random = Random();
+  var val = 50;
   final TextEditingController searchEditingController = TextEditingController();
   final TextEditingController valueaEditingController = TextEditingController();
   final TextEditingController valuebEditingController = TextEditingController();
@@ -292,7 +294,7 @@ class _HomeTabScreenState extends State<HomeTabScreen> {
                                           width: screenWidth * 0.35,
                                           fit: BoxFit.cover,
                                           imageUrl:
-                                              "${Config.server}/lsm/assets/images/${serviceList[index].serviceId}.png",
+                                              "${Config.server}/lsm/assets/images/${serviceList[index].serviceId}.png?v=$val",
                                           placeholder: (context, url) =>
                                               const LinearProgressIndicator(),
                                           errorWidget: (context, url, error) =>
@@ -381,7 +383,9 @@ void loadpageService(int pg) {
 
             print(serviceList[0].serviceName);
           }
-          setState(() {});
+          setState(() {
+             val = random.nextInt(1000);
+          });
         }
       } catch (e, _) {
         debugPrint(e.toString());
@@ -416,7 +420,9 @@ void loadpageService(int pg) {
 
             print(serviceList[0].serviceName);
           }
-          setState(() {});
+          setState(() {
+             val = random.nextInt(1000);
+          });
         }
       } catch (e, _) {
         debugPrint(e.toString());
@@ -453,7 +459,9 @@ void loadpageService(int pg) {
           });
           print(serviceList[0].serviceName);
         }
-        setState(() {});
+        setState(() {
+           val = random.nextInt(1000);
+        });
       }
     });
   }
@@ -481,7 +489,9 @@ void loadpageService(int pg) {
           });
           print(serviceList[0].serviceName);
         }
-        setState(() {});
+        setState(() {
+           val = random.nextInt(1000);
+        });
       }
     });
   }

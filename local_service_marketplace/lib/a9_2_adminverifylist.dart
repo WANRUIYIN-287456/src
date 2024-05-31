@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:math';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:local_service_marketplace/a9_0_adminlogin.dart';
@@ -23,6 +24,8 @@ class _AdminVerifyListState extends State<AdminVerifyList> {
   List<Seller> sellerList = <Seller>[];
   late Admin admin;
   int index = 0;
+  Random random = Random();
+  var val = 50;
 
   final TextEditingController searchEditingController = TextEditingController();
   String upload = "All";
@@ -198,7 +201,7 @@ class _AdminVerifyListState extends State<AdminVerifyList> {
                                         width: screenWidth * 0.2,
                                         fit: BoxFit.cover,
                                         imageUrl:
-                                            "${Config.server}/lsm/assets/images/profile/${sellerList[index].sellerId}.png",
+                                            "${Config.server}/lsm/assets/images/profile/${sellerList[index].sellerId}.png?v=$val",
                                         placeholder: (context, url) =>
                                             const LinearProgressIndicator(),
                                         errorWidget: (context, url, error) =>
@@ -294,7 +297,9 @@ class _AdminVerifyListState extends State<AdminVerifyList> {
 
             print(sellerList[0].sellerName);
           }
-          setState(() {});
+          setState(() {
+            val = random.nextInt(1000);
+          });
         }
       } catch (e, _) {
         debugPrint(e.toString());

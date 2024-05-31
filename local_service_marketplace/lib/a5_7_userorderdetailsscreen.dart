@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'dart:developer';
+import 'dart:math';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
@@ -21,6 +22,7 @@ class UserOrderDetailsScreen extends StatefulWidget {
 
 class _UserOrderDetailsScreenState extends State<UserOrderDetailsScreen> {
   final df = DateFormat('dd-MM-yyyy hh:mm a');
+  late String combineddate = "0000-00-00 00:00:00.000000";
   late double screenHeight, screenWidth;
   late Order order;
   String submitstatus = "New";
@@ -31,6 +33,8 @@ class _UserOrderDetailsScreenState extends State<UserOrderDetailsScreen> {
   String paymentstatus = "Pending";
   late DateTime servicedate;
   String? reason;
+    Random random = Random();
+  var val = 50;
   late User user = User(
       id: "na",
       name: "na",
@@ -98,8 +102,8 @@ class _UserOrderDetailsScreenState extends State<UserOrderDetailsScreen> {
             },
           ),
           actions: [
-            IconButton(
-                onPressed: () {}, icon: const Icon(Icons.location_on_outlined)),
+            // IconButton(
+            //     onPressed: () {}, icon: const Icon(Icons.location_on_outlined)),
             IconButton(
                 onPressed: () {
                   Navigator.push(
@@ -247,10 +251,10 @@ class _UserOrderDetailsScreenState extends State<UserOrderDetailsScreen> {
                   child: Column(
                     children: [
                       CachedNetworkImage(
-                        width: screenWidth * 0.38,
+                        width: screenWidth * 0.35,
                         fit: BoxFit.contain,
                         imageUrl:
-                            "${Config.server}/lsm/assets/images/${widget.order.serviceId}.png",
+                            "${Config.server}/lsm/assets/images/${widget.order.serviceId}.png?v=$val",
                         placeholder: (context, url) =>
                             const LinearProgressIndicator(),
                         errorWidget: (context, url, error) =>
@@ -302,6 +306,19 @@ class _UserOrderDetailsScreenState extends State<UserOrderDetailsScreen> {
                     TableCell(
                       child: Text(
                         "\n${df.format(DateTime.parse(widget.order.orderDate.toString()))}",
+                      ),
+                    )
+                  ]),
+                   TableRow(children: [
+                    const TableCell(
+                      child: Text(
+                        "\nService Date",
+                        style: TextStyle(fontWeight: FontWeight.bold),
+                      ),
+                    ),
+                    TableCell(
+                      child: Text(
+                        "\n${df.format(DateTime.parse(combineddate))}",
                       ),
                     )
                   ]),
@@ -379,13 +396,15 @@ class _UserOrderDetailsScreenState extends State<UserOrderDetailsScreen> {
       "orderid": widget.order.orderId,
     }).then((response) {
       print(response.statusCode);
-      log(response.body);
-      if (response.statusCode == 200) {
+      //log(response.body);
+      try{
+        if (response.statusCode == 200) {
         var jsondata = jsonDecode(response.body);
         if (jsondata['status'] == "success") {
           order = Order.fromJson(jsondata['data']);
           setState(() {
             paymentstatus = widget.order.paymentStatus.toString();
+            combineddate = "${widget.order.orderServicedate} ${widget.order.orderServicetime}";
           });
         } else {
           setState(() {});
@@ -399,6 +418,9 @@ class _UserOrderDetailsScreenState extends State<UserOrderDetailsScreen> {
         ScaffoldMessenger.of(context)
             .showSnackBar(const SnackBar(content: Text("No Order Available.")));
       }
+      }catch(e){
+        print("error");
+      }
     });
   }
 
@@ -406,14 +428,16 @@ class _UserOrderDetailsScreenState extends State<UserOrderDetailsScreen> {
     http.post(Uri.parse("${Config.server}/lsm/php/load_user.php"), body: {
       "userid": widget.order.sellerId,
     }).then((response) {
-      log(response.body);
+      //log(response.body);
       if (response.statusCode == 200) {
         var jsondata = jsonDecode(response.body);
         if (jsondata['status'] == 'success') {
           user = User.fromJson(jsondata['data']);
         }
       }
-      setState(() {});
+      setState(() {
+        val = random.nextInt(1000);
+      });
     });
   }
 
@@ -421,7 +445,7 @@ class _UserOrderDetailsScreenState extends State<UserOrderDetailsScreen> {
     http.post(Uri.parse("${Config.server}/lsm/php/load_user.php"), body: {
       "userid": widget.order.userId,
     }).then((response) {
-      log(response.body);
+      //log(response.body);
       if (response.statusCode == 200) {
         var jsondata = jsonDecode(response.body);
         if (jsondata['status'] == 'success') {
@@ -439,7 +463,7 @@ class _UserOrderDetailsScreenState extends State<UserOrderDetailsScreen> {
           "submitstatus": submitstatus,
           "orderstatus": orderstatus
         }).then((response) {
-      log(response.body);
+      //log(response.body);
       //orderList.clear();
       if (response.statusCode == 200) {
         var jsondata = jsonDecode(response.body);
@@ -584,7 +608,7 @@ class _UserOrderDetailsScreenState extends State<UserOrderDetailsScreen> {
           "reason": reason,
           "orderstatus": "Cancelled"
         }).then((response) {
-      log(response.body);
+     // log(response.body);
       //orderList.clear();
       if (response.statusCode == 200) {
         var jsondata = jsonDecode(response.body);

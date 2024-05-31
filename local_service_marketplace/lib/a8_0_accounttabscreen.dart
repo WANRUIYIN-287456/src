@@ -211,7 +211,7 @@ class _AccountTabScreenState extends State<AccountTabScreen> {
                         ),
                         MaterialButton(
                           onPressed: () {
-                            Navigator.push(
+                            Navigator.pushReplacement(
                                 context,
                                 MaterialPageRoute(
                                     builder: (content) => const LoginScreen()));
@@ -450,7 +450,7 @@ class _AccountTabScreenState extends State<AccountTabScreen> {
 
    _otp = generateOTP();
     print("email: " + widget.user.email.toString() + "otp: " + _otp);
-    http.post(Uri.parse("https://labassign2.nwarz.com/lsm/php/send_otp.php"),
+    http.post(Uri.parse("https://labassign2.nwarz.com/lsm/php/send_otpchangepass.php"),
         body: {
           "email": widget.user.email,
           "otp": _otp,

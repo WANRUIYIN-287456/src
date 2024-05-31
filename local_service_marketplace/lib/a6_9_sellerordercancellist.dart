@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'dart:developer';
+import 'dart:math';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
@@ -22,6 +23,8 @@ class _SellerOrderCancelListState extends State<SellerOrderCancelList> {
   String status = "Loading...";
   List<Order> orderList = <Order>[];
   late bool isPaid = false;
+  Random random = Random();
+  var val = 50;
 
   @override
   void initState() {
@@ -86,7 +89,7 @@ class _SellerOrderCancelListState extends State<SellerOrderCancelList> {
                                         height: screenHeight * 0.10,
                                         fit: BoxFit.cover,
                                         imageUrl:
-                                            "${Config.server}/lsm/assets/images/${orderList[index].serviceId}.png",
+                                            "${Config.server}/lsm/assets/images/${orderList[index].serviceId}.png?v=$val",
                                         placeholder: (context, url) =>
                                             const LinearProgressIndicator(),
                                         errorWidget: (context, url, error) =>
@@ -130,7 +133,7 @@ class _SellerOrderCancelListState extends State<SellerOrderCancelList> {
           "orderstatus": "Cancelled",
         }).then((response) {
       print(response.statusCode);
-      log(response.body);
+      //log(response.body);
       orderList.clear();
       if (response.statusCode == 200) {
         var jsondata = jsonDecode(response.body);
@@ -142,6 +145,7 @@ class _SellerOrderCancelListState extends State<SellerOrderCancelList> {
             orderList.add(order);
             setState(() {
               isPaid = order.paymentStatus == "Paid";
+              val = random.nextInt(1000);
             });
           });
         } else {
